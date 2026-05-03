@@ -11,32 +11,33 @@ const { exec } = require('child_process');
 
 // sometimes, notarization works but *.app does not have a ticket stapled to it
 // this ensure the *.app has the notarization ticket
-const verifyNotarizationAsync = (filePath) => new Promise((resolve, reject) => {
-  // eslint-disable-next-line no-console
-  console.log(`xcrun stapler validate ${filePath.replace(/ /g, '\\ ')}`);
+const verifyNotarizationAsync = (filePath) =>
+  new Promise((resolve, reject) => {
+    // eslint-disable-next-line no-console
+    console.log(`xcrun stapler validate ${filePath.replace(/ /g, '\\ ')}`);
 
-  exec(`xcrun stapler validate ${filePath.replace(/ /g, '\\ ')}`, (e, stdout, stderr) => {
-    if (e instanceof Error) {
-      reject(e);
-      return;
-    }
+    exec(`xcrun stapler validate ${filePath.replace(/ /g, '\\ ')}`, (e, stdout, stderr) => {
+      if (e instanceof Error) {
+        reject(e);
+        return;
+      }
 
-    if (stderr) {
-      reject(new Error(stderr));
-      return;
-    }
+      if (stderr) {
+        reject(new Error(stderr));
+        return;
+      }
 
-    if (stdout.indexOf('The validate action worked!') > -1) {
-      resolve(stdout);
-    } else {
-      reject(new Error(stdout));
-    }
+      if (stdout.indexOf('The validate action worked!') > -1) {
+        resolve(stdout);
+      } else {
+        reject(new Error(stdout));
+      }
+    });
   });
-});
 
 const arch = process.env.TEMPLATE_ARCH || 'x64';
 
-if ((['x64', 'arm64'].indexOf(arch) < 0)) {
+if (['x64', 'arm64'].indexOf(arch) < 0) {
   console.log(`${process.platform} ${arch} is not supported.`);
 }
 
@@ -64,6 +65,7 @@ const opts = {
       '**/build/**/*forked*',
     ],
     files: [
+      'build/**/*',
       'bin/**/*',
       'default-app-icons/**/*',
       '!tests/**/*',
@@ -89,7 +91,10 @@ const opts = {
     },
     afterSign: (context) => {
       // Only notarize app when forced in pull requests or when releasing using tag
-      const shouldNotarize = process.platform === 'darwin' && context.electronPlatformName === 'darwin' && process.env.CI_BUILD_TAG;
+      const shouldNotarize =
+        process.platform === 'darwin' &&
+        context.electronPlatformName === 'darwin' &&
+        process.env.CI_BUILD_TAG;
       if (!shouldNotarize) return null;
 
       console.log('Notarizing app...');
