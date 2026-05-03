@@ -45,6 +45,7 @@ if ((['x64', 'arm64'].indexOf(arch) < 0)) {
 // Intel-based Macs from updating if there exists Arch.arm64 builds
 // https://github.com/electron-userland/electron-builder/pull/6212
 const targets = Platform.MAC.createTarget(['zip', 'dmg'], Arch.universal);
+const isDevelopmentBuild = process.env.CSC_IDENTITY_AUTO_DISCOVERY === 'false';
 
 const opts = {
   targets,
@@ -80,7 +81,7 @@ const opts = {
     },
     mac: {
       category: 'public.app-category.utilities',
-      hardenedRuntime: true,
+      hardenedRuntime: !isDevelopmentBuild,
       gatekeeperAssess: false,
       darkModeSupport: true,
       entitlements: 'build-resources/entitlements.mac.plist',
