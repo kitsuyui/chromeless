@@ -11,9 +11,11 @@ on:
     paths:
       - '.github/workflows/macos.yml'
       - 'dist.js'
+      - 'index.html'
       - 'package.json'
       - 'bun.lock'
       - 'tsdown.config.js'
+      - 'vite.config.js'
 
 
 jobs:
@@ -48,7 +50,4 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REACT_APP_ELASTIC_CLOUD_APP_SEARCH_SEARCH_KEY: ${{ secrets.REACT_APP_ELASTIC_CLOUD_APP_SEARCH_SEARCH_KEY }}
-          REACT_APP_ELASTIC_CLOUD_APP_SEARCH_API_ENDPOINT: ${{ secrets.REACT_APP_ELASTIC_CLOUD_APP_SEARCH_API_ENDPOINT }}
-          REACT_APP_ELASTIC_CLOUD_APP_SEARCH_ENGINE_NAME: ${{ secrets.REACT_APP_ELASTIC_CLOUD_APP_SEARCH_ENGINE_NAME }}
         if: startsWith(github.ref, 'refs/tags/')
