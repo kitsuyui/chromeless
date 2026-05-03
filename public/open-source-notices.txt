@@ -23,12 +23,6 @@
 [@emotion/hash@0.8.0](https://github.com/emotion-js/emotion/tree/master/packages/hash) - MIT
 [@epic-web/invariant@1.0.0](https://github.com/epicweb-dev/invariant) - MIT
 [@fontsource/roboto@5.2.10](https://github.com/fontsource/font-files) - OFL-1.1
-[@hapi/address@5.1.1](https://github.com/hapijs/address) - BSD-3-Clause
-[@hapi/formula@3.0.2](https://github.com/hapijs/formula) - BSD-3-Clause
-[@hapi/hoek@11.0.7](https://github.com/hapijs/hoek) - BSD-3-Clause
-[@hapi/pinpoint@2.0.1](https://github.com/hapijs/pinpoint) - BSD-3-Clause
-[@hapi/tlds@1.1.6](https://github.com/hapijs/tlds) - BSD-3-Clause
-[@hapi/topo@6.0.2](https://github.com/hapijs/topo) - BSD-3-Clause
 [@img/sharp-darwin-arm64@0.33.5](https://github.com/lovell/sharp) - Apache-2.0
 [@img/sharp-libvips-darwin-arm64@1.0.4](https://github.com/lovell/sharp-libvips) - LGPL-3.0-or-later
 [@isaacs/fs-minipass@4.0.1](https://github.com/npm/fs-minipass) - ISC
@@ -79,7 +73,6 @@
 [@rolldown/binding-darwin-arm64@1.0.0-rc.17](https://github.com/rolldown/rolldown) - MIT
 [@rolldown/pluginutils@1.0.0-rc.17](https://github.com/rolldown/rolldown) - MIT
 [@sindresorhus/is@4.6.0](https://github.com/sindresorhus/is) - MIT
-[@standard-schema/spec@1.1.0](https://github.com/standard-schema/standard-schema) - MIT
 [@szmarczak/http-timer@4.0.6](https://github.com/szmarczak/http-timer) - MIT
 [@tokenizer/inflate@0.4.1](https://github.com/Borewit/tokenizer-inflate) - MIT
 [@tokenizer/token@0.3.0](https://github.com/Borewit/tokenizer-token) - MIT
@@ -129,7 +122,6 @@
 [asynckit@0.4.0](https://github.com/alexindigo/asynckit) - MIT
 [at-least-node@1.0.0](https://github.com/RyanZim/at-least-node) - ISC
 [await-to-js@3.0.0](https://github.com/scopsy/await-to-js) - MIT
-[axios@1.16.0](https://github.com/axios/axios) - MIT
 [balanced-match@1.0.2](https://github.com/juliangruber/balanced-match) - MIT
 [balanced-match@4.0.4](https://github.com/juliangruber/balanced-match) - MIT
 [base64-js@1.5.1](https://github.com/beatgammit/base64-js) - MIT
@@ -196,7 +188,6 @@
 [css-what@6.2.2](https://github.com/fb55/css-what) - BSD-2-Clause
 [csstype@2.6.20](https://github.com/frenic/csstype) - MIT
 [csstype@3.1.0](https://github.com/frenic/csstype) - MIT
-[data-uri-to-buffer@4.0.1](https://github.com/TooTallNate/node-data-uri-to-buffer) - MIT
 [debug@3.2.7](https://github.com/visionmedia/debug) - MIT
 [debug@4.3.4](https://github.com/debug-js/debug) - MIT
 [debug@4.4.3](https://github.com/debug-js/debug) - MIT
@@ -271,15 +262,12 @@
 [fast-json-stable-stringify@2.1.0](https://github.com/epoberezkin/fast-json-stable-stringify) - MIT
 [fd-slicer@1.1.0](https://github.com/andrewrk/node-fd-slicer) - MIT
 [fdir@6.5.0](https://github.com/thecodrr/fdir) - MIT
-[fetch-blob@3.2.0](https://github.com/node-fetch/fetch-blob) - MIT
 [file-type@21.3.4](https://github.com/sindresorhus/file-type) - MIT
 [file-type@3.9.0](https://github.com/sindresorhus/file-type) - MIT
 [file-type@5.2.0](https://github.com/sindresorhus/file-type) - MIT
 [file-type@6.2.0](https://github.com/sindresorhus/file-type) - MIT
 [filelist@1.0.4](https://github.com/mde/filelist) - Apache-2.0
-[follow-redirects@1.16.0](https://github.com/follow-redirects/follow-redirects) - MIT
 [form-data@4.0.5](https://github.com/form-data/form-data) - MIT
-[formdata-polyfill@4.0.10](git+https://jimmywarting@github.com/jimmywarting/FormData) - MIT
 [fs-constants@1.0.0](https://github.com/mafintosh/fs-constants) - MIT
 [fs-extra@10.1.0](https://github.com/jprichardson/node-fs-extra) - MIT
 [fs-extra@11.3.4](https://github.com/jprichardson/node-fs-extra) - MIT
@@ -354,7 +342,6 @@
 [jake@10.8.5](https://github.com/jakejs/jake) - Apache-2.0
 [jimp@1.6.1](https://github.com/jimp-dev/jimp) - MIT
 [jiti@2.6.1](https://github.com/unjs/jiti) - MIT
-[joi@18.1.2](https://github.com/hapijs/joi) - BSD-3-Clause
 [jpeg-js@0.4.4](https://github.com/eugeneware/jpeg-js) - BSD-3-Clause
 [js-tokens@4.0.0](https://github.com/lydell/js-tokens) - MIT
 [js-yaml@4.1.1](https://github.com/nodeca/js-yaml) - MIT
@@ -415,8 +402,6 @@
 [node-addon-api@1.7.2](https://github.com/nodejs/node-addon-api) - MIT
 [node-api-version@0.2.1](https://github.com/timfish/node-api-version) - MIT
 [node-cache@5.1.2](https://github.com/node-cache/node-cache) - MIT
-[node-domexception@1.0.0](https://github.com/jimmywarting/node-domexception) - MIT
-[node-fetch@3.3.2](https://github.com/node-fetch/node-fetch) - MIT
 [node-gyp@12.3.0](https://github.com/nodejs/node-gyp) - MIT
 [nopt@4.0.3](https://github.com/npm/nopt) - ISC
 [nopt@9.0.0](https://github.com/npm/nopt) - ISC
@@ -469,7 +454,6 @@
 [promise-retry@2.0.1](https://github.com/IndigoUnited/node-promise-retry) - MIT
 [prop-types@15.8.1](https://github.com/facebook/prop-types) - MIT
 [proper-lockfile@4.1.2](https://github.com/moxystudio/node-proper-lockfile) - MIT
-[proxy-from-env@2.1.0](https://github.com/Rob--W/proxy-from-env) - MIT
 [pump@3.0.4](https://github.com/mafintosh/pump) - MIT
 [punycode@2.1.1](https://github.com/bestiejs/punycode.js) - MIT
 [pupa@3.3.0](https://github.com/sindresorhus/pupa) - MIT
@@ -602,8 +586,6 @@
 [validate-npm-package-license@3.0.4](https://github.com/kemitchell/validate-npm-package-license.js) - Apache-2.0
 [verror@1.10.1](https://github.com/joyent/node-verror) - MIT
 [vite@8.0.10](https://github.com/vitejs/vite) - MIT
-[wait-on@9.0.5](https://github.com/jeffbski/wait-on) - MIT
-[web-streams-polyfill@3.3.3](https://github.com/MattiasBuelens/web-streams-polyfill) - MIT
 [whatwg-encoding@3.1.1](https://github.com/jsdom/whatwg-encoding) - MIT
 [whatwg-mimetype@4.0.0](https://github.com/jsdom/whatwg-mimetype) - MIT
 [which@2.0.2](https://github.com/isaacs/node-which) - ISC

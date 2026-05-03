@@ -2,23 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 const fsExtra = require('fs-extra');
+const { Readable } = require('stream');
+const { pipeline } = require('stream/promises');
 
 const customizedFetch = require('./customized-fetch');
 
-// https://github.com/node-fetch/node-fetch/issues/375#issuecomment-385751664
-const downloadAsync = (
-  url, dest, fetchOpts, ...fetchArgs
-) => fsExtra.ensureFile(dest)
-  .then(() => customizedFetch(url, fetchOpts, ...fetchArgs))
-  .then((res) => new Promise((resolve, reject) => {
-    const fileStream = fsExtra.createWriteStream(dest);
-    res.body.pipe(fileStream);
-    res.body.on('error', (err) => {
-      reject(err);
+const getNodeReadableStream = (body) => {
+  if (typeof body.pipe === 'function') return body;
+  return Readable.fromWeb(body);
+};
+
+const downloadAsync = (url, dest, fetchOpts, ...fetchArgs) =>
+  fsExtra
+    .ensureFile(dest)
+    .then(() => customizedFetch(url, fetchOpts, ...fetchArgs))
+    .then((res) => {
+      if (!res.ok) throw new Error(`Failed to download ${url}: ${res.status} ${res.statusText}`);
+      if (!res.body) throw new Error(`Failed to download ${url}: empty response body`);
+      return pipeline(getNodeReadableStream(res.body), fsExtra.createWriteStream(dest));
     });
-    fileStream.on('finish', () => {
-      resolve();
-    });
-  }));
 
 module.exports = downloadAsync;
