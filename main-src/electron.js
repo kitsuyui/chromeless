@@ -1,14 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-require('source-map-support').install();
 const path = require('path');
-const {
-  app,
-  ipcMain,
-  nativeTheme,
-  protocol,
-} = require('electron');
+const { app, ipcMain, nativeTheme, protocol } = require('electron');
 const fs = require('fs');
 const electronRemote = require('@electron/remote/main');
 
@@ -22,10 +16,7 @@ settings.configure({
 
 const { autoUpdater } = require('electron-updater');
 
-const {
-  getPreference,
-  getPreferences,
-} = require('./libs/preferences');
+const { getPreference, getPreferences } = require('./libs/preferences');
 
 const { createMenu } = require('./libs/menu');
 const sendToAllWindows = require('./libs/send-to-all-windows');
@@ -63,29 +54,23 @@ if (!gotTheLock) {
       callback(pathname);
     });
 
-    global.defaultIcon = path.join(
-      app.getAppPath(),
-      'default-app-icons',
-      'default-icon.png',
-    ).replace('app.asar', 'app.asar.unpacked');
+    global.defaultIcon = path
+      .join(app.getAppPath(), 'default-app-icons', 'default-icon.png')
+      .replace('app.asar', 'app.asar.unpacked');
 
-    const {
-      allowPrerelease,
-      themeSource,
-    } = getPreferences();
+    const { allowPrerelease, themeSource } = getPreferences();
 
     nativeTheme.themeSource = themeSource;
 
-    mainWindow.createAsync()
-      .then(() => {
-        // trigger whenFullyReady
-        ipcMain.emit('truly-ready');
+    mainWindow.createAsync().then(() => {
+      // trigger whenFullyReady
+      ipcMain.emit('truly-ready');
 
-        const win = mainWindow.get();
-        mainWindow.get().on('focus', () => {
-          win.send('log-focus');
-        });
+      const win = mainWindow.get();
+      mainWindow.get().on('focus', () => {
+        win.send('log-focus');
       });
+    });
 
     createMenu();
 
@@ -103,8 +88,7 @@ if (!gotTheLock) {
   });
 
   app.on('activate', () => {
-    app.whenReady()
-      .then(() => mainWindow.show());
+    app.whenReady().then(() => mainWindow.show());
   });
 
   app.on('second-instance', () => {

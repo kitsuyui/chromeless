@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 const path = require('path');
 const semver = require('semver');
-const NodeCache = require('node-cache');
 const { fork } = require('child_process');
 const { app } = require('electron');
 const envPaths = require('env-paths');
@@ -15,7 +14,7 @@ const { getPreference } = require('../../preferences');
 // force re-extract for first installation after launch
 global.forceExtract = true;
 
-const cache = new NodeCache();
+const templateInfoCache = new Map();
 
 const webkitWrapperReleasesUrl = 'https://api.github.com/repos/webcatalog/webkit-wrapper/releases';
 
@@ -62,7 +61,7 @@ const downloadTemplateAsync = (tagName) =>
       tagName,
     ];
 
-    const cachedTemplateInfoJson = cache.get(`templateInfoJson.${tagName}`);
+    const cachedTemplateInfoJson = templateInfoCache.get(tagName);
     if (cachedTemplateInfoJson) {
       args.push('--templateInfoJson');
       args.push(cachedTemplateInfoJson);
@@ -82,7 +81,7 @@ const downloadTemplateAsync = (tagName) =>
       if (message && message.templateInfo) {
         latestTemplateVersion = message.templateInfo.version;
         // cache template info for the tag name indefinitely (until app is quitted)
-        cache.set(`templateInfoJson.${tagName}`, JSON.stringify(message.templateInfo));
+        templateInfoCache.set(tagName, JSON.stringify(message.templateInfo));
       } else if (message && message.progress) {
         sendToAllWindows('update-installation-progress', message.progress);
       } else if (message && message.error) {

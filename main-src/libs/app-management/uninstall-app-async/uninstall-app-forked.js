@@ -1,8 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-require('source-map-support').install();
-
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
   process.send({
@@ -21,14 +19,21 @@ const sudo = require('sudo-prompt');
 const { exec } = require('child_process');
 const os = require('os');
 
-const yargsParser = process.env.NODE_ENV === 'production' ? require('yargs-parser').default : require('yargs-parser');
-
 const getRelatedPaths = require('../get-related-paths');
+const parseArgs = require('../../parse-args');
 
-// id, name, username might only contain numbers
-// causing yargsParser to parse them correctly as Number instead of String
-// so it's neccessary to explitcity state their types
-const argv = yargsParser(process.argv.slice(1), { string: ['id', 'name', 'username'] });
+const argv = parseArgs([
+  'appDataPath',
+  'desktopPath',
+  'engine',
+  'homePath',
+  'id',
+  'installationPath',
+  'name',
+  'username',
+  'chromelessUserDataPath',
+  'requireAdmin',
+]);
 const {
   appDataPath,
   desktopPath,
@@ -42,54 +47,58 @@ const {
 } = argv;
 
 // ignore requireAdmin if installationPath is not custom
-const isStandardInstallationPath = installationPath === '~/Applications/Chromeless Apps'
-|| installationPath === '/Applications/Chromeless Apps';
+const isStandardInstallationPath =
+  installationPath === '~/Applications/Chromeless Apps' ||
+  installationPath === '/Applications/Chromeless Apps';
 const requireAdmin = isStandardInstallationPath ? false : argv.requireAdmin;
 
-const sudoAsync = (prompt) => new Promise((resolve, reject) => {
-  const opts = {
-    name: 'Chromeless',
-  };
-  process.env.USER = username;
-  sudo.exec(prompt, opts, (error, stdout, stderr) => {
-    if (error) {
-      return reject(error);
-    }
-    return resolve(stdout, stderr);
+const sudoAsync = (prompt) =>
+  new Promise((resolve, reject) => {
+    const opts = {
+      name: 'Chromeless',
+    };
+    process.env.USER = username;
+    sudo.exec(prompt, opts, (error, stdout, stderr) => {
+      if (error) {
+        return reject(error);
+      }
+      return resolve(stdout, stderr);
+    });
   });
-});
 
-const checkExistsAndRemove = (dirPath) => fsExtra.exists(dirPath)
-  .then((exists) => {
+const checkExistsAndRemove = (dirPath) =>
+  fsExtra.exists(dirPath).then((exists) => {
     if (exists) return fsExtra.remove(dirPath);
     return null;
   });
 
-const checkExistsAndRemoveWithSudo = (dirPath) => fsExtra.exists(dirPath)
-  .then((exists) => {
+const checkExistsAndRemoveWithSudo = (dirPath) =>
+  fsExtra.exists(dirPath).then((exists) => {
     if (exists) return sudoAsync(`rm -rf "${dirPath}"`);
     return null;
   });
 
-const execAsync = (cmd) => new Promise((resolve, reject) => {
-  exec(cmd, (e, stdout, stderr) => {
-    if (e instanceof Error) {
-      reject(e);
-      return;
-    }
+const execAsync = (cmd) =>
+  new Promise((resolve, reject) => {
+    exec(cmd, (e, stdout, stderr) => {
+      if (e instanceof Error) {
+        reject(e);
+        return;
+      }
 
-    if (stderr) {
-      reject(new Error(stderr));
-      return;
-    }
+      if (stderr) {
+        reject(new Error(stderr));
+        return;
+      }
 
-    resolve(stdout);
+      resolve(stdout);
+    });
   });
-});
 
-const dotAppPath = process.platform === 'darwin'
-  ? path.join(installationPath.replace('~', homePath), `${name}.app`)
-  : path.join(installationPath.replace('~', homePath), `${name}`);
+const dotAppPath =
+  process.platform === 'darwin'
+    ? path.join(installationPath.replace('~', homePath), `${name}.app`)
+    : path.join(installationPath.replace('~', homePath), `${name}`);
 
 const relatedPaths = getRelatedPaths({
   appObj: {
@@ -116,7 +125,9 @@ Promise.resolve()
     // need to correct to user to install apps without sudo
     if (installationPath === '/Applications/Chromeless Apps') {
       // https://unix.stackexchange.com/a/7732
-      const installationPathOwner = await execAsync("ls -ld '/Applications/Chromeless Apps' | awk '{print $3}'");
+      const installationPathOwner = await execAsync(
+        "ls -ld '/Applications/Chromeless Apps' | awk '{print $3}'",
+      );
       if (installationPathOwner.trim() === 'root') {
         // https://askubuntu.com/questions/6723/change-folder-permissions-and-ownership
         // https://stackoverflow.com/questions/23714097/sudo-chown-command-not-found
@@ -137,21 +148,20 @@ Promise.resolve()
       const firefoxUserDataPath = path.join(homePath, 'Library', 'Application Support', 'Firefox');
       const profilesIniPath = path.join(firefoxUserDataPath, 'profiles.ini');
 
-      return fsExtra.pathExists(profilesIniPath)
-        .then((exists) => {
-          // If user has never opened Firefox app
-          // profiles.ini doesn't exist
-          if (!exists) return;
-          const profilesIniContent = fsExtra.readFileSync(profilesIniPath, 'utf-8');
+      return fsExtra.pathExists(profilesIniPath).then((exists) => {
+        // If user has never opened Firefox app
+        // profiles.ini doesn't exist
+        if (!exists) return;
+        const profilesIniContent = fsExtra.readFileSync(profilesIniPath, 'utf-8');
 
-          // remove entry from profiles.init
-          const modifiedProfilesIniContent = profilesIniContent
-            .split(`${os.EOL}${os.EOL}`)
-            .filter((x) => !x.includes(`Name=${profileId}`))
-            .join(`${os.EOL}${os.EOL}`);
+        // remove entry from profiles.init
+        const modifiedProfilesIniContent = profilesIniContent
+          .split(`${os.EOL}${os.EOL}`)
+          .filter((x) => !x.includes(`Name=${profileId}`))
+          .join(`${os.EOL}${os.EOL}`);
 
-          fsExtra.writeFileSync(profilesIniPath, modifiedProfilesIniContent);
-        });
+        fsExtra.writeFileSync(profilesIniPath, modifiedProfilesIniContent);
+      });
     }
     return null;
   })

@@ -4,7 +4,6 @@
 /* eslint-disable no-constant-condition */
 import React from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -69,7 +68,8 @@ const styles = (theme) => ({
     padding: 0,
     margin: 0,
     '&:hover': {
-      backgroundColor: theme.palette.type === 'dark' ? theme.palette.common.black : theme.palette.primary.dark,
+      backgroundColor:
+        theme.palette.type === 'dark' ? theme.palette.common.black : theme.palette.primary.dark,
     },
   },
   windowsIcon: {
@@ -98,11 +98,7 @@ const styles = (theme) => ({
   },
 });
 
-const EnhancedAppBar = ({
-  center,
-  classes,
-  shouldUseDarkColors,
-}) => {
+const EnhancedAppBar = ({ center, classes, shouldUseDarkColors }) => {
   const onDoubleClick = (e) => {
     // feature: double click on title bar to expand #656
     // https://github.com/webcatalog/webcatalog-app/issues/656
@@ -126,17 +122,14 @@ const EnhancedAppBar = ({
       className={classes.appBar}
       color={shouldUseDarkColors ? 'default' : 'primary'}
     >
-      <Toolbar
-        variant="dense"
-        className={classes.toolbar}
-      >
+      <Toolbar variant="dense" className={classes.toolbar}>
         <div className={classes.left} onDoubleClick={onDoubleClick}>
           {shouldShowMenuButton && (
             <IconButton
               size="small"
               color="inherit"
               aria-label="Menu"
-              className={classnames(classes.iconButton, classes.noDrag)}
+              className={`${classes.iconButton} ${classes.noDrag}`}
               onClick={(e) => {
                 e.stopPropagation();
                 requestShowAppMenu(e.x, e.y);
@@ -169,9 +162,4 @@ const mapStateToProps = (state) => ({
   shouldUseDarkColors: state.general.shouldUseDarkColors,
 });
 
-export default connectComponent(
-  EnhancedAppBar,
-  mapStateToProps,
-  null,
-  styles,
-);
+export default connectComponent(EnhancedAppBar, mapStateToProps, null, styles);

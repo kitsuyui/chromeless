@@ -1,8 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-require('source-map-support').install();
-
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
   process.send({
@@ -15,24 +13,32 @@ process.on('uncaughtException', (e) => {
   process.exit(1);
 });
 
-const yargsParser =
-  process.env.NODE_ENV === 'production' ? require('yargs-parser').default : require('yargs-parser');
 const icongen = require('icon-gen');
 const Jimp = process.env.NODE_ENV === 'production' ? require('jimp').default : require('jimp');
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
-const tmp = require('tmp');
 const fsExtra = require('fs-extra');
-const isUrl = require('is-url');
 const sudo = require('sudo-prompt');
 const decompress = require('decompress');
 
 const execAsync = require('../../exec-async');
 const downloadAsync = require('../../download-async');
+const parseArgs = require('../../parse-args');
 
-// id, name, username might only contain numbers
-// causing yargsParser to parse them correctly as Number instead of String
-// so it's neccessary to explitcity state their types
-const argv = yargsParser(process.argv.slice(1), { string: ['id', 'name', 'username'] });
+const argv = parseArgs([
+  'cacheRoot',
+  'engine',
+  'homePath',
+  'icon',
+  'id',
+  'installationPath',
+  'name',
+  'url',
+  'username',
+  'opts',
+  'requireAdmin',
+]);
 const { cacheRoot, engine, homePath, icon, id, installationPath, name, url, username } = argv;
 const opts = JSON.parse(argv.opts);
 
@@ -45,6 +51,8 @@ const isStandardInstallationPath =
   installationPath === '~/Applications/Chromeless Apps' ||
   installationPath === '/Applications/Chromeless Apps';
 const requireAdmin = isStandardInstallationPath ? false : argv.requireAdmin;
+
+const isUrl = (value) => URL.canParse(value);
 
 const sudoAsync = (prompt) =>
   new Promise((resolve, reject) => {
@@ -67,8 +75,7 @@ const getAppFolderName = () => {
   throw Error('Unsupported platform');
 };
 
-const tmpObj = tmp.dirSync();
-const tmpPath = tmpObj.name;
+const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'chromeless-'));
 const appFolderPath = path.join(tmpPath, getAppFolderName());
 // Mock Electron for backward compatiblity
 const contentsPath = path.join(appFolderPath, 'Contents');

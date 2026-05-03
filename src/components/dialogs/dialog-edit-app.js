@@ -4,7 +4,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -131,7 +130,7 @@ const DialogEditApp = (props) => {
             <Grid item xs={12} sm="auto">
               <Typography
                 variant="body2"
-                className={classnames(classes.caption, classes.captionDisabled)}
+                className={`${classes.caption} ${classes.captionDisabled}`}
               >
                 This app icon is managed by the installed app and is not editable. To customize the
                 icon,

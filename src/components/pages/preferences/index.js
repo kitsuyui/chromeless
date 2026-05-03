@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
@@ -236,7 +235,7 @@ const Preferences = ({
                   classes={{
                     root: classes.select,
                   }}
-                  className={classnames(classes.selectRoot, classes.selectRootExtraMargin)}
+                  className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                 >
                   <MenuItem dense value="system">
                     System default
@@ -304,7 +303,7 @@ const Preferences = ({
                   classes={{
                     root: classes.select,
                   }}
-                  className={classnames(classes.selectRoot, classes.selectRootExtraMargin)}
+                  className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                 >
                   <MenuItem dense value="browsers">
                     Browsers
@@ -329,7 +328,7 @@ const Preferences = ({
                   classes={{
                     root: classes.select,
                   }}
-                  className={classnames(classes.selectRoot, classes.selectRootExtraMargin)}
+                  className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                 >
                   <MenuItem dense value="yes">
                     Yes
@@ -402,7 +401,7 @@ const Preferences = ({
                   classes={{
                     root: classes.select,
                   }}
-                  className={classnames(classes.selectRoot, classes.selectRootExtraMargin)}
+                  className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                   disabled={installingAppCount > 0}
                 >
                   {[
