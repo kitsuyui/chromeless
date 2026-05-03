@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { createStore, combineReducers, applyMiddleware } from 'redux';
-import thunkMiddleware from 'redux-thunk';
+import { thunk as thunkMiddleware } from 'redux-thunk';
 
 import appManagement from './app-management/reducers';
 import dialogAbout from './dialog-about/reducers';

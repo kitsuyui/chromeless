@@ -17,8 +17,8 @@ process.on('uncaughtException', (e) => {
 
 const yargsParser = process.env.NODE_ENV === 'production' ? require('yargs-parser').default : require('yargs-parser');
 const axios = require('axios');
+const crypto = require('crypto');
 const fs = require('fs-extra');
-const hasha = require('hasha');
 const path = require('path');
 const semver = require('semver');
 
@@ -36,6 +36,7 @@ const {
 const cachePath = path.join(cacheRoot, 'webkit-wrapper');
 const templateZipPath = path.join(cachePath, 'template.zip');
 const templateJsonPath = path.join(cachePath, 'template.json');
+const sha256FileSync = (filePath) => crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
 
 Promise.resolve()
   .then(() => fs.ensureDir(cachePath))
@@ -59,8 +60,7 @@ Promise.resolve()
 
       // return shouldDownload
       if (fs.pathExistsSync(templateZipPath)) {
-        // do not use hasha.fromFile as it uses worker which is incompatible with webpack setup
-        const localSha256 = hasha.fromFileSync(templateZipPath, { algorithm: 'sha256' });
+        const localSha256 = sha256FileSync(templateZipPath);
         return localSha256 !== templateInfo.sha256;
       }
 
@@ -112,8 +112,7 @@ Promise.resolve()
               });
             }));
           })
-          // do not use hasha.fromFile as it uses worker which is incompatible with webpack setup
-          .then(() => hasha.fromFileSync(templateZipPath, { algorithm: 'sha256' }))
+          .then(() => sha256FileSync(templateZipPath))
           .then((sha256) => {
             if (sha256 !== templateInfo.sha256) {
               return Promise.reject(new Error('Downloaded template code zip is corrupted (validated with SHA256).'));

@@ -176,11 +176,11 @@ const createMenu = () => {
         },
         {
           label: 'Report a Bug via GitHub...',
-          click: () => shell.openExternal('https://github.com/webcatalog/chromeless/issues'),
+          click: () => shell.openExternal('https://github.com/kitsuyui/chromeless/issues'),
         },
         {
           label: 'Request a New Feature via GitHub...',
-          click: () => shell.openExternal('https://github.com/webcatalog/chromeless/issues/new?template=feature.md&title=feature%3A+'),
+          click: () => shell.openExternal('https://github.com/kitsuyui/chromeless/issues/new?template=feature.md&title=feature%3A+'),
         },
         {
           label: 'Learn More...',

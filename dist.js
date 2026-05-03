@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-disable no-console */
 const builder = require('electron-builder');
-const { notarize } = require('electron-notarize');
+const { notarize } = require('@electron/notarize');
 
 const { Arch, Platform } = builder;
 
@@ -49,7 +49,7 @@ const targets = Platform.MAC.createTarget(['zip', 'dmg'], Arch.universal);
 const opts = {
   targets,
   config: {
-    appId: 'com.webcatalog.chromeless',
+    appId: 'com.kitsuyui.chromeless',
     productName: 'Chromeless',
     asar: true,
     asarUnpack: [
@@ -99,7 +99,7 @@ const opts = {
       const appPath = `${appOutDir}/${appName}.app`;
 
       return notarize({
-        appBundleId: 'com.webcatalog.chromeless',
+        appBundleId: 'com.kitsuyui.chromeless',
         appPath,
         appleId: process.env.APPLE_ID,
         appleIdPassword: process.env.APPLE_ID_PASSWORD,

@@ -681,7 +681,7 @@ const Preferences = ({
                 <ChevronRightIcon color="action" />
               </ListItem>
               <Divider />
-              <ListItem button onClick={() => requestOpenInBrowser('https://github.com/webcatalog/chromeless')}>
+              <ListItem button onClick={() => requestOpenInBrowser('https://github.com/kitsuyui/chromeless')}>
                 <ListItemText primary="GitHub" />
                 <ChevronRightIcon color="action" />
               </ListItem>

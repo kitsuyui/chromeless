@@ -80,7 +80,7 @@ const Home = ({
           align="center"
           color="textPrimary"
         >
-          Swiftype environment variables are required for &quot;Catalog&quot;. Learn more at: https://github.com/webcatalog/chromeless/blob/master/README.md#development
+          Swiftype environment variables are required for &quot;Catalog&quot;. Learn more at: https://github.com/kitsuyui/chromeless/blob/main/README.md#development
         </Typography>
       </div>
     );

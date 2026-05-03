@@ -2,7 +2,7 @@
 
 |macOS|
 |---|
-|[![macOS](https://github.com/webcatalog/chromeless/workflows/macOS/badge.svg)](https://github.com/webcatalog/chromeless/actions?query=workflow:%22macOS%22)|
+|[![macOS](https://github.com/kitsuyui/chromeless/workflows/macOS/badge.svg)](https://github.com/kitsuyui/chromeless/actions?query=workflow:%22macOS%22)|
 
 ## Deprecation
 **Deprecated:** Chromeless is deprecated legacy software and will no longer receive feature updates. Nevertheless, the app will continue working and receiving maintainance updates.
@@ -55,7 +55,7 @@ REACT_APP_ELASTIC_CLOUD_APP_SEARCH_ENGINE_NAME=
 Then, run:
 ```bash
 # clone the project:
-git clone https://github.com/webcatalog/chromeless.git
+git clone https://github.com/kitsuyui/chromeless.git
 cd chromeless
 
 # install the dependencies

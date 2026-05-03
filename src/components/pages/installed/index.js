@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import SearchIcon from '@material-ui/icons/Search';
 import GetAppIcon from '@material-ui/icons/GetApp';
 
-import { FixedSizeGrid } from 'react-window';
+import { Grid } from 'react-window';
 
 import connectComponent from '../../../helpers/connect-component';
 
@@ -82,10 +82,16 @@ const Installed = ({
   }, []);
 
   useEffect(() => () => {
-    if (gridRef.current) {
-      onUpdateScrollOffset(gridRef.current.scrollTop);
+    if (gridRef.current && gridRef.current.element) {
+      onUpdateScrollOffset(gridRef.current.element.scrollTop);
     }
   }, [gridRef, onUpdateScrollOffset]);
+
+  useEffect(() => {
+    if (gridRef.current && gridRef.current.element) {
+      gridRef.current.element.scrollTop = scrollOffset;
+    }
+  }, [scrollOffset]);
 
   const renderContent = () => {
     if (scanning || isSearching) {
@@ -104,14 +110,19 @@ const Installed = ({
       const columnWidth = Math.floor(innerWidthMinurScrollbar / columnCount);
       // total window height - (searchbox: 40, toolbar: 36, bottom nav: 40)
       const scrollHeight = innerHeight - 116;
-      const Cell = ({ columnIndex, rowIndex, style }) => {
+      const Cell = ({
+        ariaAttributes,
+        columnIndex,
+        rowIndex,
+        style,
+      }) => {
         const index = rowIndex * columnCount + columnIndex;
 
-        if (index >= appIds.length) return <div style={style} />;
+        if (index >= appIds.length) return <div {...ariaAttributes} style={style} />;
 
         const appId = appIds[index];
         return (
-          <div className={classes.cardContainer} style={style}>
+          <div {...ariaAttributes} className={classes.cardContainer} style={style}>
             <AppCard
               key={appId}
               id={appId}
@@ -120,25 +131,25 @@ const Installed = ({
         );
       };
       Cell.propTypes = {
+        ariaAttributes: PropTypes.object.isRequired,
         columnIndex: PropTypes.number.isRequired,
         rowIndex: PropTypes.number.isRequired,
         style: PropTypes.object.isRequired,
       };
 
       return (
-        <FixedSizeGrid
+        <Grid
+          cellComponent={Cell}
+          cellProps={{}}
           columnCount={columnCount}
           columnWidth={columnWidth}
           height={scrollHeight}
           rowCount={rowCount}
           rowHeight={rowHeight}
           width={innerWidth}
-          initialScrollTop={scrollOffset}
-          outerRef={gridRef}
+          gridRef={gridRef}
           className={classes.fixedSizeGrid}
-        >
-          {Cell}
-        </FixedSizeGrid>
+        />
       );
     }
 

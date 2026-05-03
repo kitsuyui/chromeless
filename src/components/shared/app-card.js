@@ -203,7 +203,7 @@ const AppCard = (props) => {
       },
       {
         label: 'What\'s New',
-        click: () => requestOpenInBrowser('https://github.com/webcatalog/chromeless/releases?utm_source=chromeless_app'),
+        click: () => requestOpenInBrowser('https://github.com/kitsuyui/chromeless/releases?utm_source=chromeless_app'),
         visible: Boolean(engine && version),
       },
       {
