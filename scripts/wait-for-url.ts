@@ -13,7 +13,7 @@ const sleep = (ms) =>
   });
 
 const waitForUrlAsync = async () => {
-  if (!url) throw new Error('Usage: wait-for-url.js <url>');
+  if (!url) throw new Error('Usage: wait-for-url.ts <url>');
 
   while (Date.now() - startedAt < timeoutMs) {
     try {

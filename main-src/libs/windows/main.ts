@@ -195,7 +195,7 @@ const createAsync = () => new Promise((resolve) => {
     window: win,
   });
 
-  // check system-preferences.js
+  // check system-preferences.ts
   // wasOpenedAsHidden is only available on macOS
   const { wasOpenedAsHidden } = app.getLoginItemSettings();
   win.once('ready-to-show', () => {
