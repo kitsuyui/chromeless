@@ -9,7 +9,6 @@ import {
   clean as cleanAppManagement,
   setScanningForInstalled,
 } from '../state/app-management/actions';
-import { changeRoute } from '../state/router/actions';
 import { setPreference, setPreferences } from '../state/preferences/actions';
 import { setSystemPreference } from '../state/system-preferences/actions';
 import { open as openDialogAbout } from '../state/dialog-about/actions';
@@ -23,8 +22,6 @@ import {
 import {
   getShouldUseDarkColors,
 } from '../senders';
-
-import { ROUTE_PREFERENCES } from '../constants/routes';
 
 const loadListeners = (store) => {
   window.ipcRenderer.on('log', (e, message) => {
@@ -61,8 +58,6 @@ const loadListeners = (store) => {
   window.ipcRenderer.on('set-system-preference', (e, name, value) => {
     store.dispatch(setSystemPreference(name, value));
   });
-
-  window.ipcRenderer.on('go-to-preferences', () => store.dispatch(changeRoute(ROUTE_PREFERENCES)));
 
   window.ipcRenderer.on('open-dialog-about', () => {
     store.dispatch(openDialogAbout());

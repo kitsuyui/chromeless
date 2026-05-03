@@ -5,6 +5,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import connectComponent from '../helpers/connect-component';
+import NavigationContext from '../contexts/navigation';
 
 import EnhancedBottomNavigation from './root/enhanced-bottom-navigation';
 import SnackbarTrigger from './root/snackbar-trigger';
@@ -46,6 +47,8 @@ const styles = (theme) => ({
 });
 
 class App extends React.Component {
+  static contextType = NavigationContext;
+
   constructor(props) {
     super(props);
     this.updaterTimer = null;
@@ -70,7 +73,8 @@ class App extends React.Component {
   }
 
   render() {
-    const { classes, route } = this.props;
+    const { route } = this.context;
+    const { classes } = this.props;
     let pageContent;
     switch (route) {
       case ROUTE_PREFERENCES:
@@ -107,13 +111,11 @@ class App extends React.Component {
 
 App.propTypes = {
   classes: PropTypes.object.isRequired,
-  route: PropTypes.string.isRequired,
   onFetchLatestTemplateVersionAsync: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   isFullScreen: state.general.isFullScreen,
-  route: state.router.route,
 });
 
 const actionCreators = {

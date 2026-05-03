@@ -16,7 +16,6 @@ import browsers from './browsers/reducers';
 import general from './general/reducers';
 import installed from './installed/reducers';
 import preferences from './preferences/reducers';
-import router from './router/reducers';
 import systemPreferences from './system-preferences/reducers';
 import updater from './updater/reducers';
 
@@ -33,7 +32,6 @@ const rootReducer = combineReducers({
   general,
   installed,
   preferences,
-  router,
   systemPreferences,
   updater,
 });

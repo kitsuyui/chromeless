@@ -1,9 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-// Route
-export const CHANGE_ROUTE = 'CHANGE_ROUTE';
-
 // General
 export const UPDATE_FETCHING_LATEST_TEMPLATE_VERSION = 'UPDATE_FETCHING_LATEST_TEMPLATE_VERSION';
 export const UPDATE_INSTALLATION_PROGRESS = 'UPDATE_INSTALLATION_PROGRESS';

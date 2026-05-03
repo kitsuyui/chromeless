@@ -11,6 +11,7 @@ import '@fontsource/roboto/500.css';
 import './index.css';
 
 import store from './state';
+import { NavigationProvider } from './contexts/navigation';
 
 // listeners to communicate with main process
 import loadListeners from './listeners';
@@ -21,7 +22,9 @@ loadListeners(store);
 
 ReactDOM.render(
   <Provider store={store}>
-    <AppWrapper />
+    <NavigationProvider>
+      <AppWrapper />
+    </NavigationProvider>
   </Provider>,
   document.getElementById('app'),
 );
