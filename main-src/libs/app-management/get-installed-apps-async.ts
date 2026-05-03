@@ -34,8 +34,8 @@ const getInstalledAppsAsync = () => {
               const iconPath = path.join(resourcesPath, 'app.asar.unpacked', 'build', 'icon.png');
 
               let version = '0.0.0';
-              let appJson;
-              let icon;
+              let appJson = null;
+              let icon = null;
               let lastUpdated = 0;
 
               if (fsExtra.pathExistsSync(appJsonPath)) {

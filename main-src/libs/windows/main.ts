@@ -23,7 +23,7 @@ const formatBytes = require('../format-bytes');
 
 const contextMenu = contextMenuModule.default || contextMenuModule;
 
-let win;
+let win = null;
 let mb = {};
 let attachToMenubar = false;
 
@@ -48,7 +48,7 @@ const createAsync = () => new Promise((resolve) => {
     // https://github.com/atomery/translatium/issues/164
     const tray = new Tray(nativeImage.createEmpty());
     const iconFileName = 'menubarTemplate.png';
-    let iconPath;
+    let iconPath = null;
     if (process.env.NODE_ENV === 'production') {
       iconPath = path.resolve(__dirname, 'images', iconFileName);
     } else {

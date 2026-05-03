@@ -10,12 +10,17 @@ on:
       - next
     paths:
       - '.github/workflows/macos.yml'
-      - 'dist.js'
+      - 'dist.ts'
       - 'index.html'
       - 'package.json'
       - 'bun.lock'
-      - 'tsdown.config.js'
-      - 'vite.config.js'
+      - 'main-src/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'src/**'
+      - 'tsconfig.json'
+      - 'tsdown.config.ts'
+      - 'vite.config.ts'
 
 
 jobs:

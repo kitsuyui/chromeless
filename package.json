@@ -18,9 +18,9 @@
     "lint": "biome lint .",
     "lint-fix": "biome check --write .",
     "start": "vite",
-    "electron-dev": "concurrently \"cross-env BROWSER=none bun run start\" \"bun scripts/wait-for-url.js http://localhost:3000 && cross-env API_URL=http://localhost:3000/api electron .\" -k",
-    "dist": "bun run build && cross-env NODE_ENV=production bun dist.js",
-    "dist-dev": "bun run build && cross-env NODE_ENV=production CSC_IDENTITY_AUTO_DISCOVERY=false bun dist.js"
+    "electron-dev": "concurrently \"cross-env BROWSER=none bun run start\" \"bun scripts/wait-for-url.ts http://localhost:3000 && cross-env API_URL=http://localhost:3000/api electron .\" -k",
+    "dist": "bun run build && cross-env NODE_ENV=production bun dist.ts",
+    "dist-dev": "bun run build && cross-env NODE_ENV=production CSC_IDENTITY_AUTO_DISCOVERY=false bun dist.ts"
   },
   "repository": "https://github.com/kitsuyui/chromeless",
   "author": {
@@ -39,6 +39,7 @@
     "@mui/lab": "5.0.0-alpha.177",
     "@mui/material": "5.18.0",
     "@mui/styles": "5.18.0",
+    "@types/node": "^24.10.1",
     "@types/react": "18",
     "@types/react-dom": "18",
     "cheerio": "1.2.0",

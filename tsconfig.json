@@ -5,11 +5,12 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "module": "ESNext",
+    "moduleDetection": "force",
     "moduleResolution": "Bundler",
     "noEmit": true,
     "skipLibCheck": true,
     "strict": false,
     "target": "ES2022"
   },
-  "include": ["src", "main-src", "scripts", "dist.js", "vite.config.js", "tsdown.config.js"]
+  "include": ["src", "main-src", "scripts", "dist.ts", "vite.config.ts", "tsdown.config.ts"]
 }

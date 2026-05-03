@@ -29,8 +29,8 @@ const installAppAsync = (
   engine, id, name, url, icon, _opts = {},
 ) => {
   let v = '0.0.0'; // app version
-  let scriptFileName;
-  let browserPath;
+  let scriptFileName = null;
+  const browserPath = null;
 
   const opts = { ..._opts };
 

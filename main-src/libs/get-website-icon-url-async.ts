@@ -18,7 +18,7 @@ const getWebsiteIconUrlAsync = (websiteURL) => customizedFetch(websiteURL)
     }
 
     const getMaxSizeIcon = (rootElm) => {
-      let icon;
+      let icon = null;
       let maxSize = 0;
       // find the icon with largest size
       rootElm.each((i, _elm) => {

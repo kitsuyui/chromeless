@@ -9,7 +9,7 @@ const formatBytes = require('./format-bytes');
 
 const mainWindow = require('./windows/main');
 
-let menu;
+let menu = null;
 
 const createMenu = () => {
   const updaterMenuItem = {
