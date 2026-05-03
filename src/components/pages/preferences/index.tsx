@@ -90,6 +90,17 @@ const styles = (theme) => ({
   selectRoot: {
     borderRadius: theme.spacing(0.5),
     fontSize: '0.84375rem',
+    minHeight: 36,
+    '& .MuiFilledInput-input': {
+      minHeight: 'unset',
+    },
+    '& .MuiSelect-select': {
+      minHeight: 'unset',
+      paddingTop: theme.spacing(1),
+      paddingRight: 26,
+      paddingBottom: theme.spacing(1),
+      paddingLeft: theme.spacing(1.5),
+    },
   },
   selectRootExtraMargin: {
     marginTop: theme.spacing(1),
@@ -237,7 +248,7 @@ const Preferences = ({
                   disableUnderline
                   margin="dense"
                   classes={{
-                    root: classes.select,
+                    select: classes.select,
                   }}
                   className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                 >
@@ -305,7 +316,7 @@ const Preferences = ({
                   disableUnderline
                   margin="dense"
                   classes={{
-                    root: classes.select,
+                    select: classes.select,
                   }}
                   className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                 >
@@ -330,7 +341,7 @@ const Preferences = ({
                   disableUnderline
                   margin="dense"
                   classes={{
-                    root: classes.select,
+                    select: classes.select,
                   }}
                   className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                 >
@@ -403,7 +414,7 @@ const Preferences = ({
                   disableUnderline
                   margin="dense"
                   classes={{
-                    root: classes.select,
+                    select: classes.select,
                   }}
                   className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                   disabled={installingAppCount > 0}
