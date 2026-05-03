@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import React from 'react';
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { grey, pink as red, teal } from '@mui/material/colors';
 
 import { useAppearance } from '../contexts/appearance';
@@ -41,9 +41,11 @@ const AppWrapper = () => {
   const theme = createTheme(themeObj);
 
   return (
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 
