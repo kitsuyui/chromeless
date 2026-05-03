@@ -5,8 +5,8 @@ import React, { useEffect, useState, useRef } from 'react';
 
 import PropTypes from 'prop-types';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Divider from '@material-ui/core/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
 
 import { Grid } from 'react-window';
 

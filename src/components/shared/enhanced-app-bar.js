@@ -5,11 +5,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
 
-import MenuIcon from '@material-ui/icons/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
 
 import { requestShowAppMenu } from '../../senders';
 
@@ -69,7 +69,7 @@ const styles = (theme) => ({
     margin: 0,
     '&:hover': {
       backgroundColor:
-        theme.palette.type === 'dark' ? theme.palette.common.black : theme.palette.primary.dark,
+        theme.palette.mode === 'dark' ? theme.palette.common.black : theme.palette.primary.dark,
     },
   },
   windowsIcon: {

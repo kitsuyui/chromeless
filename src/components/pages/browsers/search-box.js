@@ -4,14 +4,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { fade } from '@material-ui/core/styles';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { alpha } from '@mui/material/styles';
 
-import SearchIcon from '@material-ui/icons/Search';
-import CloseIcon from '@material-ui/icons/Close';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 
 import connectComponent from '../../../helpers/connect-component';
 
@@ -24,8 +24,8 @@ const styles = (theme) => ({
     borderRadius: 6,
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
-    backgroundColor: theme.palette.type === 'dark' ? theme.palette.background.paper : theme.palette.primary.dark,
-    color: fade(theme.palette.common.white, 0.88),
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : theme.palette.primary.dark,
+    color: alpha(theme.palette.common.white, 0.88),
     flex: 1,
     WebkitAppRegion: 'no-drag',
   },
@@ -61,7 +61,7 @@ const styles = (theme) => ({
       outline: 0,
     },
     '&::placeholder': {
-      color: fade(theme.palette.common.white, 0.3),
+      color: alpha(theme.palette.common.white, 0.3),
     },
   },
   searchIcon: {

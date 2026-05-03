@@ -28,6 +28,6 @@ export default defineConfig({
     target: 'es2022',
   },
   optimizeDeps: {
-    noDiscovery: true,
+    include: ['lodash', 'react-redux', 'semver', 'use-sync-external-store/with-selector'],
   },
 });

@@ -3,13 +3,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from '@material-ui/core/Paper';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import SystemUpdateIcon from '@material-ui/icons/SystemUpdate';
-import SettingsIcon from '@material-ui/icons/Settings';
-import PublicIcon from '@material-ui/icons/Public';
-import Badge from '@material-ui/core/Badge';
+import Paper from '@mui/material/Paper';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import SystemUpdateIcon from '@mui/icons-material/SystemUpdate';
+import SettingsIcon from '@mui/icons-material/Settings';
+import PublicIcon from '@mui/icons-material/Public';
+import Badge from '@mui/material/Badge';
 
 import connectComponent from '../../helpers/connect-component';
 

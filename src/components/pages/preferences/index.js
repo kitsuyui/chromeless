@@ -4,24 +4,24 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
-import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import PowerIcon from '@material-ui/icons/Power';
-import RotateLeftIcon from '@material-ui/icons/RotateLeft';
-import SystemUpdateAltIcon from '@material-ui/icons/SystemUpdateAlt';
-import WidgetsIcon from '@material-ui/icons/Widgets';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import PowerIcon from '@mui/icons-material/Power';
+import RotateLeftIcon from '@mui/icons-material/RotateLeft';
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
+import WidgetsIcon from '@mui/icons-material/Widgets';
 
 import connectComponent from '../../../helpers/connect-component';
 import getEngineName from '../../../helpers/get-engine-name';
@@ -67,7 +67,7 @@ const styles = (theme) => ({
     marginBottom: theme.spacing(3),
     width: '100%',
     WebkitAppRegion: 'none',
-    border: theme.palette.type === 'dark' ? 'none' : '1px solid rgba(0, 0, 0, 0.12)',
+    border: theme.palette.mode === 'dark' ? 'none' : '1px solid rgba(0, 0, 0, 0.12)',
   },
   inner: {
     width: '100%',

@@ -4,10 +4,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import AddIcon from '@material-ui/icons/Add';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import AddIcon from '@mui/icons-material/Add';
 
 import connectComponent from '../../helpers/connect-component';
 
@@ -28,7 +28,7 @@ const styles = (theme) => ({
     justifyContent: 'center',
     cursor: 'pointer',
     color: theme.palette.text.primary,
-    border: theme.palette.type === 'dark' ? 'none' : '1px solid rgba(0, 0, 0, 0.12)',
+    border: theme.palette.mode === 'dark' ? 'none' : '1px solid rgba(0, 0, 0, 0.12)',
     outline: 'none',
     userSelect: 'none',
     '&:hover, &:focus': {

@@ -4,14 +4,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import connectComponent from '../../helpers/connect-component';
 import isUrl from '../../helpers/is-url';
@@ -53,7 +53,7 @@ const styles = (theme) => ({
     padding: theme.spacing(1),
     textAlign: 'center',
     position: 'relative',
-    boxShadow: theme.palette.type === 'dark' ? 'none' : '0 0 0 1px rgba(0, 0, 0, 0.12)',
+    boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 0 0 1px rgba(0, 0, 0, 0.12)',
     transition: 'all 0.2s ease-in-out',
   },
   appName: {
