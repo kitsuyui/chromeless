@@ -25,6 +25,9 @@ module.exports = defineConfig({
   outDir: 'build',
   clean: ['build/*.js', 'build/*.js.map', 'build/images'],
   sourcemap: true,
+  deps: {
+    neverBundle: ['electron'],
+  },
   copy: [
     {
       from: path.join(__dirname, 'main-src', 'images'),

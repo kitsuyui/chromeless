@@ -12,7 +12,7 @@ const {
 const path = require('path');
 const windowStateKeeper = require('electron-window-state');
 const { menubar } = require('menubar');
-const contextMenu = require('electron-context-menu');
+const contextMenuModule = require('electron-context-menu');
 const electronRemote = require('@electron/remote/main');
 
 const sendToAllWindows = require('../send-to-all-windows');
@@ -20,6 +20,8 @@ const { getPreference } = require('../preferences');
 const { REACT_PATH } = require('../constants/paths');
 
 const formatBytes = require('../format-bytes');
+
+const contextMenu = contextMenuModule.default || contextMenuModule;
 
 let win;
 let mb = {};

@@ -8,7 +8,7 @@
     "node": ">=24.11.1"
   },
   "packageManager": "bun@1.3.13",
-  "main": "main-src/electron.js",
+  "main": "build/electron.js",
   "scripts": {
     "postinstall": "electron-builder install-app-deps && bun run generate-open-source-notices",
     "generate-open-source-notices": "license-checker --markdown > public/open-source-notices.txt",
