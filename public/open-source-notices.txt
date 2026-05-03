@@ -135,7 +135,6 @@
 [base64-js@1.5.1](https://github.com/beatgammit/base64-js) - MIT
 [birpc@4.0.0](https://github.com/antfu-collective/birpc) - MIT
 [bl@1.2.3](https://github.com/rvagg/bl) - MIT
-[blueimp-md5@2.19.0](https://github.com/blueimp/JavaScript-MD5) - MIT
 [bmp-ts@1.0.9](https://github.com/hipstersmoothie/bmp-ts) - MIT
 [boolbase@1.0.0](https://github.com/fb55/boolbase) - ISC
 [boolean@3.2.0](https://github.com/thenativeweb/boolean) - MIT
@@ -600,7 +599,6 @@
 [utif2@4.1.0](https://github.com/photopea/UTIF.js) - MIT
 [util-deprecate@1.0.2](https://github.com/TooTallNate/util-deprecate) - MIT
 [util-extend@1.0.3](https://github.com/isaacs/util-extend) - MIT
-[uuid@14.0.0](https://github.com/uuidjs/uuid) - MIT
 [validate-npm-package-license@3.0.4](https://github.com/kemitchell/validate-npm-package-license.js) - Apache-2.0
 [verror@1.10.1](https://github.com/joyent/node-verror) - MIT
 [vite@8.0.10](https://github.com/vitejs/vite) - MIT
