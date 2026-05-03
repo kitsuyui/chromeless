@@ -35,20 +35,15 @@ const verifyNotarizationAsync = (filePath) =>
     });
   });
 
-const arch = process.env.TEMPLATE_ARCH || 'x64';
-
-if (['x64', 'arm64'].indexOf(arch) < 0) {
-  console.log(`${process.platform} ${arch} is not supported.`);
-}
-
 // use Arch.universal because
 // electron-updater 4.3.10 -> 4.5.1 has a bug preventing
 // Intel-based Macs from updating if there exists Arch.arm64 builds
 // https://github.com/electron-userland/electron-builder/pull/6212
-const targets = Platform.MAC.createTarget(['zip', 'dmg'], Arch.universal);
+const universalTargets = Platform.MAC.createTarget(['zip', 'dmg'], Arch.universal);
+const arm64DevelopmentTargets = Platform.MAC.createTarget(['dir'], Arch.arm64);
 const isDevelopmentBuild = process.env.CSC_IDENTITY_AUTO_DISCOVERY === 'false';
 
-const opts = {
+const createBuildOptions = (targets) => ({
   targets,
   config: {
     appId: 'com.kitsuyui.chromeless',
@@ -117,10 +112,16 @@ const opts = {
         });
     },
   },
-};
+});
 
 Promise.resolve()
-  .then(() => builder.build(opts))
+  .then(() => builder.build(createBuildOptions(universalTargets)))
+  .then(() => {
+    if (!isDevelopmentBuild || process.platform !== 'darwin') return null;
+
+    console.log('Building arm64 development app...');
+    return builder.build(createBuildOptions(arm64DevelopmentTargets));
+  })
   .then(() => {
     console.log('build successful');
   })
