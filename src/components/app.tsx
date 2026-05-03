@@ -75,7 +75,7 @@ class App extends React.Component {
   render() {
     const { route } = this.context;
     const { classes } = this.props;
-    let pageContent;
+    let pageContent = null;
     switch (route) {
       case ROUTE_PREFERENCES:
         pageContent = <Preferences key="preferences" />;

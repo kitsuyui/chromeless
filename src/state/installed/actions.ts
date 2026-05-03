@@ -55,14 +55,14 @@ export const updateActiveQuery = (activeQuery) => (dispatch, getState) =>
       console.log(err);
     });
 
-let timeout;
+let timeout = null;
 export const updateQuery = (query) => (dispatch) => {
   dispatch({
     type: INSTALLED_UPDATE_QUERY,
     query,
   });
 
-  clearTimeout(timeout);
+  if (timeout) clearTimeout(timeout);
   timeout = setTimeout(() => {
     dispatch(updateActiveQuery(query));
   }, 500);

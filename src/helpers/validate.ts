@@ -27,8 +27,7 @@ const kits = {
   filePath: (val, ruleVal, fieldName) => {
     if (!ruleVal) return null;
     // https://stackoverflow.com/questions/1976007/what-characters-are-forbidden-in-windows-and-linux-directory-names
-    // eslint-disable-next-line react/destructuring-assignment
-    if (val.match(/[/:\000]/)) {
+    if (val.includes('/') || val.includes(':') || val.includes(String.fromCharCode(0))) {
       // unix
       return '{fieldName} cannot contain any of the following characters: / : or NUL.'
         .replace('{fieldName}', fieldName);
