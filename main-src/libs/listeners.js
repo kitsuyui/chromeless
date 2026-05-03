@@ -1,13 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-const {
-  app,
-  dialog,
-  ipcMain,
-  nativeTheme,
-  shell,
-} = require('electron');
+const { app, dialog, ipcMain, nativeTheme, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
 const sendToAllWindows = require('./send-to-all-windows');
@@ -18,12 +12,7 @@ const installAppAsync = require('./app-management/install-app-async');
 const uninstallAppAsync = require('./app-management/uninstall-app-async');
 const getInstalledAppsAsync = require('./app-management/get-installed-apps-async');
 
-const {
-  getPreference,
-  getPreferences,
-  setPreference,
-  resetPreferences,
-} = require('./preferences');
+const { getPreference, getPreferences, setPreference, resetPreferences } = require('./preferences');
 
 const {
   getSystemPreference,
@@ -48,13 +37,15 @@ const loadListeners = () => {
   });
 
   ipcMain.on('request-show-message-box', (e, message, type) => {
-    dialog.showMessageBox(mainWindow.get(), {
-      type: type || 'error',
-      message,
-      buttons: ['OK'],
-      cancelId: 0,
-      defaultId: 0,
-    }).catch(console.log); // eslint-disable-line
+    dialog
+      .showMessageBox(mainWindow.get(), {
+        type: type || 'error',
+        message,
+        buttons: ['OK'],
+        cancelId: 0,
+        defaultId: 0,
+      })
+      .catch(console.log); // eslint-disable-line
   });
 
   // Preferences
@@ -108,49 +99,62 @@ const loadListeners = () => {
     scanningPromise = scanningPromise
       .then(() => getInstalledAppsAsync())
       .catch((error) => {
-        dialog.showMessageBox(mainWindow.get(), {
-          type: 'error',
-          message: `Failed to scan for installed apps. (${error.stack})`,
-          buttons: ['OK'],
-          cancelId: 0,
-          defaultId: 0,
-        }).catch(console.log); // eslint-disable-line
+        dialog
+          .showMessageBox(mainWindow.get(), {
+            type: 'error',
+            message: `Failed to scan for installed apps. (${error.stack})`,
+            buttons: ['OK'],
+            cancelId: 0,
+            defaultId: 0,
+          })
+          .catch(console.log); // eslint-disable-line
       });
   });
 
   ipcMain.on('request-open-app', (e, id, name) => openApp(id, name));
 
   ipcMain.on('request-uninstall-app', (e, id, name, engine) => {
-    dialog.showMessageBox(mainWindow.get(), {
-      type: 'question',
-      buttons: ['Uninstall', 'Cancel'],
-      message: `Are you sure you want to uninstall ${name}? This action cannot be undone.`,
-      cancelId: 1,
-    }).then(({ response }) => {
-      if (response === 0) {
-        send(e.sender, 'set-app', id, {
-          status: 'UNINSTALLING',
-        });
-
-        uninstallAppAsync(id, name, engine)
-          .then(() => {
-            send(e.sender, 'remove-app', id);
-          })
-          .catch((error) => {
-            // eslint-disable-next-line no-console
-            console.log(error);
-            if (error && error.message && (error.message.startsWith('EBUSY') || error.message === 'Application is in use.')) {
-              send(e.sender, 'enqueue-snackbar', `Failed to uninstall ${name} as the application is in use.`, 'error');
-            } else {
-              send(e.sender, 'enqueue-snackbar', `Failed to uninstall ${name}.`, 'error');
-            }
-            send(e.sender, 'set-app', id, {
-              status: 'INSTALLED',
-            });
+    dialog
+      .showMessageBox(mainWindow.get(), {
+        type: 'question',
+        buttons: ['Uninstall', 'Cancel'],
+        message: `Are you sure you want to uninstall ${name}? This action cannot be undone.`,
+        cancelId: 1,
+      })
+      .then(({ response }) => {
+        if (response === 0) {
+          send(e.sender, 'set-app', id, {
+            status: 'UNINSTALLING',
           });
-      }
-    })
-    .catch(console.log); // eslint-disable-line
+
+          uninstallAppAsync(id, name, engine)
+            .then(() => {
+              send(e.sender, 'remove-app', id);
+            })
+            .catch((error) => {
+              // eslint-disable-next-line no-console
+              console.log(error);
+              if (
+                error &&
+                error.message &&
+                (error.message.startsWith('EBUSY') || error.message === 'Application is in use.')
+              ) {
+                send(
+                  e.sender,
+                  'enqueue-snackbar',
+                  `Failed to uninstall ${name} as the application is in use.`,
+                  'error',
+                );
+              } else {
+                send(e.sender, 'enqueue-snackbar', `Failed to uninstall ${name}.`, 'error');
+              }
+              send(e.sender, 'set-app', id, {
+                status: 'INSTALLED',
+              });
+            });
+        }
+      })
+      .catch(console.log); // eslint-disable-line
   });
 
   // Chain app installing promises
@@ -159,113 +163,120 @@ const loadListeners = () => {
   const promiseFuncMap = {};
 
   ipcMain.on('request-install-app', (e, engine, id, name, url, icon, opts) => {
-    Promise.resolve()
-      .then(() => {
-        send(e.sender, 'set-app', id, {
-          status: 'INSTALLING',
-          lastUpdated: new Date().getTime(),
-          engine,
-          id,
-          name,
-          url,
-          icon,
-          opts,
-          cancelable: true,
-        });
-
-        promiseFuncMap[id] = () => {
-          // prevent canceling when installation has already started
-          send(e.sender, 'set-app', id, {
-            cancelable: false,
-          });
-
-          return installAppAsync(engine, id, name, url, icon, opts)
-            .then((newApp) => {
-              send(e.sender, 'set-app', id, {
-                ...newApp,
-                status: 'INSTALLED',
-              });
-              delete promiseFuncMap[id];
-            })
-            .catch((error) => {
-              // eslint-disable-next-line no-console
-              console.log(error);
-              if (error && error.message && error.message.includes('is not installed')) {
-                send(e.sender, 'enqueue-snackbar', error.message, 'error');
-              } else if (error && error.message && error.message.startsWith('Chromeless is outdated')) {
-                send(e.sender, 'enqueue-snackbar', error.message, 'error');
-              } else {
-                send(e.sender, 'enqueue-snackbar', `Failed to install ${name}.`, 'error');
-              }
-              send(e.sender, 'remove-app', id);
-              delete promiseFuncMap[id];
-            });
-        };
-
-        p = p.then(() => {
-          if (promiseFuncMap[id]) {
-            return promiseFuncMap[id]();
-          }
-          return null;
-        });
+    Promise.resolve().then(() => {
+      send(e.sender, 'set-app', id, {
+        status: 'INSTALLING',
+        lastUpdated: new Date().getTime(),
+        engine,
+        id,
+        name,
+        url,
+        icon,
+        opts,
+        cancelable: true,
       });
+
+      promiseFuncMap[id] = () => {
+        // prevent canceling when installation has already started
+        send(e.sender, 'set-app', id, {
+          cancelable: false,
+        });
+
+        return installAppAsync(engine, id, name, url, icon, opts)
+          .then((newApp) => {
+            send(e.sender, 'set-app', id, {
+              ...newApp,
+              status: 'INSTALLED',
+            });
+            delete promiseFuncMap[id];
+          })
+          .catch((error) => {
+            // eslint-disable-next-line no-console
+            console.log(error);
+            if (error && error.message && error.message.includes('is not installed')) {
+              send(e.sender, 'enqueue-snackbar', error.message, 'error');
+            } else if (
+              error &&
+              error.message &&
+              error.message.startsWith('Chromeless is outdated')
+            ) {
+              send(e.sender, 'enqueue-snackbar', error.message, 'error');
+            } else {
+              send(e.sender, 'enqueue-snackbar', `Failed to install ${name}.`, 'error');
+            }
+            send(e.sender, 'remove-app', id);
+            delete promiseFuncMap[id];
+          });
+      };
+
+      p = p.then(() => {
+        if (promiseFuncMap[id]) {
+          return promiseFuncMap[id]();
+        }
+        return null;
+      });
+    });
   });
 
   ipcMain.on('request-update-app', (e, engine, id, name, url, icon, opts) => {
-    Promise.resolve()
-      .then(() => {
-        send(e.sender, 'set-app', id, {
-          status: 'INSTALLING',
-          cancelable: true,
-        });
-
-        promiseFuncMap[id] = () => {
-          // prevent canceling when installation has already started
-          send(e.sender, 'set-app', id, {
-            cancelable: false,
-          });
-
-          return installAppAsync(engine, id, name, url, icon, opts)
-            .then((newApp) => {
-              let displayedIcon;
-              // display latest icon from WebCatalog
-              if (!id.startsWith('custom-')) {
-                displayedIcon = `https://cdn-1.webcatalog.io/catalog/${id}/${id}-icon-128.webp`;
-              }
-
-              send(e.sender, 'set-app', id, {
-                ...newApp,
-                status: 'INSTALLED',
-                lastUpdated: new Date().getTime(),
-                // ensure fresh icon from the catalog is shown
-                icon128: displayedIcon,
-              });
-            })
-            .catch((error) => {
-              // eslint-disable-next-line no-console
-              console.log(error);
-              if (error && error.message && error.message.includes('is not installed')) {
-                send(e.sender, 'enqueue-snackbar', error.message, 'error');
-              } else if (error && error.message && (error.message.startsWith('EBUSY') || error.message === 'Application is in use.')) {
-                send(e.sender, 'enqueue-snackbar', `Failed to update ${name} as the application is in use.`, 'error');
-              } else if (error && error.message && error.message.startsWith('Chromeless is outdated')) {
-                send(e.sender, 'enqueue-snackbar', error.message, 'error');
-              } else {
-                send(e.sender, 'enqueue-snackbar', `Failed to update ${name}.`, 'error');
-              }
-              send(e.sender, 'set-app', id, {
-                status: 'INSTALLED',
-              });
-            });
-        };
-
-        p = p.then(() => {
-          if (promiseFuncMap[id]) {
-            return promiseFuncMap[id]();
-          }
-          return null;
-        });
+    Promise.resolve().then(() => {
+      send(e.sender, 'set-app', id, {
+        status: 'INSTALLING',
+        cancelable: true,
       });
+
+      promiseFuncMap[id] = () => {
+        // prevent canceling when installation has already started
+        send(e.sender, 'set-app', id, {
+          cancelable: false,
+        });
+
+        return installAppAsync(engine, id, name, url, icon, opts)
+          .then((newApp) => {
+            send(e.sender, 'set-app', id, {
+              ...newApp,
+              status: 'INSTALLED',
+              lastUpdated: new Date().getTime(),
+            });
+          })
+          .catch((error) => {
+            // eslint-disable-next-line no-console
+            console.log(error);
+            if (error && error.message && error.message.includes('is not installed')) {
+              send(e.sender, 'enqueue-snackbar', error.message, 'error');
+            } else if (
+              error &&
+              error.message &&
+              (error.message.startsWith('EBUSY') || error.message === 'Application is in use.')
+            ) {
+              send(
+                e.sender,
+                'enqueue-snackbar',
+                `Failed to update ${name} as the application is in use.`,
+                'error',
+              );
+            } else if (
+              error &&
+              error.message &&
+              error.message.startsWith('Chromeless is outdated')
+            ) {
+              send(e.sender, 'enqueue-snackbar', error.message, 'error');
+            } else {
+              send(e.sender, 'enqueue-snackbar', `Failed to update ${name}.`, 'error');
+            }
+            send(e.sender, 'set-app', id, {
+              status: 'INSTALLED',
+            });
+          });
+      };
+
+      p = p.then(() => {
+        if (promiseFuncMap[id]) {
+          return promiseFuncMap[id]();
+        }
+        return null;
+      });
+    });
   });
 
   ipcMain.on('request-cancel-install-app', (e, id) => {

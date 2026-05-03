@@ -22,7 +22,7 @@ const defaultPreferences = {
   allowPrerelease: Boolean(semver.prerelease(app.getVersion())),
   alwaysOnTop: false, // for menubar
   attachToMenubar: false,
-  defaultHome: 'home',
+  defaultHome: 'browsers',
   installationPath: getDefaultInstallationPath(),
   preferredEngine: 'chrome',
   requireAdmin: false,

@@ -1,12 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-const {
-  app,
-  Menu,
-  shell,
-  ipcMain,
-} = require('electron');
+const { app, Menu, shell, ipcMain } = require('electron');
 
 const sendToAllWindows = require('./send-to-all-windows');
 
@@ -151,18 +146,20 @@ const createMenu = () => {
         { role: 'close' },
         { role: 'minimize' },
         // role: 'zoom' is only supported on macOS
-        process.platform === 'darwin' ? {
-          role: 'zoom',
-        } : {
-          label: 'Zoom',
-          click: () => {
-            const win = mainWindow.get();
-
-            if (win != null) {
-              win.maximize();
+        process.platform === 'darwin'
+          ? {
+              role: 'zoom',
             }
-          },
-        },
+          : {
+              label: 'Zoom',
+              click: () => {
+                const win = mainWindow.get();
+
+                if (win != null) {
+                  win.maximize();
+                }
+              },
+            },
         { type: 'separator' },
         { role: 'front' },
       ],
@@ -171,20 +168,15 @@ const createMenu = () => {
       role: 'help',
       submenu: [
         {
-          label: 'Help',
-          click: () => shell.openExternal('https://webcatalog.io/chromeless/help/?utm_source=chromeless_app'),
-        },
-        {
           label: 'Report a Bug via GitHub...',
           click: () => shell.openExternal('https://github.com/kitsuyui/chromeless/issues'),
         },
         {
           label: 'Request a New Feature via GitHub...',
-          click: () => shell.openExternal('https://github.com/kitsuyui/chromeless/issues/new?template=feature.md&title=feature%3A+'),
-        },
-        {
-          label: 'Learn More...',
-          click: () => shell.openExternal('https://webcatalog.io/chromeless/?utm_source=chromeless_app'),
+          click: () =>
+            shell.openExternal(
+              'https://github.com/kitsuyui/chromeless/issues/new?template=feature.md&title=feature%3A+',
+            ),
         },
         { type: 'separator' },
         {

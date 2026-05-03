@@ -21,7 +21,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import PowerIcon from '@material-ui/icons/Power';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
-import StorefrontIcon from '@material-ui/icons/Storefront';
 import SystemUpdateAltIcon from '@material-ui/icons/SystemUpdateAlt';
 import WidgetsIcon from '@material-ui/icons/Widgets';
 
@@ -47,12 +46,6 @@ import {
 } from '../../../senders';
 
 import DefinedAppBar from './defined-app-bar';
-
-import webcatalogIconPng from '../../../assets/products/webcatalog-mac-icon-128@2x.png';
-import translatiumIconPng from '../../../assets/products/translatium-mac-icon-128@2x.png';
-import singleboxIconPng from '../../../assets/products/singlebox-mac-icon-128@2x.png';
-import cloveryIconPng from '../../../assets/products/clovery-mac-icon-128@2x.png';
-import switchbarIconPng from '../../../assets/products/switchbar-mac-icon-128@2x.png';
 
 const styles = (theme) => ({
   root: {
@@ -95,28 +88,6 @@ const styles = (theme) => ({
       display: 'none',
     },
   },
-  listItemPromotion: {
-    paddingLeft: theme.spacing(1),
-  },
-  promotionBlock: {
-    display: 'flex',
-    flex: 1,
-  },
-  promotionLeft: {
-    height: 64,
-    width: 64,
-  },
-  promotionRight: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: theme.spacing(1.5),
-  },
-  appTitle: {},
-  appIcon: {
-    height: 64,
-  },
   selectRoot: {
     borderRadius: theme.spacing(0.5),
     fontSize: '0.84375rem',
@@ -142,7 +113,7 @@ const formatBytes = (bytes, decimals = 2) => {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / (k ** i)).toFixed(dm))} ${sizes[i]}`;
+  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 };
 
 const getUpdaterDesc = (status, info) => {
@@ -187,7 +158,6 @@ const Preferences = ({
   updaterStatus,
   useHardwareAcceleration,
 }) => {
-  const utmSource = 'chromeless_app';
   const sections = {
     general: {
       text: 'General',
@@ -209,11 +179,6 @@ const Preferences = ({
       Icon: RotateLeftIcon,
       ref: useRef(),
     },
-    moreApps: {
-      text: 'More Apps',
-      Icon: StorefrontIcon,
-      ref: useRef(),
-    },
     miscs: {
       text: 'Miscellaneous',
       Icon: MoreHorizIcon,
@@ -228,20 +193,21 @@ const Preferences = ({
         <div className={classes.sidebar}>
           <List dense>
             {Object.keys(sections).map((sectionKey, i) => {
-              const {
-                Icon, text, ref, hidden,
-              } = sections[sectionKey];
+              const { Icon, text, ref, hidden } = sections[sectionKey];
               if (hidden) return null;
               return (
                 <React.Fragment key={sectionKey}>
                   {i > 0 && <Divider />}
-                  <ListItem button onClick={() => ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  <ListItem
+                    button
+                    onClick={() =>
+                      ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
+                  >
                     <ListItemIcon>
                       <Icon />
                     </ListItemIcon>
-                    <ListItemText
-                      primary={text}
-                    />
+                    <ListItemText primary={text} />
                   </ListItem>
                 </React.Fragment>
               );
@@ -249,7 +215,12 @@ const Preferences = ({
           </List>
         </div>
         <div className={classes.inner}>
-          <Typography variant="subtitle2" color="textPrimary" className={classes.sectionTitle} ref={sections.general.ref}>
+          <Typography
+            variant="subtitle2"
+            color="textPrimary"
+            className={classes.sectionTitle}
+            ref={sections.general.ref}
+          >
             General
           </Typography>
           <Paper elevation={0} className={classes.paper}>
@@ -267,15 +238,25 @@ const Preferences = ({
                   }}
                   className={classnames(classes.selectRoot, classes.selectRootExtraMargin)}
                 >
-                  <MenuItem dense value="system">System default</MenuItem>
-                  <MenuItem dense value="light">Light</MenuItem>
-                  <MenuItem dense value="dark">Dark</MenuItem>
+                  <MenuItem dense value="system">
+                    System default
+                  </MenuItem>
+                  <MenuItem dense value="light">
+                    Light
+                  </MenuItem>
+                  <MenuItem dense value="dark">
+                    Dark
+                  </MenuItem>
                 </Select>
               </ListItem>
               <Divider />
               <ListItem>
                 <ListItemText
-                  primary={window.process.platform === 'darwin' ? 'Attach to menu bar' : 'Pin to system tray (notification area)'}
+                  primary={
+                    window.process.platform === 'darwin'
+                      ? 'Attach to menu bar'
+                      : 'Pin to system tray (notification area)'
+                  }
                   secondary="Tip: Right-click on app icon to access context menu."
                 />
                 <ListItemSecondaryAction>
@@ -325,10 +306,15 @@ const Preferences = ({
                   }}
                   className={classnames(classes.selectRoot, classes.selectRootExtraMargin)}
                 >
-                  <MenuItem dense value="home">Catalog</MenuItem>
-                  <MenuItem dense value="browsers">Browsers</MenuItem>
-                  <MenuItem dense value="installed">Installed</MenuItem>
-                  <MenuItem dense value="preferences">Preferences</MenuItem>
+                  <MenuItem dense value="browsers">
+                    Browsers
+                  </MenuItem>
+                  <MenuItem dense value="installed">
+                    Installed
+                  </MenuItem>
+                  <MenuItem dense value="preferences">
+                    Preferences
+                  </MenuItem>
                 </Select>
               </ListItem>
               <Divider />
@@ -345,15 +331,26 @@ const Preferences = ({
                   }}
                   className={classnames(classes.selectRoot, classes.selectRootExtraMargin)}
                 >
-                  <MenuItem dense value="yes">Yes</MenuItem>
-                  <MenuItem dense value="yes-hidden">Yes, but minimized</MenuItem>
-                  <MenuItem dense value="no">No</MenuItem>
+                  <MenuItem dense value="yes">
+                    Yes
+                  </MenuItem>
+                  <MenuItem dense value="yes-hidden">
+                    Yes, but minimized
+                  </MenuItem>
+                  <MenuItem dense value="no">
+                    No
+                  </MenuItem>
                 </Select>
               </ListItem>
             </List>
           </Paper>
 
-          <Typography variant="subtitle2" color="textPrimary" className={classes.sectionTitle} ref={sections.advanced.ref}>
+          <Typography
+            variant="subtitle2"
+            color="textPrimary"
+            className={classes.sectionTitle}
+            ref={sections.advanced.ref}
+          >
             Advanced
           </Typography>
           <Paper elevation={0} className={classes.paper}>
@@ -364,7 +361,10 @@ const Preferences = ({
                   onOpenDialogSetPreferredEngine();
                 }}
               >
-                <ListItemText primary="Preferred browser engine" secondary={getEngineName(preferredEngine)} />
+                <ListItemText
+                  primary="Preferred browser engine"
+                  secondary={getEngineName(preferredEngine)}
+                />
                 <ChevronRightIcon color="action" />
               </ListItem>
               <Divider />
@@ -372,20 +372,25 @@ const Preferences = ({
                 <ListItemText primary="Installation path" />
                 <Select
                   value="-"
-                  renderValue={() => `${installationPath} ${requireAdmin && installationPath !== '~/Applications/Chromeless Apps' && installationPath !== '/Applications/Chromeless Apps' ? '(require sudo)' : ''}`}
+                  renderValue={() =>
+                    `${installationPath} ${requireAdmin && installationPath !== '~/Applications/Chromeless Apps' && installationPath !== '/Applications/Chromeless Apps' ? '(require sudo)' : ''}`
+                  }
                   onChange={(e) => {
                     const val = e.target.value;
 
                     if (val == null) return;
 
                     if (appCount > 0) {
-                      window.remote.dialog.showMessageBox(window.remote.getCurrentWindow(), {
-                        title: 'Uninstall all of Chromeless apps first',
-                        message: 'You need to uninstall all of your Chromeless apps before changing this preference.',
-                        buttons: ['OK'],
-                        cancelId: 0,
-                        defaultId: 0,
-                      }).catch(console.log); // eslint-disable-line
+                      window.remote.dialog
+                        .showMessageBox(window.remote.getCurrentWindow(), {
+                          title: 'Uninstall all of Chromeless apps first',
+                          message:
+                            'You need to uninstall all of your Chromeless apps before changing this preference.',
+                          buttons: ['OK'],
+                          cancelId: 0,
+                          defaultId: 0,
+                        })
+                        .catch(console.log); // eslint-disable-line
                     } else {
                       requestSetPreference('requireAdmin', val.requireAdmin);
                       requestSetPreference('installationPath', val.installationPath);
@@ -400,35 +405,34 @@ const Preferences = ({
                   className={classnames(classes.selectRoot, classes.selectRootExtraMargin)}
                   disabled={installingAppCount > 0}
                 >
-                  {(
-                    [
-                      (installationPath !== '~/Applications/Chromeless Apps' && installationPath !== '/Applications/WebCatalog Apps') && (
+                  {[
+                    installationPath !== '~/Applications/Chromeless Apps' &&
+                      installationPath !== '/Applications/WebCatalog Apps' && (
                         <MenuItem dense key="installation-path-menu-item" value={null}>
                           {installationPath}
                         </MenuItem>
                       ),
-                      <MenuItem
-                        dense
-                        key="default-installation-path-menu-item"
-                        value={{
-                          installationPath: '~/Applications/Chromeless Apps',
-                          requireAdmin: false,
-                        }}
-                      >
-                        ~/Applications/Chromeless Apps (default)
-                      </MenuItem>,
-                      <MenuItem
-                        dense
-                        key="default-sudo-installation-path-menu-item"
-                        value={{
-                          installationPath: '/Applications/Chromeless Apps',
-                          requireAdmin: true,
-                        }}
-                      >
-                        /Applications/Chromeless Apps
-                      </MenuItem>,
-                    ]
-                  )}
+                    <MenuItem
+                      dense
+                      key="default-installation-path-menu-item"
+                      value={{
+                        installationPath: '~/Applications/Chromeless Apps',
+                        requireAdmin: false,
+                      }}
+                    >
+                      ~/Applications/Chromeless Apps (default)
+                    </MenuItem>,
+                    <MenuItem
+                      dense
+                      key="default-sudo-installation-path-menu-item"
+                      value={{
+                        installationPath: '/Applications/Chromeless Apps',
+                        requireAdmin: true,
+                      }}
+                    >
+                      /Applications/Chromeless Apps
+                    </MenuItem>,
+                  ]}
                   <MenuItem dense onClick={onOpenDialogSetInstallationPath}>
                     Custom
                   </MenuItem>
@@ -440,9 +444,7 @@ const Preferences = ({
               </ListItem>
               <Divider />
               <ListItem>
-                <ListItemText
-                  primary="Use hardware acceleration when available"
-                />
+                <ListItemText primary="Use hardware acceleration when available" />
                 <ListItemSecondaryAction>
                   <Switch
                     edge="end"
@@ -458,7 +460,12 @@ const Preferences = ({
             </List>
           </Paper>
 
-          <Typography variant="subtitle2" color="textPrimary" className={classes.sectionTitle} ref={sections.updates.ref}>
+          <Typography
+            variant="subtitle2"
+            color="textPrimary"
+            className={classes.sectionTitle}
+            ref={sections.updates.ref}
+          >
             Updates
           </Typography>
           <Paper elevation={0} className={classes.paper}>
@@ -466,22 +473,26 @@ const Preferences = ({
               <ListItem
                 button
                 onClick={() => requestCheckForUpdates(false)}
-                disabled={updaterStatus === 'checking-for-update'
-                  || updaterStatus === 'download-progress'
-                  || updaterStatus === 'download-progress'
-                  || updaterStatus === 'update-available'}
+                disabled={
+                  updaterStatus === 'checking-for-update' ||
+                  updaterStatus === 'download-progress' ||
+                  updaterStatus === 'download-progress' ||
+                  updaterStatus === 'update-available'
+                }
               >
                 <ListItemText
-                  primary={updaterStatus === 'update-downloaded' ? 'Restart to Apply Updates' : 'Check for Updates'}
+                  primary={
+                    updaterStatus === 'update-downloaded'
+                      ? 'Restart to Apply Updates'
+                      : 'Check for Updates'
+                  }
                   secondary={getUpdaterDesc(updaterStatus, updaterInfo)}
                 />
                 <ChevronRightIcon color="action" />
               </ListItem>
               <Divider />
               <ListItem>
-                <ListItemText
-                  primary="Receive pre-release updates"
-                />
+                <ListItemText primary="Receive pre-release updates" />
                 <ListItemSecondaryAction>
                   <Switch
                     edge="end"
@@ -497,7 +508,12 @@ const Preferences = ({
             </List>
           </Paper>
 
-          <Typography variant="subtitle2" color="textPrimary" className={classes.sectionTitle} ref={sections.reset.ref}>
+          <Typography
+            variant="subtitle2"
+            color="textPrimary"
+            className={classes.sectionTitle}
+            ref={sections.reset.ref}
+          >
             Reset
           </Typography>
           <Paper elevation={0} className={classes.paper}>
@@ -505,19 +521,23 @@ const Preferences = ({
               <ListItem
                 button
                 onClick={() => {
-                  window.remote.dialog.showMessageBox(window.remote.getCurrentWindow(), {
-                    type: 'question',
-                    buttons: ['Reset Now', 'Cancel'],
-                    message: 'Are you sure? All preferences will be restored to their original defaults. Browsing data won\'t be affected. This action cannot be undone.',
-                    cancelId: 1,
-                  }).then(({ response }) => {
-                    if (response === 0) {
-                      window.ipcRenderer.once('set-preferences', () => {
-                        enqueueRequestRestartSnackbar();
-                      });
-                      requestResetPreferences();
-                    }
-                  }).catch(console.log); // eslint-disable-line
+                  window.remote.dialog
+                    .showMessageBox(window.remote.getCurrentWindow(), {
+                      type: 'question',
+                      buttons: ['Reset Now', 'Cancel'],
+                      message:
+                        "Are you sure? All preferences will be restored to their original defaults. Browsing data won't be affected. This action cannot be undone.",
+                      cancelId: 1,
+                    })
+                    .then(({ response }) => {
+                      if (response === 0) {
+                        window.ipcRenderer.once('set-preferences', () => {
+                          enqueueRequestRestartSnackbar();
+                        });
+                        requestResetPreferences();
+                      }
+                    })
+                    .catch(console.log); // eslint-disable-line
                 }}
               >
                 <ListItemText primary="Restore preferences to their original defaults" />
@@ -526,132 +546,12 @@ const Preferences = ({
             </List>
           </Paper>
 
-          <Typography variant="subtitle2" color="textPrimary" className={classes.sectionTitle} ref={sections.moreApps.ref}>
-            More Apps
-          </Typography>
-          <Paper elevation={0} className={classes.paper}>
-            <List disablePadding dense>
-              <ListItem
-                button
-                onClick={() => requestOpenInBrowser(`https://webcatalog.io/webcatalog/?utm_source=${utmSource}`)}
-                className={classes.listItemPromotion}
-              >
-                <div className={classes.promotionBlock}>
-                  <div className={classes.promotionLeft}>
-                    <img src={webcatalogIconPng} alt="WebCatalog" className={classes.appIcon} />
-                  </div>
-                  <div className={classes.promotionRight}>
-                    <div>
-                      <Typography variant="body1" className={classes.appTitle}>
-                        WebCatalog
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Turn Any Websites Into Real Desktop Apps
-                      </Typography>
-                    </div>
-                  </div>
-                </div>
-                <ChevronRightIcon color="action" />
-              </ListItem>
-              <Divider />
-              <ListItem
-                button
-                onClick={() => requestOpenInBrowser(`https://translatium.app?utm_source=${utmSource}`)}
-                className={classes.listItemPromotion}
-              >
-                <div className={classes.promotionBlock}>
-                  <div className={classes.promotionLeft}>
-                    <img src={translatiumIconPng} alt="Translatium" className={classes.appIcon} />
-                  </div>
-                  <div className={classes.promotionRight}>
-                    <div>
-                      <Typography variant="body1" className={classes.appTitle}>
-                        Translatium
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Translate 100+ Languages Instantly
-                      </Typography>
-                    </div>
-                  </div>
-                </div>
-                <ChevronRightIcon color="action" />
-              </ListItem>
-              <Divider />
-              <ListItem
-                button
-                onClick={() => requestOpenInBrowser(`https://webcatalog.io/switchbar/?utm_source=${utmSource}`)}
-                className={classes.listItemPromotion}
-              >
-                <div className={classes.promotionBlock}>
-                  <div className={classes.promotionLeft}>
-                    <img src={switchbarIconPng} alt="Switchbar" className={classes.appIcon} />
-                  </div>
-                  <div className={classes.promotionRight}>
-                    <div>
-                      <Typography variant="body1" className={classes.appTitle}>
-                        Switchbar
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Browser & Email Client Picker
-                      </Typography>
-                    </div>
-                  </div>
-                </div>
-                <ChevronRightIcon color="action" />
-              </ListItem>
-              <Divider />
-              <ListItem
-                button
-                onClick={() => requestOpenInBrowser(`https://webcatalog.io/singlebox/?utm_source=${utmSource}`)}
-                className={classes.listItemPromotion}
-              >
-                <div className={classes.promotionBlock}>
-                  <div className={classes.promotionLeft}>
-                    <img src={singleboxIconPng} alt="Singlebox" className={classes.appIcon} />
-                  </div>
-                  <div className={classes.promotionRight}>
-                    <div>
-                      <Typography variant="body1" className={classes.appTitle}>
-                        Singlebox
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        All-in-One Messenger
-                      </Typography>
-                    </div>
-                  </div>
-                </div>
-                <ChevronRightIcon color="action" />
-              </ListItem>
-              <Divider />
-              <ListItem
-                button
-                onClick={() => {
-                  const url = `https://webcatalog.io/clovery/?utm_source=${utmSource}`;
-                  requestOpenInBrowser(url);
-                }}
-                className={classes.listItemPromotion}
-              >
-                <div className={classes.promotionBlock}>
-                  <div className={classes.promotionLeft}>
-                    <img src={cloveryIconPng} alt="Clovery" className={classes.appIcon} />
-                  </div>
-                  <div className={classes.promotionRight}>
-                    <div>
-                      <Typography variant="body1" className={classes.appTitle}>
-                        Clovery
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        All Google Apps in One
-                      </Typography>
-                    </div>
-                  </div>
-                </div>
-                <ChevronRightIcon color="action" />
-              </ListItem>
-            </List>
-          </Paper>
-
-          <Typography variant="subtitle2" color="textPrimary" className={classes.sectionTitle} ref={sections.miscs.ref}>
+          <Typography
+            variant="subtitle2"
+            color="textPrimary"
+            className={classes.sectionTitle}
+            ref={sections.miscs.ref}
+          >
             Miscellaneous
           </Typography>
           <Paper elevation={0} className={classes.paper}>
@@ -661,27 +561,15 @@ const Preferences = ({
                 <ChevronRightIcon color="action" />
               </ListItem>
               <Divider />
-              <ListItem button onClick={() => requestOpenInBrowser('https://webcatalog.io/chromeless/?utm_source=chromeless_app')}>
-                <ListItemText primary="Website" />
-                <ChevronRightIcon color="action" />
-              </ListItem>
-              <Divider />
-              <ListItem button onClick={() => requestOpenInBrowser('https://webcatalog.io/chromeless/help/?utm_source=chromeless_app')}>
-                <ListItemText primary="Help" />
-                <ChevronRightIcon color="action" />
-              </ListItem>
-              <Divider />
-              <ListItem button onClick={() => requestOpenInBrowser(`https://webcatalog.io/privacy/?utm_source=${utmSource}`)}>
-                <ListItemText primary="Privacy Policy" />
-                <ChevronRightIcon color="action" />
-              </ListItem>
-              <Divider />
               <ListItem button onClick={onOpenDialogOpenSourceNotices}>
                 <ListItemText primary="Open Source Notices" />
                 <ChevronRightIcon color="action" />
               </ListItem>
               <Divider />
-              <ListItem button onClick={() => requestOpenInBrowser('https://github.com/kitsuyui/chromeless')}>
+              <ListItem
+                button
+                onClick={() => requestOpenInBrowser('https://github.com/kitsuyui/chromeless')}
+              >
                 <ListItemText primary="GitHub" />
                 <ChevronRightIcon color="action" />
               </ListItem>
@@ -749,9 +637,4 @@ const actionCreators = {
   openDialogSetPreferredEngine,
 };
 
-export default connectComponent(
-  Preferences,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(Preferences, mapStateToProps, actionCreators, styles);

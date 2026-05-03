@@ -22,7 +22,6 @@ import {
   close,
   save,
   getIconFromInternet,
-  getIconFromAppSearch,
   updateForm,
   updateFormOpts,
 } from '../../state/dialog-edit-app/actions';
@@ -78,7 +77,6 @@ const DialogEditApp = (props) => {
     name,
     onClose,
     onGetIconFromInternet,
-    onGetIconFromAppSearch,
     onSave,
     onUpdateForm,
     open,
@@ -98,15 +96,8 @@ const DialogEditApp = (props) => {
   }
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="sm"
-      onClose={onClose}
-      open={open}
-    >
-      <EnhancedDialogTitle onClose={onClose}>
-        {`Edit "${name}"`}
-      </EnhancedDialogTitle>
+    <Dialog fullWidth maxWidth="sm" onClose={onClose} open={open}>
+      <EnhancedDialogTitle onClose={onClose}>{`Edit "${name}"`}</EnhancedDialogTitle>
       <DialogContent>
         <TextField
           fullWidth
@@ -142,7 +133,8 @@ const DialogEditApp = (props) => {
                 variant="body2"
                 className={classnames(classes.caption, classes.captionDisabled)}
               >
-                This app icon is managed by WebCatalog and is not editable. To customize the icon,
+                This app icon is managed by the installed app and is not editable. To customize the
+                icon,
                 {` clone "${name}".`}
               </Typography>
             </Grid>
@@ -152,12 +144,16 @@ const DialogEditApp = (props) => {
                 variant="outlined"
                 size="small"
                 onClick={() => {
-                  window.remote.dialog.showOpenDialog({
-                    filters: [
-                      { name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'tif', 'bmp', 'dib'] },
-                    ],
-                    properties: ['openFile'],
-                  })
+                  window.remote.dialog
+                    .showOpenDialog({
+                      filters: [
+                        {
+                          name: 'Images',
+                          extensions: ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'tif', 'bmp', 'dib'],
+                        },
+                      ],
+                      properties: ['openFile'],
+                    })
                     .then(({ canceled, filePaths }) => {
                       if (!canceled && filePaths && filePaths.length > 0) {
                         onUpdateForm({ icon: filePaths[0] });
@@ -168,10 +164,7 @@ const DialogEditApp = (props) => {
               >
                 Select Local Image...
               </Button>
-              <Typography
-                variant="caption"
-                className={classes.caption}
-              >
+              <Typography variant="caption" className={classes.caption}>
                 PNG, JPEG, GIF, TIFF or BMP.
               </Typography>
               <Button
@@ -182,16 +175,6 @@ const DialogEditApp = (props) => {
                 onClick={() => onGetIconFromInternet()}
               >
                 {downloadingIcon ? 'Downloading...' : 'Download Icon from URL'}
-              </Button>
-              <br />
-              <Button
-                variant="outlined"
-                size="small"
-                className={classes.buttonBot}
-                disabled={Boolean(!url || urlError || urlDisabled || downloadingIcon)}
-                onClick={() => onGetIconFromAppSearch()}
-              >
-                {downloadingIcon ? 'Downloading...' : 'Download Icon from WebCatalog'}
               </Button>
               <br />
               <Button
@@ -224,17 +207,9 @@ const DialogEditApp = (props) => {
           </Button>
         </div>
         <div>
-          <Button
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
+          <Button onClick={onClose}>Cancel</Button>
           <Tooltip title="This action'll also update this app to the latest version">
-            <Button
-              color="primary"
-              onClick={onSave}
-              disabled={!savable}
-            >
+            <Button color="primary" onClick={onSave} disabled={!savable}>
               Save
             </Button>
           </Tooltip>
@@ -264,7 +239,6 @@ DialogEditApp.propTypes = {
   name: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   onGetIconFromInternet: PropTypes.func.isRequired,
-  onGetIconFromAppSearch: PropTypes.func.isRequired,
   onOpenDialogCreateCustomApp: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   onUpdateForm: PropTypes.func.isRequired,
@@ -280,16 +254,7 @@ const mapStateToProps = (state) => {
     downloadingIcon,
     open,
     savable,
-    form: {
-      icon,
-      id,
-      internetIcon,
-      name,
-      nameError,
-      url,
-      urlDisabled,
-      urlError,
-    },
+    form: { icon, id, internetIcon, name, nameError, url, urlDisabled, urlError },
   } = state.dialogEditApp;
 
   return {
@@ -311,15 +276,9 @@ const actionCreators = {
   close,
   save,
   getIconFromInternet,
-  getIconFromAppSearch,
   updateForm,
   updateFormOpts,
   openDialogCreateCustomApp,
 };
 
-export default connectComponent(
-  DialogEditApp,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(DialogEditApp, mapStateToProps, actionCreators, styles);

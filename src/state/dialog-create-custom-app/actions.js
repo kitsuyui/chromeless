@@ -15,13 +15,9 @@ import validate from '../../helpers/validate';
 import getStaticGlobal from '../../helpers/get-static-global';
 
 import { open as openDialogChooseEngine } from '../dialog-choose-engine/actions';
-import {
-  isNameExisted,
-} from '../app-management/utils';
+import { isNameExisted } from '../app-management/utils';
 
 import { requestShowMessageBox } from '../../senders';
-
-import appSearch from '../../app-search';
 
 export const close = () => ({
   type: DIALOG_CREATE_CUSTOM_APP_CLOSE,
@@ -35,46 +31,23 @@ export const open = (form) => ({
 // to be replaced with invoke (electron 7+)
 // https://electronjs.org/docs/api/ipc-renderer#ipcrendererinvokechannel-args
 // attempt to get icon from manifest, favicon, etc of the URL first
-export const getWebsiteIconUrlAsync = (url) => new Promise((resolve, reject) => {
-  try {
-    const id = Date.now().toString();
-    window.ipcRenderer.once(id, (e, uurl) => {
-      resolve(uurl);
-    });
-    window.ipcRenderer.send('request-get-website-icon-url', id, url);
-  } catch (err) {
-    reject(err);
-  }
-});
-
-export const getWebsiteIconUrlFromSwifttypeAsync = (url, name) => {
-  // if it fails, try to get icon from in-house database
-  const query = name && name.length > 0 ? `${url} ${name}` : url;
-  return appSearch
-    .search(query, {
-      search_fields: {
-        name: {},
-        url: { weight: 5 },
-      },
-      result_fields: {
-        icon: { raw: {} },
-      },
-      page: { size: 1 },
-    })
-    .then((res) => {
-      if (res.rawResults.length < 1) return null;
-      const app = res.rawResults[0];
-      return app.icon.raw;
-    })
-    .catch(() => null);
-};
+export const getWebsiteIconUrlAsync = (url) =>
+  new Promise((resolve, reject) => {
+    try {
+      const id = Date.now().toString();
+      window.ipcRenderer.once(id, (e, uurl) => {
+        resolve(uurl);
+      });
+      window.ipcRenderer.send('request-get-website-icon-url', id, url);
+    } catch (err) {
+      reject(err);
+    }
+  });
 
 let requestCount = 0;
 export const getIconFromInternet = () => (dispatch, getState) => {
   const {
-    form: {
-      name, url, urlDisabled, urlError,
-    },
+    form: { name, url, urlDisabled, urlError },
   } = getState().dialogCreateCustomApp;
   if (!url || urlDisabled || urlError) return;
 
@@ -89,10 +62,10 @@ export const getIconFromInternet = () => (dispatch, getState) => {
       const { form } = getState().dialogCreateCustomApp;
       if (form.url === url) {
         const changes = { internetIcon: iconUrl || form.internetIcon };
-        dispatch(({
+        dispatch({
           type: DIALOG_CREATE_CUSTOM_APP_FORM_UPDATE,
           changes,
-        }));
+        });
       }
 
       if (!iconUrl) {
@@ -105,52 +78,8 @@ export const getIconFromInternet = () => (dispatch, getState) => {
       }
 
       return null;
-    }).catch(console.log) // eslint-disable-line no-console
-    .then(() => {
-      requestCount -= 1;
-      dispatch({
-        type: DIALOG_CREATE_CUSTOM_APP_DOWNLOADING_ICON_UPDATE,
-        downloadingIcon: requestCount > 0,
-      });
-    });
-};
-
-export const getIconFromAppSearch = () => (dispatch, getState) => {
-  const {
-    form: {
-      name, url, urlDisabled, urlError,
-    },
-  } = getState().dialogCreateCustomApp;
-  if (!url || urlDisabled || urlError) return;
-
-  dispatch({
-    type: DIALOG_CREATE_CUSTOM_APP_DOWNLOADING_ICON_UPDATE,
-    downloadingIcon: true,
-  });
-  requestCount += 1;
-
-  getWebsiteIconUrlFromSwifttypeAsync(url, name)
-    .then((iconUrl) => {
-      const { form } = getState().dialogCreateCustomApp;
-      if (form.url === url) {
-        const changes = { internetIcon: iconUrl || form.internetIcon };
-        dispatch(({
-          type: DIALOG_CREATE_CUSTOM_APP_FORM_UPDATE,
-          changes,
-        }));
-      }
-
-      if (!iconUrl) {
-        return window.remote.dialog.showMessageBox(window.remote.getCurrentWindow(), {
-          message: 'Unable to find a suitable icon from WebCatalog\'s database.',
-          buttons: ['OK'],
-          cancelId: 0,
-          defaultId: 0,
-        });
-      }
-
-      return null;
-    }).catch(console.log) // eslint-disable-line no-console
+    })
+    .catch(console.log) // eslint-disable-line no-console
     .then(() => {
       requestCount -= 1;
       dispatch({
@@ -166,11 +95,13 @@ const getValidationRules = (urlDisabled) => ({
     required: true,
     filePath: true,
   },
-  url: !urlDisabled ? {
-    fieldName: 'URL',
-    required: true,
-    lessStrictUrl: true,
-  } : undefined,
+  url: !urlDisabled
+    ? {
+        fieldName: 'URL',
+        required: true,
+        lessStrictUrl: true,
+      }
+    : undefined,
 });
 
 export const updateForm = (changes) => (dispatch, getState) => {

@@ -15,7 +15,8 @@ process.on('uncaughtException', (e) => {
   process.exit(1);
 });
 
-const yargsParser = process.env.NODE_ENV === 'production' ? require('yargs-parser').default : require('yargs-parser');
+const yargsParser =
+  process.env.NODE_ENV === 'production' ? require('yargs-parser').default : require('yargs-parser');
 const icongen = require('icon-gen');
 const Jimp = process.env.NODE_ENV === 'production' ? require('jimp').default : require('jimp');
 const path = require('path');
@@ -32,17 +33,7 @@ const downloadAsync = require('../../download-async');
 // causing yargsParser to parse them correctly as Number instead of String
 // so it's neccessary to explitcity state their types
 const argv = yargsParser(process.argv.slice(1), { string: ['id', 'name', 'username'] });
-const {
-  cacheRoot,
-  engine,
-  homePath,
-  icon,
-  id,
-  installationPath,
-  name,
-  url,
-  username,
-} = argv;
+const { cacheRoot, engine, homePath, icon, id, installationPath, name, url, username } = argv;
 const opts = JSON.parse(argv.opts);
 
 const webkitWrapperCachePath = path.join(cacheRoot, 'webkit-wrapper');
@@ -50,22 +41,24 @@ const templateZipPath = path.join(webkitWrapperCachePath, 'template.zip');
 const templateJsonPath = path.join(webkitWrapperCachePath, 'template.json');
 
 // ignore requireAdmin if installationPath is not custom
-const isStandardInstallationPath = installationPath === '~/Applications/Chromeless Apps'
-|| installationPath === '/Applications/Chromeless Apps';
+const isStandardInstallationPath =
+  installationPath === '~/Applications/Chromeless Apps' ||
+  installationPath === '/Applications/Chromeless Apps';
 const requireAdmin = isStandardInstallationPath ? false : argv.requireAdmin;
 
-const sudoAsync = (prompt) => new Promise((resolve, reject) => {
-  const sudoOpts = {
-    name: 'Chromeless',
-  };
-  process.env.USER = username;
-  sudo.exec(prompt, sudoOpts, (error, stdout, stderr) => {
-    if (error) {
-      return reject(error);
-    }
-    return resolve(stdout, stderr);
+const sudoAsync = (prompt) =>
+  new Promise((resolve, reject) => {
+    const sudoOpts = {
+      name: 'Chromeless',
+    };
+    process.env.USER = username;
+    sudo.exec(prompt, sudoOpts, (error, stdout, stderr) => {
+      if (error) {
+        return reject(error);
+      }
+      return resolve(stdout, stderr);
+    });
   });
-});
 
 const getAppFolderName = () => {
   if (process.platform === 'darwin') {
@@ -79,9 +72,10 @@ const tmpPath = tmpObj.name;
 const appFolderPath = path.join(tmpPath, getAppFolderName());
 // Mock Electron for backward compatiblity
 const contentsPath = path.join(appFolderPath, 'Contents');
-const resourcesPath = process.platform === 'darwin'
-  ? path.join(contentsPath, 'Resources')
-  : path.join(appFolderPath, 'resources');
+const resourcesPath =
+  process.platform === 'darwin'
+    ? path.join(contentsPath, 'Resources')
+    : path.join(appFolderPath, 'resources');
 const appAsarUnpackedPath = path.join(resourcesPath, 'app.asar.unpacked');
 const packageJsonPath = path.join(appAsarUnpackedPath, 'package.json');
 const appJsonPath = path.join(appAsarUnpackedPath, 'build', 'app.json');
@@ -93,9 +87,10 @@ const iconIcnsPath = path.join(buildResourcesPath, 'e.icns');
 const iconPngPath = path.join(buildResourcesPath, 'e.png');
 
 const allAppsPath = installationPath.replace('~', homePath);
-const finalPath = process.platform === 'darwin'
-  ? path.join(allAppsPath, `${name}.app`)
-  : path.join(allAppsPath, name);
+const finalPath =
+  process.platform === 'darwin'
+    ? path.join(allAppsPath, `${name}.app`)
+    : path.join(allAppsPath, name);
 
 Promise.resolve()
   .then(() => {
@@ -116,41 +111,35 @@ Promise.resolve()
       return downloadAsync(icon, iconPngPath);
     }
 
-    // try to get fresh icon from catalog if possible
-    if (!id.startsWith('custom-')) {
-      // use unplated icon on Windows
-      const catalogIconUrl = `https://cdn-1.webcatalog.io/catalog/${id}/${id}-icon.png`;
-      return downloadAsync(catalogIconUrl, iconPngPath)
-        .catch(() => fsExtra.copy(icon, iconPngPath)); // fallback if fails
-    }
-
     return fsExtra.copy(icon, iconPngPath);
   })
   .then(() => Jimp.read(iconPngPath))
   .then((img) => {
-    const sizes = process.platform === 'darwin'
-      ? [16, 32, 64, 128, 256, 512, 1024]
-      : [16, 24, 32, 48, 64, 128, 256];
+    const sizes =
+      process.platform === 'darwin'
+        ? [16, 32, 64, 128, 256, 512, 1024]
+        : [16, 24, 32, 48, 64, 128, 256];
 
-    const p = sizes.map((size) => img
-      .clone()
-      .resize(size, size)
-      .quality(100)
-      .writeAsync(path.join(buildResourcesPath, `${size}.png`)));
+    const p = sizes.map((size) =>
+      img
+        .clone()
+        .resize(size, size)
+        .quality(100)
+        .writeAsync(path.join(buildResourcesPath, `${size}.png`)),
+    );
 
-    return Promise.all(p)
-      .then(() => {
-        if (process.platform === 'darwin') {
-          return icongen(buildResourcesPath, buildResourcesPath, {
-            report: true,
-            icns: {
-              name: 'e',
-              sizes,
-            },
-          });
-        }
-        return null;
-      });
+    return Promise.all(p).then(() => {
+      if (process.platform === 'darwin') {
+        return icongen(buildResourcesPath, buildResourcesPath, {
+          report: true,
+          icns: {
+            name: 'e',
+            sizes,
+          },
+        });
+      }
+      return null;
+    });
   })
   .then(() => {
     process.send({
@@ -240,7 +229,9 @@ Promise.resolve()
   })
   .then(async () => {
     if (requireAdmin === 'true') {
-      return sudoAsync(`mkdir -p "${allAppsPath}" && rm -rf "${finalPath}" && mv "${appFolderPath}" "${finalPath}"`);
+      return sudoAsync(
+        `mkdir -p "${allAppsPath}" && rm -rf "${finalPath}" && mv "${appFolderPath}" "${finalPath}"`,
+      );
     }
     // in v20.5.2 and below, '/Applications/Chromeless Apps' owner is set to `root`
     // need to correct to user to install apps without sudo
@@ -249,7 +240,9 @@ Promise.resolve()
         fsExtra.mkdirSync(installationPath);
       }
       // https://unix.stackexchange.com/a/7732
-      const installationPathOwner = await execAsync("ls -ld '/Applications/Chromeless Apps' | awk '{print $3}'");
+      const installationPathOwner = await execAsync(
+        "ls -ld '/Applications/Chromeless Apps' | awk '{print $3}'",
+      );
       if (installationPathOwner.trim() === 'root') {
         // https://askubuntu.com/questions/6723/change-folder-permissions-and-ownership
         // https://stackoverflow.com/questions/23714097/sudo-chown-command-not-found

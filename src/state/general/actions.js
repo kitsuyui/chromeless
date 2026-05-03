@@ -48,53 +48,39 @@ export const updateInstallationProgress = (progress) => ({
   progress,
 });
 
+const webkitWrapperReleasesUrl = 'https://api.github.com/repos/webcatalog/webkit-wrapper/releases';
+
+const getReleaseVersion = (release) => semver.clean(release.tag_name || release.name || '');
+
+const getLatestWebkitWrapperVersionAsync = (allowPrerelease) =>
+  window
+    .fetch(webkitWrapperReleasesUrl)
+    .then((res) => res.json())
+    .then((releases) => {
+      const version = releases
+        .filter((release) => !release.draft && (allowPrerelease || !release.prerelease))
+        .map(getReleaseVersion)
+        .filter(Boolean)
+        .sort(semver.rcompare)[0];
+      if (!version) throw new Error('Unable to find a WebKit Wrapper release.');
+      return version;
+    });
+
 export const fetchLatestTemplateVersionAsync = () => (dispatch, getState) => {
   const { allowPrerelease } = getState().preferences;
   dispatch(updateFetchingLatestTemplateVersion(true));
   return Promise.resolve()
     .then(() => new Promise((resolve) => setTimeout(resolve, 1000)))
-    // use in-house API
-    // to avoid using GitHub API as it has rate limit (60 requests per hour)
-    // to avoid bugs with instead of https://github.com/webcatalog/webcatalog-engine/releases.atom
-    // https://github.com/webcatalog/webcatalog-app/issues/890
     .then(() => {
       const pp = [];
 
       // check for latest WebKit Wrapper version
       if (window.process.platform === 'darwin') {
-        pp.push([
-          Promise.resolve().then(() => {
-            if (allowPrerelease) {
-              return Promise.resolve()
-                .then(() => {
-                  let stableVersion;
-                  let prereleaseVersion;
-                  const p = [
-                    window.fetch('https://webcatalog.io/chromeless/webkit-wrapper/releases/latest.json')
-                      .then((res) => res.json())
-                      .then((data) => { stableVersion = data.version; }),
-                    window.fetch('https://webcatalog.io/chromeless/webkit-wrapper/releases/prerelease.json')
-                      .then((res) => res.json())
-                      .then((data) => { prereleaseVersion = data.version; }),
-                  ];
-                  return Promise.all(p)
-                    .then(() => {
-                      if (semver.gt(stableVersion, prereleaseVersion)) {
-                        return stableVersion;
-                      }
-                      return prereleaseVersion;
-                    });
-                });
-            }
-
-            return window.fetch('https://webcatalog.io/chromeless/webkit-wrapper/releases/latest.json')
-              .then((res) => res.json())
-              .then((data) => data.version);
-          })
-            .then((latestVersion) => {
-              dispatch(updateLatestWebkitWrapperVersion(latestVersion));
-            }),
-        ]);
+        pp.push(
+          getLatestWebkitWrapperVersionAsync(allowPrerelease).then((latestVersion) => {
+            dispatch(updateLatestWebkitWrapperVersion(latestVersion));
+          }),
+        );
       }
 
       return Promise.all(pp);

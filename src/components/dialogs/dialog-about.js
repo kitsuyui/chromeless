@@ -15,8 +15,6 @@ import { close } from '../../state/dialog-about/actions';
 import { open as openDialogOpenSourceNotices } from '../../state/dialog-open-source-notices/actions';
 import iconPng from '../../assets/products/chromeless-mac-icon-128@2x.png';
 
-import { requestOpenInBrowser } from '../../senders';
-
 import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
 
 const styles = (theme) => ({
@@ -42,68 +40,24 @@ const styles = (theme) => ({
   versionSmall: {
     fontSize: 13,
   },
-  goToTheWebsiteButton: {
-    marginRight: theme.spacing(1),
-  },
-  madeBy: {
-    marginTop: theme.spacing(2),
-  },
-  link: {
-    fontWeight: 600,
-    cursor: 'pointer',
-    outline: 'none',
-    '&:hover': {
-      textDecoration: 'underline',
-    },
-  },
 });
 
-const About = ({
-  classes,
-  onClose,
-  onOpenDialogOpenSourceNotices,
-  open,
-}) => {
+const About = ({ classes, onClose, onOpenDialogOpenSourceNotices, open }) => {
   const appVersion = window.remote.app.getVersion();
 
   return (
-    <Dialog
-      className={classes.root}
-      onClose={onClose}
-      open={open}
-    >
-      <EnhancedDialogTitle onClose={onClose}>
-        About
-      </EnhancedDialogTitle>
+    <Dialog className={classes.root} onClose={onClose} open={open}>
+      <EnhancedDialogTitle onClose={onClose}>About</EnhancedDialogTitle>
       <DialogContent className={classes.dialogContent}>
         <img src={iconPng} alt="Chromeless" className={classes.icon} />
-        <Typography variant="h6" className={classes.title}>Chromeless</Typography>
-        <Typography
-          variant="body2"
-          className={classes.version}
-        >
+        <Typography variant="h6" className={classes.title}>
+          Chromeless
+        </Typography>
+        <Typography variant="body2" className={classes.version}>
           {`Version v${appVersion}`}
         </Typography>
 
-        <Button
-          onClick={() => requestOpenInBrowser('https://webcatalog.io/chromeless/?utm_source=chromeless_app')}
-        >
-          Website
-        </Button>
-
-        <Button
-          onClick={() => requestOpenInBrowser('https://webcatalog.io/chromeless/help/?utm_source=chromeless_app')}
-        >
-          Help
-        </Button>
-
-        <br />
-
-        <Button
-          onClick={onOpenDialogOpenSourceNotices}
-        >
-          Open Source Notices
-        </Button>
+        <Button onClick={onOpenDialogOpenSourceNotices}>Open Source Notices</Button>
       </DialogContent>
     </Dialog>
   );
@@ -125,9 +79,4 @@ const actionCreators = {
   openDialogOpenSourceNotices,
 };
 
-export default connectComponent(
-  About,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(About, mapStateToProps, actionCreators, styles);

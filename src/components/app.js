@@ -10,7 +10,6 @@ import EnhancedBottomNavigation from './root/enhanced-bottom-navigation';
 import SnackbarTrigger from './root/snackbar-trigger';
 
 import Installed from './pages/installed';
-import Home from './pages/home';
 import Preferences from './pages/preferences';
 import Browsers from './pages/browsers';
 
@@ -22,15 +21,8 @@ import DialogOpenSourceNotices from './dialogs/dialog-open-source-notices';
 import DialogSetInstallationPath from './dialogs/dialog-set-installation-path';
 import DialogSetPreferredEngine from './dialogs/dialog-set-preferred-engine';
 
-import {
-  ROUTE_PREFERENCES,
-  ROUTE_INSTALLED,
-  ROUTE_BROWSERS,
-} from '../constants/routes';
-import {
-  requestGetInstalledApps,
-  requestCheckForUpdates,
-} from '../senders';
+import { ROUTE_PREFERENCES, ROUTE_INSTALLED, ROUTE_BROWSERS } from '../constants/routes';
+import { requestGetInstalledApps, requestCheckForUpdates } from '../senders';
 
 import { fetchLatestTemplateVersionAsync } from '../state/general/actions';
 
@@ -65,9 +57,12 @@ class App extends React.Component {
 
     const { onFetchLatestTemplateVersionAsync } = this.props;
     onFetchLatestTemplateVersionAsync();
-    this.updaterTimer = setTimeout(() => {
-      onFetchLatestTemplateVersionAsync();
-    }, 15 * 60 * 1000); // recheck every 15 minutes
+    this.updaterTimer = setTimeout(
+      () => {
+        onFetchLatestTemplateVersionAsync();
+      },
+      15 * 60 * 1000,
+    ); // recheck every 15 minutes
   }
 
   componentWillUnmount() {
@@ -88,14 +83,12 @@ class App extends React.Component {
         pageContent = <Browsers key="browsers" />;
         break;
       default:
-        pageContent = <Home key="home" />;
+        pageContent = <Browsers key="browsers" />;
     }
 
     return (
       <div className={classes.root}>
-        <div className={classes.content}>
-          {pageContent}
-        </div>
+        <div className={classes.content}>{pageContent}</div>
         <EnhancedBottomNavigation />
 
         <SnackbarTrigger />
@@ -127,9 +120,4 @@ const actionCreators = {
   fetchLatestTemplateVersionAsync,
 };
 
-export default connectComponent(
-  App,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(App, mapStateToProps, actionCreators, styles);

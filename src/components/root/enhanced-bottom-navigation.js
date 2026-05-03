@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import HomeIcon from '@material-ui/icons/Home';
 import SystemUpdateIcon from '@material-ui/icons/SystemUpdate';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PublicIcon from '@material-ui/icons/Public';
@@ -17,12 +16,7 @@ import connectComponent from '../../helpers/connect-component';
 import { changeRoute } from '../../state/router/actions';
 import { getAppBadgeCount } from '../../state/app-management/utils';
 
-import {
-  ROUTE_BROWSERS,
-  ROUTE_HOME,
-  ROUTE_INSTALLED,
-  ROUTE_PREFERENCES,
-} from '../../constants/routes';
+import { ROUTE_BROWSERS, ROUTE_INSTALLED, ROUTE_PREFERENCES } from '../../constants/routes';
 
 const styles = {
   paper: {
@@ -42,9 +36,7 @@ const styles = {
   },
 };
 
-const EnhancedBottomNavigation = ({
-  classes, route, appBadgeCount, onChangeRoute,
-}) => (
+const EnhancedBottomNavigation = ({ classes, route, appBadgeCount, onChangeRoute }) => (
   <Paper elevation={1} className={classes.paper}>
     <BottomNavigation
       value={route}
@@ -52,15 +44,6 @@ const EnhancedBottomNavigation = ({
       showLabels
       classes={{ root: classes.bottomNavigation }}
     >
-      <BottomNavigationAction
-        label="Catalog"
-        icon={<HomeIcon />}
-        value={ROUTE_HOME}
-        classes={{
-          wrapper: classes.bottomNavigationActionWrapper,
-          label: classes.bottomNavigationActionLabel,
-        }}
-      />
       <BottomNavigationAction
         label="Browsers"
         icon={<PublicIcon />}
@@ -72,11 +55,15 @@ const EnhancedBottomNavigation = ({
       />
       <BottomNavigationAction
         label="Installed"
-        icon={appBadgeCount > 0 ? (
-          <Badge color="secondary" badgeContent={appBadgeCount}>
+        icon={
+          appBadgeCount > 0 ? (
+            <Badge color="secondary" badgeContent={appBadgeCount}>
+              <SystemUpdateIcon />
+            </Badge>
+          ) : (
             <SystemUpdateIcon />
-          </Badge>
-        ) : <SystemUpdateIcon />}
+          )
+        }
         value={ROUTE_INSTALLED}
         classes={{
           wrapper: classes.bottomNavigationActionWrapper,
@@ -113,9 +100,4 @@ const actionCreators = {
   changeRoute,
 };
 
-export default connectComponent(
-  EnhancedBottomNavigation,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(EnhancedBottomNavigation, mapStateToProps, actionCreators, styles);

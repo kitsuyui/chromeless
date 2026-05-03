@@ -7,8 +7,6 @@
 ## Deprecation
 **Deprecated:** Chromeless is deprecated legacy software and will no longer receive feature updates. Nevertheless, the app will continue working and receiving maintainance updates.
 
-If you're looking for an alternative, check out **[WebCatalog](https://webcatalog.io/webcatalog/)**.
-
 ## Introduction
 **Chromeless** is a free Mac app which lets you create Chromium-based, Firefox-based or WebKit-based apps (also known as site-specific browsers) from any websites.
 
@@ -45,13 +43,6 @@ On the other hand, **the source code is freely available** for use, modification
 ## Development
 This repository only contains the source code of the Chromeless app. If you'd like to contribute to the code that powers WebKit-based app, check out <https://github.com/webcatalog/webkit-wrapper>.
 
-For the app to be fully functional, set these environment variables:
-```
-REACT_APP_ELASTIC_CLOUD_APP_SEARCH_SEARCH_KEY=
-REACT_APP_ELASTIC_CLOUD_APP_SEARCH_API_ENDPOINT=
-REACT_APP_ELASTIC_CLOUD_APP_SEARCH_ENGINE_NAME=
-```
-
 Then, run:
 ```bash
 # clone the project:
@@ -59,11 +50,11 @@ git clone https://github.com/kitsuyui/chromeless.git
 cd chromeless
 
 # install the dependencies
-yarn
+bun install
 
 # run the app
-yarn electron-dev
+bun run electron-dev
 
 # Build for production
-yarn dist
+bun run dist
 ```

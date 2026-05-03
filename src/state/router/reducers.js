@@ -3,9 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { combineReducers } from 'redux';
 
-import {
-  ROUTE_HOME, ROUTE_INSTALLED, ROUTE_PREFERENCES, ROUTE_BROWSERS,
-} from '../../constants/routes';
+import { ROUTE_INSTALLED, ROUTE_PREFERENCES, ROUTE_BROWSERS } from '../../constants/routes';
 
 import { CHANGE_ROUTE } from '../../constants/actions';
 
@@ -14,6 +12,10 @@ import { getPreference } from '../../senders';
 let defaultRoute;
 switch (getPreference('defaultHome')) {
   case 'browsers': {
+    defaultRoute = ROUTE_BROWSERS;
+    break;
+  }
+  case 'home': {
     defaultRoute = ROUTE_BROWSERS;
     break;
   }
@@ -26,13 +28,15 @@ switch (getPreference('defaultHome')) {
     break;
   }
   default: {
-    defaultRoute = ROUTE_HOME;
+    defaultRoute = ROUTE_BROWSERS;
   }
 }
 const route = (state = defaultRoute, action) => {
   switch (action.type) {
-    case CHANGE_ROUTE: return action.route;
-    default: return state;
+    case CHANGE_ROUTE:
+      return action.route;
+    default:
+      return state;
   }
 };
 

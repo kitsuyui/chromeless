@@ -20,7 +20,6 @@ import {
   close,
   create,
   getIconFromInternet,
-  getIconFromAppSearch,
   updateForm,
 } from '../../state/dialog-create-custom-app/actions';
 
@@ -68,7 +67,6 @@ const DialogCreateCustomApp = (props) => {
     onClose,
     onCreate,
     onGetIconFromInternet,
-    onGetIconFromAppSearch,
     onUpdateForm,
     open,
     url,
@@ -85,12 +83,7 @@ const DialogCreateCustomApp = (props) => {
   }
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="sm"
-      onClose={onClose}
-      open={open}
-    >
+    <Dialog fullWidth maxWidth="sm" onClose={onClose} open={open}>
       <EnhancedDialogTitle onClose={onClose}>
         {urlDisabled ? 'Add Browser Instance' : 'Create Custom App'}
       </EnhancedDialogTitle>
@@ -131,12 +124,16 @@ const DialogCreateCustomApp = (props) => {
               variant="outlined"
               size="small"
               onClick={() => {
-                window.remote.dialog.showOpenDialog({
-                  filters: [
-                    { name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'tif', 'bmp', 'dib'] },
-                  ],
-                  properties: ['openFile'],
-                })
+                window.remote.dialog
+                  .showOpenDialog({
+                    filters: [
+                      {
+                        name: 'Images',
+                        extensions: ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'tif', 'bmp', 'dib'],
+                      },
+                    ],
+                    properties: ['openFile'],
+                  })
                   .then(({ canceled, filePaths }) => {
                     if (!canceled && filePaths && filePaths.length > 0) {
                       onUpdateForm({ icon: filePaths[0] });
@@ -165,16 +162,6 @@ const DialogCreateCustomApp = (props) => {
               variant="outlined"
               size="small"
               className={classes.buttonBot}
-              disabled={Boolean(!url || urlError || urlDisabled || downloadingIcon)}
-              onClick={() => onGetIconFromAppSearch()}
-            >
-              {downloadingIcon ? 'Downloading...' : 'Download Icon from WebCatalog'}
-            </Button>
-            <br />
-            <Button
-              variant="outlined"
-              size="small"
-              className={classes.buttonBot}
               disabled={!(icon || internetIcon) || downloadingIcon}
               onClick={() => onUpdateForm({ icon: null, internetIcon: null })}
             >
@@ -184,15 +171,8 @@ const DialogCreateCustomApp = (props) => {
         </Grid>
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
-        <Button
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-        <Button
-          color="primary"
-          onClick={onCreate}
-        >
+        <Button onClick={onClose}>Cancel</Button>
+        <Button color="primary" onClick={onCreate}>
           Continue
         </Button>
       </DialogActions>
@@ -219,7 +199,6 @@ DialogCreateCustomApp.propTypes = {
   onClose: PropTypes.func.isRequired,
   onCreate: PropTypes.func.isRequired,
   onGetIconFromInternet: PropTypes.func.isRequired,
-  onGetIconFromAppSearch: PropTypes.func.isRequired,
   onUpdateForm: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   url: PropTypes.string,
@@ -231,15 +210,7 @@ const mapStateToProps = (state) => {
   const {
     downloadingIcon,
     open,
-    form: {
-      icon,
-      internetIcon,
-      name,
-      nameError,
-      url,
-      urlDisabled,
-      urlError,
-    },
+    form: { icon, internetIcon, name, nameError, url, urlDisabled, urlError },
   } = state.dialogCreateCustomApp;
 
   return {
@@ -259,13 +230,7 @@ const actionCreators = {
   close,
   create,
   getIconFromInternet,
-  getIconFromAppSearch,
   updateForm,
 };
 
-export default connectComponent(
-  DialogCreateCustomApp,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(DialogCreateCustomApp, mapStateToProps, actionCreators, styles);
