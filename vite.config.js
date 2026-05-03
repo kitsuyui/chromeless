@@ -28,6 +28,11 @@ export default defineConfig({
     target: 'es2022',
   },
   optimizeDeps: {
+    rolldownOptions: {
+      moduleTypes: {
+        '.js': 'jsx',
+      },
+    },
     include: ['lodash', 'react-redux', 'semver', 'use-sync-external-store/with-selector'],
   },
 });
