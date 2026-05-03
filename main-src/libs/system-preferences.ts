@@ -32,12 +32,10 @@ const getSystemPreferences = () => ({
 const setSystemPreference = (name, value) => {
   switch (name) {
     case 'openAtLogin': {
-      if (process.platform === 'darwin') {
-        app.setLoginItemSettings({
-          openAtLogin: value.startsWith('yes'),
-          openAsHidden: value === 'yes-hidden', // only for macOS
-        });
-      }
+      app.setLoginItemSettings({
+        openAtLogin: value.startsWith('yes'),
+        openAsHidden: value === 'yes-hidden',
+      });
       break;
     }
     default: {

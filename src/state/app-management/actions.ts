@@ -2,23 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import {
-  SET_APP,
-  REMOVE_APP,
   CLEAN_APP_MANAGEMENT,
+  REMOVE_APP,
+  SET_APP,
   SET_SCANNING_FOR_INSTALLED,
   SORT_APPS,
 } from '../../constants/actions';
-
-import {
-  isNameExisted,
-  getOutdatedAppsAsList,
-} from './utils';
-
-import {
-  requestShowMessageBox,
-  requestInstallApp,
-  requestUpdateApp,
-} from '../../senders';
+import { requestInstallApp, requestShowMessageBox, requestUpdateApp } from '../../senders';
+import { getOutdatedAppsAsList, isNameExisted } from './utils';
 
 export const clean = () => (dispatch, getState) => {
   const state = getState();
@@ -64,16 +55,18 @@ export const installApp = (engine, id, name, url, icon, opts) => (dispatch, getS
   return null;
 };
 
-export const updateApp = (id, _name, _url, _icon, _opts) => async (dispatch, getState) => {
-  const appObj = getState().appManagement.apps[id];
-  const { engine } = appObj;
-  const name = _name || appObj.name;
-  const url = _url !== undefined ? _url : appObj.url; // url can be null
-  const icon = _icon || appObj.icon;
-  const opts = { ...appObj.opts, ..._opts };
+export const updateApp =
+  (id, _name = null, _url = undefined, _icon = null, _opts = {}) =>
+  async (dispatch, getState) => {
+    const appObj = getState().appManagement.apps[id];
+    const { engine } = appObj;
+    const name = _name || appObj.name;
+    const url = _url !== undefined ? _url : appObj.url; // url can be null
+    const icon = _icon || appObj.icon;
+    const opts = { ...appObj.opts, ..._opts };
 
-  requestUpdateApp(engine, id, name, url, icon, opts);
-};
+    requestUpdateApp(engine, id, name, url, icon, opts);
+  };
 
 export const updateApps = (apps) => (dispatch) => {
   apps.forEach((app) => dispatch(updateApp(app.id)));

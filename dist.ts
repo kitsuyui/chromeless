@@ -53,10 +53,6 @@ const createBuildOptions = (targets) => ({
       '**/build/chromeless-helper/**/*',
       '**/build/chromeless-helper-browser-instances/**/*',
       'default-app-icons/**/*',
-      '**/node_modules/regedit/**/*',
-      '**/rcedit*.exe',
-      '**/build/vbs/**/*',
-      '**/build/**/Shortcut.exe',
       '**/build/**/*forked*',
     ],
     files: [
@@ -86,10 +82,7 @@ const createBuildOptions = (targets) => ({
     },
     afterSign: (context) => {
       // Only notarize app when forced in pull requests or when releasing using tag
-      const shouldNotarize =
-        process.platform === 'darwin' &&
-        context.electronPlatformName === 'darwin' &&
-        process.env.CI_BUILD_TAG;
+      const shouldNotarize = Boolean(process.env.CI_BUILD_TAG);
       if (!shouldNotarize) return null;
 
       console.log('Notarizing app...');
@@ -117,7 +110,7 @@ const createBuildOptions = (targets) => ({
 Promise.resolve()
   .then(() => builder.build(createBuildOptions(universalTargets)))
   .then(() => {
-    if (!isDevelopmentBuild || process.platform !== 'darwin') return null;
+    if (!isDevelopmentBuild) return null;
 
     console.log('Building arm64 development app...');
     return builder.build(createBuildOptions(arm64DevelopmentTargets));

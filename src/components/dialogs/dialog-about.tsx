@@ -1,18 +1,17 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
-
-import connectComponent from '../../helpers/connect-component';
+import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+import React from 'react';
+import iconPng from '../../assets/products/chromeless-mac-icon-128@2x.png';
 
 import { useDialogs } from '../../contexts/dialogs';
-import iconPng from '../../assets/products/chromeless-mac-icon-128@2x.png';
+import connectComponent from '../../helpers/connect-component';
 
 import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
 
@@ -42,11 +41,7 @@ const styles = (theme) => ({
 });
 
 const About = ({ classes }) => {
-  const {
-    aboutOpen,
-    closeAbout,
-    openOpenSourceNotices,
-  } = useDialogs();
+  const { aboutOpen, closeAbout, openOpenSourceNotices } = useDialogs();
   const appVersion = window.remote.app.getVersion();
 
   return (

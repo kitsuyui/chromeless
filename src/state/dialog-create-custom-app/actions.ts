@@ -8,16 +8,13 @@ import {
   DIALOG_CREATE_CUSTOM_APP_FORM_UPDATE,
   DIALOG_CREATE_CUSTOM_APP_OPEN,
 } from '../../constants/actions';
-
+import getStaticGlobal from '../../helpers/get-static-global';
 import hasErrors from '../../helpers/has-errors';
 import isUrl from '../../helpers/is-url';
 import validate from '../../helpers/validate';
-import getStaticGlobal from '../../helpers/get-static-global';
-
-import { open as openDialogChooseEngine } from '../dialog-choose-engine/actions';
-import { isNameExisted } from '../app-management/utils';
-
 import { requestShowMessageBox } from '../../senders';
+import { isNameExisted } from '../app-management/utils';
+import { open as openDialogChooseEngine } from '../dialog-choose-engine/actions';
 
 export const close = () => ({
   type: DIALOG_CREATE_CUSTOM_APP_CLOSE,
@@ -31,7 +28,7 @@ export const open = (form) => ({
 // to be replaced with invoke (electron 7+)
 // https://electronjs.org/docs/api/ipc-renderer#ipcrendererinvokechannel-args
 // attempt to get icon from manifest, favicon, etc of the URL first
-export const getWebsiteIconUrlAsync = (url) =>
+export const getWebsiteIconUrlAsync = (url, _name = null) =>
   new Promise((resolve, reject) => {
     try {
       const id = Date.now().toString();
@@ -132,7 +129,7 @@ export const create = () => (dispatch, getState) => {
   const icon = form.icon || form.internetIcon || getStaticGlobal('defaultIcon');
   const protocolledUrl = isUrl(url) ? url : `http://${url}`;
 
-  const opts = {};
+  const opts: Record<string, unknown> = {};
 
   // custom app ID makes it hard to identify app directories in Finder
   // see https://github.com/webcatalog/webcatalog-app/issues/1327

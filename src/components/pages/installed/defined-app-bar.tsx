@@ -2,16 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-disable no-constant-condition */
-import React from 'react';
+
 import PropTypes from 'prop-types';
+import React from 'react';
 
 import connectComponent from '../../../helpers/connect-component';
 
 import { open as openDialogCreateCustomApp } from '../../../state/dialog-create-custom-app/actions';
-
-import SearchBox from './search-box';
-
 import EnhancedAppBar from '../../shared/enhanced-app-bar';
+import SearchBox from './search-box';
 
 const styles = (theme) => ({
   addButton: {
@@ -32,15 +31,13 @@ const styles = (theme) => ({
   },
 });
 
-const DefinedAppBar = ({
-  classes,
-}) => (
+const DefinedAppBar = ({ classes }) => (
   <EnhancedAppBar
-    center={(
+    center={
       <div className={classes.centerContainer}>
         <SearchBox />
       </div>
-    )}
+    }
   />
 );
 
@@ -52,9 +49,4 @@ const actionCreators = {
   openDialogCreateCustomApp,
 };
 
-export default connectComponent(
-  DefinedAppBar,
-  null,
-  actionCreators,
-  styles,
-);
+export default connectComponent(DefinedAppBar, null, actionCreators, styles);

@@ -1,28 +1,22 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
-
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Grid from '@mui/material/Grid';
 
 import HelpIcon from '@mui/icons-material/Help';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import connectComponent from '../../helpers/connect-component';
 
-import {
-  close,
-  create,
-  updateForm,
-} from '../../state/dialog-choose-engine/actions';
-
-import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
+import { close, create, updateForm } from '../../state/dialog-choose-engine/actions';
 import EngineList from '../shared/engine-list';
+import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
 import HelpTooltip from '../shared/help-tooltip';
 
 const styles = (theme) => ({
@@ -53,12 +47,7 @@ const DialogChooseEngine = ({
   open,
   url,
 }) => (
-  <Dialog
-    fullWidth
-    maxWidth="sm"
-    onClose={onClose}
-    open={open}
-  >
+  <Dialog fullWidth maxWidth="sm" onClose={onClose} open={open}>
     <EnhancedDialogTitle onClose={onClose} disableTypography>
       <Grid container direction="row" alignItems="center" spacing={1}>
         <Grid item>
@@ -69,16 +58,15 @@ const DialogChooseEngine = ({
         </Grid>
         <Grid item>
           <HelpTooltip
-            title={(
+            title={
               <Typography variant="body2" color="textPrimary">
-                Pick your preferrred browser engine to power&nbsp;
-                {name}
-                . This cannot be changed later.
-                You will have to uninstall and then reinstall&nbsp;
+                Pick your preferred browser engine to power&nbsp;
+                {name}. This cannot be changed later. You will have to uninstall and then
+                reinstall&nbsp;
                 {name}
                 &nbsp;to change the engine of the app.
               </Typography>
-            )}
+            }
           >
             <HelpIcon color="disabled" />
           </HelpTooltip>
@@ -93,15 +81,8 @@ const DialogChooseEngine = ({
       />
     </DialogContent>
     <DialogActions className={classes.dialogActions}>
-      <Button
-        onClick={onClose}
-      >
-        Cancel
-      </Button>
-      <Button
-        color="primary"
-        onClick={onCreate}
-      >
+      <Button onClick={onClose}>Cancel</Button>
+      <Button color="primary" onClick={onCreate}>
         Install
       </Button>
     </DialogActions>
@@ -126,11 +107,7 @@ DialogChooseEngine.propTypes = {
 const mapStateToProps = (state) => {
   const {
     open,
-    form: {
-      name,
-      url,
-      engine,
-    },
+    form: { name, url, engine },
   } = state.dialogChooseEngine;
 
   return {
@@ -147,9 +124,4 @@ const actionCreators = {
   updateForm,
 };
 
-export default connectComponent(
-  DialogChooseEngine,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(DialogChooseEngine, mapStateToProps, actionCreators, styles);

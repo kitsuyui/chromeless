@@ -1,10 +1,11 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
 
-import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { grey, pink as red, teal } from '@mui/material/colors';
+import type { ThemeOptions } from '@mui/material/styles';
+import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import React from 'react';
 
 import { useAppearance } from '../contexts/appearance';
 
@@ -12,13 +13,17 @@ import App from './app';
 
 const AppWrapper = () => {
   const { shouldUseDarkColors } = useAppearance();
-  const themeObj = {
+  const themeObj: ThemeOptions = {
     typography: {
-      fontFamily: '"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+      fontFamily:
+        '"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
       fontSize: 13.5,
     },
     palette: {
       mode: shouldUseDarkColors ? 'dark' : 'light',
+      background: {
+        default: shouldUseDarkColors ? undefined : grey[200],
+      },
       primary: {
         light: teal[300],
         main: teal[700],
@@ -31,12 +36,6 @@ const AppWrapper = () => {
       },
     },
   };
-
-  if (!shouldUseDarkColors) {
-    themeObj.background = {
-      primary: grey[200],
-    };
-  }
 
   const theme = createTheme(themeObj);
 

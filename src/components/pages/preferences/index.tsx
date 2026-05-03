@@ -1,9 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
 
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import PowerIcon from '@mui/icons-material/Power';
+import RotateLeftIcon from '@mui/icons-material/RotateLeft';
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
+import WidgetsIcon from '@mui/icons-material/Widgets';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -15,25 +19,14 @@ import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
-
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import PowerIcon from '@mui/icons-material/Power';
-import RotateLeftIcon from '@mui/icons-material/RotateLeft';
-import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
-import WidgetsIcon from '@mui/icons-material/Widgets';
-
-import connectComponent from '../../../helpers/connect-component';
+import PropTypes from 'prop-types';
+import React, { useRef } from 'react';
 import { useDialogs } from '../../../contexts/dialogs';
 import { useUpdater } from '../../../contexts/updater';
+import connectComponent from '../../../helpers/connect-component';
 import getEngineName from '../../../helpers/get-engine-name';
-
-import { getInstallingAppsAsList } from '../../../state/app-management/utils';
-
-import { open as openDialogSetInstallationPath } from '../../../state/dialog-set-installation-path/actions';
-import { open as openDialogSetPreferredEngine } from '../../../state/dialog-set-preferred-engine/actions';
-
 import {
+  enqueueRequestRestartSnackbar,
   requestCheckForUpdates,
   requestOpenInBrowser,
   requestOpenInstallLocation,
@@ -41,8 +34,10 @@ import {
   requestResetPreferences,
   requestSetPreference,
   requestSetSystemPreference,
-  enqueueRequestRestartSnackbar,
 } from '../../../senders';
+import { getInstallingAppsAsList } from '../../../state/app-management/utils';
+import { open as openDialogSetInstallationPath } from '../../../state/dialog-set-installation-path/actions';
+import { open as openDialogSetPreferredEngine } from '../../../state/dialog-set-preferred-engine/actions';
 
 import DefinedAppBar from './defined-app-bar';
 
@@ -123,7 +118,7 @@ const formatBytes = (bytes, decimals = 2) => {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
+  return `${Number.parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 };
 
 const getUpdaterDesc = (status, info) => {
@@ -164,14 +159,8 @@ const Preferences = ({
   themeSource,
   useHardwareAcceleration,
 }) => {
-  const {
-    updaterInfo,
-    updaterStatus,
-  } = useUpdater();
-  const {
-    openAbout,
-    openOpenSourceNotices,
-  } = useDialogs();
+  const { updaterInfo, updaterStatus } = useUpdater();
+  const { openAbout, openOpenSourceNotices } = useDialogs();
   const sections = {
     general: {
       text: 'General',
@@ -266,11 +255,7 @@ const Preferences = ({
               <Divider />
               <ListItem>
                 <ListItemText
-                  primary={
-                    window.process.platform === 'darwin'
-                      ? 'Attach to menu bar'
-                      : 'Pin to system tray (notification area)'
-                  }
+                  primary="Attach to menu bar"
                   secondary="Tip: Right-click on app icon to access context menu."
                 />
                 <ListItemSecondaryAction>
@@ -385,7 +370,7 @@ const Preferences = ({
               <ListItem>
                 <ListItemText primary="Installation path" />
                 <Select
-                  value="-"
+                  value=""
                   renderValue={() =>
                     `${installationPath} ${requireAdmin && installationPath !== '~/Applications/Chromeless Apps' && installationPath !== '/Applications/Chromeless Apps' ? '(require sudo)' : ''}`
                   }
@@ -393,6 +378,9 @@ const Preferences = ({
                     const val = e.target.value;
 
                     if (val == null) return;
+                    const nextPreference =
+                      typeof val === 'string' && val.length > 0 ? JSON.parse(val) : null;
+                    if (nextPreference == null) return;
 
                     if (appCount > 0) {
                       window.remote.dialog
@@ -406,8 +394,8 @@ const Preferences = ({
                         })
                         .catch(console.log); // eslint-disable-line
                     } else {
-                      requestSetPreference('requireAdmin', val.requireAdmin);
-                      requestSetPreference('installationPath', val.installationPath);
+                      requestSetPreference('requireAdmin', nextPreference.requireAdmin);
+                      requestSetPreference('installationPath', nextPreference.installationPath);
                     }
                   }}
                   variant="filled"
@@ -429,20 +417,20 @@ const Preferences = ({
                     <MenuItem
                       dense
                       key="default-installation-path-menu-item"
-                      value={{
+                      value={JSON.stringify({
                         installationPath: '~/Applications/Chromeless Apps',
                         requireAdmin: false,
-                      }}
+                      })}
                     >
                       ~/Applications/Chromeless Apps (default)
                     </MenuItem>,
                     <MenuItem
                       dense
                       key="default-sudo-installation-path-menu-item"
-                      value={{
+                      value={JSON.stringify({
                         installationPath: '/Applications/Chromeless Apps',
                         requireAdmin: true,
-                      }}
+                      })}
                     >
                       /Applications/Chromeless Apps
                     </MenuItem>,

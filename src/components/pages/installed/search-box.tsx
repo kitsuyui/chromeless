@@ -1,17 +1,17 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
+
+import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
 
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
+import { alpha } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { alpha } from '@mui/material/styles';
-
-import SearchIcon from '@mui/icons-material/Search';
-import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import connectComponent from '../../../helpers/connect-component';
 
@@ -24,7 +24,8 @@ const styles = (theme) => ({
     borderRadius: 6,
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
-    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : theme.palette.primary.dark,
+    backgroundColor:
+      theme.palette.mode === 'dark' ? theme.palette.background.paper : theme.palette.primary.dark,
     color: alpha(theme.palette.common.white, 0.88),
     flex: 1,
     WebkitAppRegion: 'no-drag',
@@ -74,9 +75,36 @@ const styles = (theme) => ({
   },
 });
 
-class SearchBox extends React.Component {
+type SearchBoxProps = {
+  classes: Record<
+    | 'input'
+    | 'searchBarText'
+    | 'searchButton'
+    | 'searchIcon'
+    | 'toolbarSearchContainer'
+    | 'toolbarSectionSearch',
+    string
+  >;
+  onUpdateQuery: (query: string) => void;
+  query: string;
+};
+
+class SearchBox extends React.Component<SearchBoxProps> {
+  static defaultProps = {
+    query: '',
+  };
+
+  static propTypes = {
+    classes: PropTypes.object.isRequired,
+    onUpdateQuery: PropTypes.func.isRequired,
+    query: PropTypes.string,
+  };
+
+  inputBox: HTMLInputElement | null;
+
   constructor(props) {
     super(props);
+    this.inputBox = null;
 
     this.handleFocusSearch = this.handleFocusSearch.bind(this);
   }
@@ -84,7 +112,7 @@ class SearchBox extends React.Component {
   componentDidMount() {
     window.ipcRenderer.on('focus-search', this.handleFocusSearch);
 
-    this.inputBox.focus();
+    this.inputBox?.focus();
   }
 
   componentWillUnmount() {
@@ -92,16 +120,12 @@ class SearchBox extends React.Component {
   }
 
   handleFocusSearch() {
-    this.inputBox.focus();
-    this.inputBox.select();
+    this.inputBox?.focus();
+    this.inputBox?.select();
   }
 
   render() {
-    const {
-      classes,
-      onUpdateQuery,
-      query,
-    } = this.props;
+    const { classes, onUpdateQuery, query } = this.props;
 
     const clearSearchAction = (
       <>
@@ -122,27 +146,22 @@ class SearchBox extends React.Component {
     return (
       <Paper elevation={1} className={classes.toolbarSearchContainer}>
         <div className={classes.toolbarSectionSearch}>
-          <SearchIcon
-            className={classes.searchIcon}
-            fontSize="small"
-          />
-          <Typography
-            className={classes.searchBarText}
-            color="inherit"
-            variant="subtitle1"
-          >
+          <SearchIcon className={classes.searchIcon} fontSize="small" />
+          <Typography className={classes.searchBarText} color="inherit" variant="subtitle1">
             <input
               className={classes.input}
-              onChange={(e) => onUpdateQuery(e.target.value)}
-              onInput={(e) => onUpdateQuery(e.target.value)}
+              onChange={(e) => onUpdateQuery(e.currentTarget.value)}
+              onInput={(e) => onUpdateQuery(e.currentTarget.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
-                  e.target.blur();
+                  e.currentTarget.blur();
                   onUpdateQuery('');
                 }
               }}
               placeholder="Search installed apps and browser instances..."
-              ref={(inputBox) => { this.inputBox = inputBox; }}
+              ref={(inputBox) => {
+                this.inputBox = inputBox;
+              }}
               value={query}
             />
           </Typography>
@@ -153,16 +172,6 @@ class SearchBox extends React.Component {
   }
 }
 
-SearchBox.defaultProps = {
-  query: '',
-};
-
-SearchBox.propTypes = {
-  classes: PropTypes.object.isRequired,
-  onUpdateQuery: PropTypes.func.isRequired,
-  query: PropTypes.string,
-};
-
 const mapStateToProps = (state) => ({
   query: state.installed.query,
 });
@@ -171,9 +180,4 @@ const actionCreators = {
   updateQuery,
 };
 
-export default connectComponent(
-  SearchBox,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(SearchBox, mapStateToProps, actionCreators, styles);

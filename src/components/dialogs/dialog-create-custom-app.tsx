@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react';
-import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -12,18 +10,17 @@ import DialogContent from '@mui/material/DialogContent';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-
+import PropTypes from 'prop-types';
+import React from 'react';
+import defaultIcon from '../../assets/default-icon.png';
 import connectComponent from '../../helpers/connect-component';
 import isUrl from '../../helpers/is-url';
-
 import {
   close,
   create,
   getIconFromInternet,
   updateForm,
 } from '../../state/dialog-create-custom-app/actions';
-
-import defaultIcon from '../../assets/default-icon.png';
 
 import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
 

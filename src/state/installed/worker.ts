@@ -8,8 +8,8 @@ async function filterApps(apps, sortedAppIds, query) {
   return sortedAppIds.filter((id) => {
     const app = apps[id];
     return (
-      app.name.toLowerCase().includes(processedQuery)
-      || (app.url && app.url.toLowerCase().includes(processedQuery))
+      app.name.toLowerCase().includes(processedQuery) ||
+      (app.url && app.url.toLowerCase().includes(processedQuery))
     );
   });
 }

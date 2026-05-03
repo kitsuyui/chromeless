@@ -1,13 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
 
+import CloseIcon from '@mui/icons-material/Close';
 import MuiDialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import connectComponent from '../../helpers/connect-component';
 
@@ -34,15 +34,14 @@ const styles = (theme) => ({
   },
 });
 
-const EnhancedDialogTitle = ({
-  children,
-  classes,
-  disableTypography,
-  onClose,
-}) => (
-  <MuiDialogTitle disableTypography className={classes.root}>
-    {disableTypography ? children : (
-      <Typography variant="subtitle1" className={classes.subtitle1}>{children}</Typography>
+const EnhancedDialogTitle = ({ children, classes, disableTypography, onClose }) => (
+  <MuiDialogTitle className={classes.root}>
+    {disableTypography ? (
+      children
+    ) : (
+      <Typography variant="subtitle1" className={classes.subtitle1}>
+        {children}
+      </Typography>
     )}
     {onClose ? (
       <IconButton size="small" aria-label="Close" className={classes.closeButton} onClick={onClose}>
@@ -64,9 +63,4 @@ EnhancedDialogTitle.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-export default connectComponent(
-  EnhancedDialogTitle,
-  null,
-  null,
-  styles,
-);
+export default connectComponent(EnhancedDialogTitle, null, null, styles);

@@ -1,5 +1,13 @@
 /// <reference types="vite/client" />
 
+import type {
+  BrowserWindow,
+  MessageBoxOptions,
+  MessageBoxReturnValue,
+  OpenDialogOptions,
+  OpenDialogReturnValue,
+} from 'electron';
+
 declare module '*.css';
 
 declare module '*.png' {
@@ -13,7 +21,7 @@ type IpcRendererLike = {
   on: (...args: unknown[]) => unknown;
   once: (...args: unknown[]) => unknown;
   send: (...args: unknown[]) => unknown;
-  sendSync: (...args: unknown[]) => unknown;
+  sendSync: <T = unknown>(...args: unknown[]) => T;
   removeAllListeners: (...args: unknown[]) => unknown;
   removeListener?: (...args: unknown[]) => unknown;
 };
@@ -23,11 +31,15 @@ type RemoteLike = {
     getVersion: () => string;
   };
   dialog: {
-    showMessageBox: (...args: unknown[]) => Promise<unknown>;
-    showOpenDialog: (...args: unknown[]) => Promise<unknown>;
+    showMessageBox: (
+      ...args: [BrowserWindow, MessageBoxOptions] | [MessageBoxOptions]
+    ) => Promise<MessageBoxReturnValue>;
+    showOpenDialog: (
+      ...args: [BrowserWindow, OpenDialogOptions] | [OpenDialogOptions]
+    ) => Promise<OpenDialogReturnValue>;
   };
-  getCurrentWindow: () => unknown;
-  getGlobal: (key: string) => unknown;
+  getCurrentWindow: () => BrowserWindow;
+  getGlobal: <T = unknown>(key: string) => T;
   Menu: {
     buildFromTemplate: (...args: unknown[]) => {
       popup: (...args: unknown[]) => unknown;
@@ -40,14 +52,15 @@ type RemoteLike = {
 };
 
 declare global {
+  namespace NodeJS {
+    interface Process {
+      mas?: boolean;
+    }
+  }
+
   interface Window {
     ipcRenderer: IpcRendererLike;
     mode?: string;
-    process: {
-      platform: string;
-    };
     remote: RemoteLike;
   }
 }
-
-export {};

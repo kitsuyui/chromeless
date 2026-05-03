@@ -1,19 +1,12 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
 import React from 'react';
-import PropTypes from 'prop-types';
-
-import connectComponent from '../helpers/connect-component';
+import { ROUTE_BROWSERS, ROUTE_INSTALLED, ROUTE_PREFERENCES } from '../constants/routes';
 import NavigationContext from '../contexts/navigation';
-
-import EnhancedBottomNavigation from './root/enhanced-bottom-navigation';
-import SnackbarTrigger from './root/snackbar-trigger';
-
-import Installed from './pages/installed';
-import Preferences from './pages/preferences';
-import Browsers from './pages/browsers';
-
+import connectComponent from '../helpers/connect-component';
+import { requestCheckForUpdates, requestGetInstalledApps } from '../senders';
 import DialogAbout from './dialogs/dialog-about';
 import DialogChooseEngine from './dialogs/dialog-choose-engine';
 import DialogCreateCustomApp from './dialogs/dialog-create-custom-app';
@@ -21,11 +14,19 @@ import DialogEditApp from './dialogs/dialog-edit-app';
 import DialogOpenSourceNotices from './dialogs/dialog-open-source-notices';
 import DialogSetInstallationPath from './dialogs/dialog-set-installation-path';
 import DialogSetPreferredEngine from './dialogs/dialog-set-preferred-engine';
+import Browsers from './pages/browsers';
+import Installed from './pages/installed';
+import Preferences from './pages/preferences';
+import EnhancedBottomNavigation from './root/enhanced-bottom-navigation';
+import SnackbarTrigger from './root/snackbar-trigger';
 
-import { ROUTE_PREFERENCES, ROUTE_INSTALLED, ROUTE_BROWSERS } from '../constants/routes';
-import { requestGetInstalledApps, requestCheckForUpdates } from '../senders';
+type AppProps = {
+  classes: Record<'content' | 'root', string>;
+};
 
-import { fetchLatestTemplateVersionAsync } from '../state/general/actions';
+type NavigationContextValue = {
+  route: string;
+};
 
 const styles = (theme) => ({
   root: {
@@ -41,35 +42,19 @@ const styles = (theme) => ({
     overflow: 'hidden',
   },
   notistackContainerRoot: {
-    // substract 22px of FakeTitleBar
-    marginTop: window.process.platform === 'darwin' && window.mode !== 'menubar' ? 64 : 42,
+    // subtract 22px of FakeTitleBar
+    marginTop: window.mode !== 'menubar' ? 64 : 42,
   },
 });
 
-class App extends React.Component {
+class App extends React.Component<AppProps> {
   static contextType = NavigationContext;
 
-  constructor(props) {
-    super(props);
-    this.updaterTimer = null;
-  }
+  declare context: NavigationContextValue;
 
   componentDidMount() {
     requestCheckForUpdates(true); // isSilent = true
     requestGetInstalledApps();
-
-    const { onFetchLatestTemplateVersionAsync } = this.props;
-    onFetchLatestTemplateVersionAsync();
-    this.updaterTimer = setTimeout(
-      () => {
-        onFetchLatestTemplateVersionAsync();
-      },
-      15 * 60 * 1000,
-    ); // recheck every 15 minutes
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this.updaterTimer);
   }
 
   render() {
@@ -109,13 +94,4 @@ class App extends React.Component {
   }
 }
 
-App.propTypes = {
-  classes: PropTypes.object.isRequired,
-  onFetchLatestTemplateVersionAsync: PropTypes.func.isRequired,
-};
-
-const actionCreators = {
-  fetchLatestTemplateVersionAsync,
-};
-
-export default connectComponent(App, null, actionCreators, styles);
+export default connectComponent(App, null, null, styles);

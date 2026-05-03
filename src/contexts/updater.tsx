@@ -1,13 +1,19 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
 import PropTypes from 'prop-types';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 const UpdaterContext = createContext(null);
 
+type UpdaterState = {
+  info?: unknown;
+  status?: string;
+};
+
 export const UpdaterProvider = ({ children }) => {
-  const [updater, setUpdater] = useState({});
+  const [updater, setUpdater] = useState<UpdaterState>({});
 
   useEffect(() => {
     const handleUpdateUpdater = (e, updaterObj) => setUpdater(updaterObj || {});
@@ -29,11 +35,7 @@ export const UpdaterProvider = ({ children }) => {
     [updater],
   );
 
-  return (
-    <UpdaterContext.Provider value={value}>
-      {children}
-    </UpdaterContext.Provider>
-  );
+  return <UpdaterContext.Provider value={value}>{children}</UpdaterContext.Provider>;
 };
 
 UpdaterProvider.propTypes = {

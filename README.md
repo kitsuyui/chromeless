@@ -4,14 +4,14 @@
 |---|
 |[![macOS](https://github.com/kitsuyui/chromeless/workflows/macOS/badge.svg)](https://github.com/kitsuyui/chromeless/actions?query=workflow:%22macOS%22)|
 
-## Deprecation
-**Deprecated:** Chromeless is deprecated legacy software and will no longer receive feature updates. Nevertheless, the app will continue working and receiving maintainance updates.
+## Fork
+This project is a maintained fork of [webcatalog/chromeless](https://github.com/webcatalog/chromeless), which is no longer actively developed upstream.
 
 ## Introduction
-**Chromeless** is a free Mac app which lets you create Chromium-based, Firefox-based or WebKit-based apps (also known as site-specific browsers) from any websites.
+**Chromeless** is a free macOS app which lets you create Chromium-based or Firefox-based apps (also known as site-specific browsers) from any websites.
 
 ### How It Works
-Chromeless is a free and open-source app for Mac that lets you create a site-specific browser (also known as Chromium-based app, chromeless app, etc) out of any website or web application, effectively turning your favorite web apps into self-contained, distraction-free desktop apps, all powered by your daily web browsers.
+Chromeless is a free and open-source app for macOS that lets you create a site-specific browser (also known as Chromium-based app, chromeless app, etc) out of any website or web application, effectively turning your favorite web apps into self-contained, distraction-free desktop apps, all powered by your daily web browsers.
 
 Supported Browser Engines:
 - Google Chrome
@@ -23,7 +23,6 @@ Supported Browser Engines:
 - Cốc Cốc
 - Yandex Browser
 - Mozilla Firefox
-- WebKit
 
 ### Browser Instances
 Chromeless also lets you create traditional browser instances (also known as tabbed-style apps) that behave just like normal browsers but with their own cookies and storage.
@@ -41,9 +40,7 @@ On the other hand, **the source code is freely available** for use, modification
 ---
 
 ## Development
-This repository only contains the source code of the Chromeless app. If you'd like to contribute to the code that powers WebKit-based app, check out <https://github.com/webcatalog/webkit-wrapper>.
-
-Then, run:
+Run:
 ```bash
 # clone the project:
 git clone https://github.com/kitsuyui/chromeless.git

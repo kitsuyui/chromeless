@@ -1,8 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
 import PropTypes from 'prop-types';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { getShouldUseDarkColors } from '../senders';
 
@@ -30,11 +31,7 @@ export const AppearanceProvider = ({ children }) => {
     [shouldUseDarkColors],
   );
 
-  return (
-    <AppearanceContext.Provider value={value}>
-      {children}
-    </AppearanceContext.Provider>
-  );
+  return <AppearanceContext.Provider value={value}>{children}</AppearanceContext.Provider>;
 };
 
 AppearanceProvider.propTypes = {

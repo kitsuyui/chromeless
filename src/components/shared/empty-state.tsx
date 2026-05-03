@@ -1,11 +1,11 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
 
 import Typography from '@mui/material/Typography';
 import { withStyles } from '@mui/styles';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const styles = (theme) => ({
   root: {
@@ -26,12 +26,7 @@ const styles = (theme) => ({
 });
 
 const EmptyState = (props) => {
-  const {
-    children,
-    classes,
-    icon,
-    title,
-  } = props;
+  const { children, classes, icon, title } = props;
 
   const Icon = icon;
 
@@ -40,23 +35,17 @@ const EmptyState = (props) => {
       <Icon className={classes.icon} color="action" />
       <br />
       {title && (
-        <Typography
-          className={classes.title}
-          variant="h6"
-          color="inherit"
-        >
+        <Typography className={classes.title} variant="h6" color="inherit">
           {title}
         </Typography>
       )}
       {typeof children === 'string' ? (
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="inherit"
-        >
+        <Typography variant="subtitle1" align="center" color="inherit">
           {children}
         </Typography>
-      ) : children}
+      ) : (
+        children
+      )}
     </div>
   );
 };
@@ -77,4 +66,6 @@ EmptyState.propTypes = {
   title: PropTypes.string,
 };
 
-export default withStyles(styles, { name: 'EmptyState' })(EmptyState);
+export default withStyles(styles as Parameters<typeof withStyles>[0], { name: 'EmptyState' })(
+  EmptyState,
+);

@@ -1,13 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import PropTypes from 'prop-types';
-import React from 'react';
 
+import AddIcon from '@mui/icons-material/Add';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import AddIcon from '@mui/icons-material/Add';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import connectComponent from '../../../helpers/connect-component';
 
@@ -55,7 +55,7 @@ const CreateCustomAppCard = ({ classes, onOpenDialogCreateCustomApp }) => (
       className={classes.card}
       elevation={0}
       role="link"
-      tabIndex="0"
+      tabIndex={0}
       onClick={() => onOpenDialogCreateCustomApp({ urlDisabled: true })}
     >
       <AddIcon className={classes.icon} />
@@ -75,9 +75,4 @@ const actionCreators = {
   openDialogCreateCustomApp,
 };
 
-export default connectComponent(
-  CreateCustomAppCard,
-  null,
-  actionCreators,
-  styles,
-);
+export default connectComponent(CreateCustomAppCard, null, actionCreators, styles);

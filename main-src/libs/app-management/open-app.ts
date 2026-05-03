@@ -7,10 +7,11 @@ const path = require('path');
 const { getPreference } = require('../preferences');
 
 const openApp = (id, name) => {
-  if (process.platform === 'darwin') {
-    const appPath = path.join(getPreference('installationPath').replace('~', app.getPath('home')), `${name}.app`);
-    shell.openPath(appPath);
-  }
+  const appPath = path.join(
+    getPreference('installationPath').replace('~', app.getPath('home')),
+    `${name}.app`,
+  );
+  shell.openPath(appPath);
 };
 
 module.exports = openApp;

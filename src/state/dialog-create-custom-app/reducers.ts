@@ -12,9 +12,12 @@ import {
 
 const open = (state = false, action) => {
   switch (action.type) {
-    case DIALOG_CREATE_CUSTOM_APP_CLOSE: return false;
-    case DIALOG_CREATE_CUSTOM_APP_OPEN: return true;
-    default: return state;
+    case DIALOG_CREATE_CUSTOM_APP_CLOSE:
+      return false;
+    case DIALOG_CREATE_CUSTOM_APP_OPEN:
+      return true;
+    default:
+      return state;
   }
 };
 
@@ -26,20 +29,25 @@ const formInitialState = {
 };
 const form = (state = formInitialState, action) => {
   switch (action.type) {
-    case DIALOG_CREATE_CUSTOM_APP_OPEN: return { ...formInitialState, ...action.form };
+    case DIALOG_CREATE_CUSTOM_APP_OPEN:
+      return { ...formInitialState, ...action.form };
     case DIALOG_CREATE_CUSTOM_APP_FORM_UPDATE: {
       const { changes } = action;
       return { ...state, ...changes };
     }
-    default: return state;
+    default:
+      return state;
   }
 };
 
 const downloadingIcon = (state = false, action) => {
   switch (action.type) {
-    case DIALOG_CREATE_CUSTOM_APP_OPEN: return false;
-    case DIALOG_CREATE_CUSTOM_APP_DOWNLOADING_ICON_UPDATE: return action.downloadingIcon;
-    default: return state;
+    case DIALOG_CREATE_CUSTOM_APP_OPEN:
+      return false;
+    case DIALOG_CREATE_CUSTOM_APP_DOWNLOADING_ICON_UPDATE:
+      return action.downloadingIcon;
+    default:
+      return state;
   }
 };
 

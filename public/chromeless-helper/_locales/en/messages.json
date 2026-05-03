@@ -5,6 +5,6 @@
   },
   "extDesc": {
     "message": "Browser extension to control the behaviors of apps created with Chromeless app (https://chromeless.app).",
-    "description":"The description of the application, displayed in the web store."
+    "description": "The description of the application, displayed in the web store."
   }
 }

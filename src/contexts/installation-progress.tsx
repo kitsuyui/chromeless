@@ -1,12 +1,18 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
 import PropTypes from 'prop-types';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 const InstallationProgressContext = createContext(null);
 
-const normalizeProgress = (progress = {}) => ({
+type InstallationProgress = {
+  desc?: string | null;
+  percent?: number;
+};
+
+const normalizeProgress = (progress: InstallationProgress = {}) => ({
   desc: progress.desc || null,
   percent: progress.percent || 0,
 });
@@ -23,7 +29,10 @@ export const InstallationProgressProvider = ({ children }) => {
 
     return () => {
       if (window.ipcRenderer.removeListener) {
-        window.ipcRenderer.removeListener('update-installation-progress', handleInstallationProgress);
+        window.ipcRenderer.removeListener(
+          'update-installation-progress',
+          handleInstallationProgress,
+        );
       }
     };
   }, []);

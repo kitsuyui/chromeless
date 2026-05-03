@@ -7,14 +7,7 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "permissions": [
-    "sessions",
-    "webRequest",
-    "webRequestBlocking",
-    "tabs",
-    "<all_urls>",
-    "*://*/"
-  ],
+  "permissions": ["sessions", "webRequest", "webRequestBlocking", "tabs", "<all_urls>", "*://*/"],
   "icons": {
     "16": "icon-16.png",
     "24": "icon-24.png",

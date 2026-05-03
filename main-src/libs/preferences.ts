@@ -11,12 +11,7 @@ const sendToAllWindows = require('./send-to-all-windows');
 // scope
 const v = '2018';
 
-const getDefaultInstallationPath = () => {
-  if (process.platform === 'darwin') {
-    return path.join('~', 'Applications', 'Chromeless Apps');
-  }
-  throw Error('Unsupported platform');
-};
+const getDefaultInstallationPath = () => path.join('~', 'Applications', 'Chromeless Apps');
 
 const defaultPreferences = {
   allowPrerelease: Boolean(semver.prerelease(app.getVersion())),
@@ -67,8 +62,8 @@ const getPreference = (name) => {
   // so catch with default pref as fallback
   // https://github.com/nathanbuchar/electron-settings/issues/111
   try {
-    // ensure compatiblity with old version
-    if (process.platform === 'darwin' && (name === 'installationPath' || name === 'requireAdmin')) {
+    // ensure compatibility with old version
+    if (name === 'installationPath' || name === 'requireAdmin') {
       // old pref, home or root
       if (settings.getSync('preferences.2018.installLocation') === 'root') {
         settings.unsetSync('preferences.2018.installLocation');

@@ -1,13 +1,30 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
 
 import Menu from '@mui/material/Menu';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-class StatedMenu extends React.Component {
-  constructor(props) {
+type StatedMenuProps = {
+  buttonElement: React.ReactElement;
+  children: React.ReactNode;
+  id: string;
+};
+
+type StatedMenuState = {
+  anchorEl?: HTMLElement;
+  open: boolean;
+};
+
+class StatedMenu extends React.Component<StatedMenuProps, StatedMenuState> {
+  static propTypes = {
+    buttonElement: PropTypes.element.isRequired,
+    children: PropTypes.node.isRequired,
+    id: PropTypes.string.isRequired,
+  };
+
+  constructor(props: StatedMenuProps) {
     super(props);
 
     this.state = {
@@ -19,7 +36,7 @@ class StatedMenu extends React.Component {
     this.handleRequestClose = this.handleRequestClose.bind(this);
   }
 
-  handleClick(event) {
+  handleClick(event: React.MouseEvent<HTMLElement>) {
     event.stopPropagation();
     this.setState({ open: true, anchorEl: event.currentTarget });
   }
@@ -29,11 +46,7 @@ class StatedMenu extends React.Component {
   }
 
   render() {
-    const {
-      buttonElement,
-      children,
-      id,
-    } = this.props;
+    const { buttonElement, children, id } = this.props;
 
     const { anchorEl, open } = this.state;
 
@@ -51,23 +64,24 @@ class StatedMenu extends React.Component {
           onClose={this.handleRequestClose}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          {React.Children.map(children, (child) => child && React.cloneElement(child, {
-            onClick: (e) => {
-              e.stopPropagation();
-              if (child.props.onClick) child.props.onClick();
-              this.handleRequestClose();
-            },
-          }))}
+          {React.Children.map(
+            children,
+            (child) =>
+              React.isValidElement<{ onClick?: (event: React.MouseEvent<HTMLElement>) => void }>(
+                child,
+              ) &&
+              React.cloneElement(child, {
+                onClick: (e: React.MouseEvent<HTMLElement>) => {
+                  e.stopPropagation();
+                  child.props.onClick?.(e);
+                  this.handleRequestClose();
+                },
+              }),
+          )}
         </Menu>
       </>
     );
   }
 }
-
-StatedMenu.propTypes = {
-  buttonElement: PropTypes.element.isRequired,
-  children: PropTypes.node.isRequired,
-  id: PropTypes.string.isRequired,
-};
 
 export default StatedMenu;

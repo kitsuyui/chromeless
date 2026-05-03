@@ -1,28 +1,22 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
-
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Grid from '@mui/material/Grid';
 
 import HelpIcon from '@mui/icons-material/Help';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import connectComponent from '../../helpers/connect-component';
 
-import {
-  close,
-  save,
-  updateForm,
-} from '../../state/dialog-set-preferred-engine/actions';
-
-import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
+import { close, save, updateForm } from '../../state/dialog-set-preferred-engine/actions';
 import EngineList from '../shared/engine-list';
+import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
 import HelpTooltip from '../shared/help-tooltip';
 
 const styles = (theme) => ({
@@ -44,38 +38,24 @@ const styles = (theme) => ({
 });
 
 const DialogSetPreferredEngine = (props) => {
-  const {
-    classes,
-    engine,
-    onClose,
-    onSave,
-    onUpdateForm,
-    open,
-  } = props;
+  const { classes, engine, onClose, onSave, onUpdateForm, open } = props;
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="sm"
-      onClose={onClose}
-      open={open}
-    >
+    <Dialog fullWidth maxWidth="sm" onClose={onClose} open={open}>
       <EnhancedDialogTitle onClose={onClose} disableTypography>
         <Grid container direction="row" alignItems="center" spacing={1}>
           <Grid item>
-            <Typography variant="subtitle1">
-              Choose Preferred Browser Engine
-            </Typography>
+            <Typography variant="subtitle1">Choose Preferred Browser Engine</Typography>
           </Grid>
           <Grid item>
             <HelpTooltip
-              title={(
+              title={
                 <Typography variant="body2" color="textPrimary">
-                  Chromeless lets you pick your preferrred browser engine to power your apps.
-                  After you install an app,
-                  you will have to uninstall and then reinstall the app to change its engine.
+                  Chromeless lets you pick your preferred browser engine to power your apps. After
+                  you install an app, you will have to uninstall and then reinstall the app to
+                  change its engine.
                 </Typography>
-              )}
+              }
             >
               <HelpIcon color="disabled" />
             </HelpTooltip>
@@ -89,15 +69,8 @@ const DialogSetPreferredEngine = (props) => {
         />
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
-        <Button
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-        <Button
-          color="primary"
-          onClick={onSave}
-        >
+        <Button onClick={onClose}>Cancel</Button>
+        <Button color="primary" onClick={onSave}>
           Save
         </Button>
       </DialogActions>
@@ -117,9 +90,7 @@ DialogSetPreferredEngine.propTypes = {
 const mapStateToProps = (state) => {
   const {
     open,
-    form: {
-      engine,
-    },
+    form: { engine },
   } = state.dialogSetPreferredEngine;
 
   return {
@@ -134,9 +105,4 @@ const actionCreators = {
   updateForm,
 };
 
-export default connectComponent(
-  DialogSetPreferredEngine,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(DialogSetPreferredEngine, mapStateToProps, actionCreators, styles);

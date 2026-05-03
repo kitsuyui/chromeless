@@ -1,25 +1,24 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React, { useEffect, useState, useRef } from 'react';
-
-import PropTypes from 'prop-types';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
+import PropTypes from 'prop-types';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Grid } from 'react-window';
 
 import connectComponent from '../../../helpers/connect-component';
-
+import { getBrowserInstanceAppIds } from '../../../state/app-management/selectors';
+import { updateScrollOffset } from '../../../state/browsers/actions';
 import AppCard from '../../shared/app-card';
-
+import CreateCustomAppCard from './create-custom-app-card';
 import DefinedAppBar from './defined-app-bar';
 import Toolbar from './toolbar';
-import CreateCustomAppCard from './create-custom-app-card';
 
-import { updateScrollOffset } from '../../../state/browsers/actions';
-import { getBrowserInstanceAppIds } from '../../../state/app-management/selectors';
+const UntypedGrid = Grid as unknown as React.ComponentType<Record<string, unknown>>;
 
 const styles = (theme) => ({
   root: {
@@ -54,13 +53,7 @@ const styles = (theme) => ({
   },
 });
 
-const Installed = ({
-  appIds,
-  classes,
-  onUpdateScrollOffset,
-  scanning,
-  scrollOffset,
-}) => {
+const Installed = ({ appIds, classes, onUpdateScrollOffset, scanning, scrollOffset }) => {
   const [innerHeight, updateInnerHeight] = useState(window.innerHeight);
   const [innerWidth, updateInnerWidth] = useState(window.innerWidth);
   const gridRef = useRef(null);
@@ -76,11 +69,14 @@ const Installed = ({
     };
   }, []);
 
-  useEffect(() => () => {
-    if (gridRef.current && gridRef.current.element) {
-      onUpdateScrollOffset(gridRef.current.element.scrollTop);
-    }
-  }, [gridRef, onUpdateScrollOffset]);
+  useEffect(
+    () => () => {
+      if (gridRef.current && gridRef.current.element) {
+        onUpdateScrollOffset(gridRef.current.element.scrollTop);
+      }
+    },
+    [gridRef, onUpdateScrollOffset],
+  );
 
   useEffect(() => {
     if (gridRef.current && gridRef.current.element) {
@@ -99,18 +95,13 @@ const Installed = ({
 
     const itemCount = appIds.length + 1; // 1 for the "create" card
     const rowHeight = 158 + 16;
-    const innerWidthMinurScrollbar = window.process.platform === 'darwin' ? innerWidth - 10 : innerWidth - 20;
+    const innerWidthMinurScrollbar = innerWidth - 10;
     const columnCount = Math.floor(innerWidthMinurScrollbar / 184);
     const rowCount = Math.ceil(itemCount / columnCount);
     const columnWidth = Math.floor(innerWidthMinurScrollbar / columnCount);
     // total window height - (searchbox: 40, toolbar: 36, bottom nav: 40)
     const scrollHeight = innerHeight - 116;
-    const Cell = ({
-      ariaAttributes,
-      columnIndex,
-      rowIndex,
-      style,
-    }) => {
+    const Cell = ({ ariaAttributes, columnIndex, rowIndex, style }) => {
       const index = rowIndex * columnCount + columnIndex;
 
       if (index >= itemCount) return <div {...ariaAttributes} style={style} />;
@@ -126,10 +117,7 @@ const Installed = ({
       const appId = appIds[index - 1];
       return (
         <div {...ariaAttributes} className={classes.cardContainer} style={style}>
-          <AppCard
-            key={appId}
-            id={appId}
-          />
+          <AppCard key={appId} id={appId} />
         </div>
       );
     };
@@ -141,7 +129,7 @@ const Installed = ({
     };
 
     return (
-      <Grid
+      <UntypedGrid
         cellComponent={Cell}
         cellProps={{}}
         columnCount={columnCount}
@@ -186,9 +174,4 @@ const actionCreators = {
   updateScrollOffset,
 };
 
-export default connectComponent(
-  Installed,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(Installed, mapStateToProps, actionCreators, styles);

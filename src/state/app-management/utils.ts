@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import semver from 'semver';
-import { INSTALLING, INSTALLED } from '../../constants/app-statuses';
 import packageJson from '../../../package.json';
+import { INSTALLED, INSTALLING } from '../../constants/app-statuses';
 
 const { scriptVersion } = packageJson;
 
 export const isInstalledApp = (id, state) => {
   const { apps } = state.appManagement;
-  return (apps[id] && apps[id].status === INSTALLED);
+  return apps[id] && apps[id].status === INSTALLED;
 };
 
 export const isOutdatedApp = (id, state) => {
@@ -24,68 +24,53 @@ export const isOutdatedApp = (id, state) => {
 
   const v = appDetails.version;
 
-  // app is WebKit based
-  if (appDetails.engine === 'webkit') {
-    const latestV = state.general.latestWebkitWrapperVersion;
-    if (!v) return true;
-    return semver.lt(v, latestV);
-  }
-
-  // app is Chromium/Firefox-based
-  // check if app is installed with the latest version of forked-script-v2.js
-  if (window.process.platform === 'darwin') {
-    return semver.lt(v, scriptVersion);
-  }
-  // check if app is installed with the latest version of forked-script-v1.js
-  return semver.lt(v, '1.8.0');
+  return semver.lt(v, scriptVersion);
 };
 
 export const isCancelableApp = (id, state) => {
   const { apps } = state.appManagement;
-  return (apps[id] && apps[id].cancelable);
+  return apps[id] && apps[id].cancelable;
 };
 
 export const getOutdatedAppsAsList = (state) => {
   const { apps, sortedAppIds } = state.appManagement;
-  return sortedAppIds.map((id) => apps[id])
-    .filter((app) => isOutdatedApp(app.id, state));
+  return sortedAppIds.map((id) => apps[id]).filter((app) => isOutdatedApp(app.id, state));
 };
 
 export const getCancelableAppsAsList = (state) => {
   const { apps, sortedAppIds } = state.appManagement;
-  return sortedAppIds.map((id) => apps[id])
-    .filter((app) => isCancelableApp(app.id, state));
+  return sortedAppIds.map((id) => apps[id]).filter((app) => isCancelableApp(app.id, state));
 };
 
 export const getInstallingAppsAsList = (state) => {
   const { apps, sortedAppIds } = state.appManagement;
-  return sortedAppIds.map((id) => apps[id])
-    .filter((app) => app.status !== INSTALLED);
+  return sortedAppIds.map((id) => apps[id]).filter((app) => app.status !== INSTALLED);
 };
 
 export const getInstalledAppCount = (state) => {
   const { apps, sortedAppIds } = state.appManagement;
-  return sortedAppIds
-    .filter((id) => {
-      const app = apps[id];
-      return app.status === INSTALLED || (app.status === INSTALLING && app.version);
-    })
-    .length;
+  return sortedAppIds.filter((id) => {
+    const app = apps[id];
+    return app.status === INSTALLED || (app.status === INSTALLING && app.version);
+  }).length;
 };
 
 export const getAppBadgeCount = (state) => {
   const { apps } = state.appManagement;
-  return Object.values(apps)
-    .filter((app) => isOutdatedApp(app.id, state) || app.status !== INSTALLED).length;
+  return (Object.values(apps) as Array<{ id: string; status: string }>).filter(
+    (app) => isOutdatedApp(app.id, state) || app.status !== INSTALLED,
+  ).length;
 };
 
 export const isNameExisted = (name, state) => {
   const { apps } = state.appManagement;
-  return Boolean(Object.keys(apps).find((id) => {
-    if (apps[id].name === name) {
-      return true;
-    }
+  return Boolean(
+    Object.keys(apps).find((id) => {
+      if (apps[id].name === name) {
+        return true;
+      }
 
-    return false;
-  }));
+      return false;
+    }),
+  );
 };

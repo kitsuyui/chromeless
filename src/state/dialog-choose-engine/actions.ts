@@ -6,13 +6,9 @@ import {
   DIALOG_CHOOSE_ENGINE_FORM_UPDATE,
   DIALOG_CHOOSE_ENGINE_OPEN,
 } from '../../constants/actions';
-
-import { installApp } from '../app-management/actions';
-import {
-  isNameExisted,
-} from '../app-management/utils';
-
 import { requestShowMessageBox } from '../../senders';
+import { installApp } from '../app-management/actions';
+import { isNameExisted } from '../app-management/utils';
 
 export const close = () => ({
   type: DIALOG_CHOOSE_ENGINE_CLOSE,
@@ -28,9 +24,7 @@ export const create = () => (dispatch, getState) => {
 
   const { form } = state.dialogChooseEngine;
 
-  const {
-    engine, id, icon, name, url, opts,
-  } = form;
+  const { engine, id, icon, name, url, opts } = form;
 
   if (isNameExisted(name, state)) {
     requestShowMessageBox(`An app named ${name} already exists.`, 'error');
@@ -43,29 +37,33 @@ export const create = () => (dispatch, getState) => {
   return null;
 };
 
-export const open = (id, name, url, icon, opts = {}) => (dispatch, getState) => {
-  const state = getState();
+export const open =
+  (id, name, url, icon, opts = {}) =>
+  (dispatch, getState) => {
+    const state = getState();
 
-  const { preferredEngine } = state.preferences;
+    const { preferredEngine } = state.preferences;
 
-  dispatch(updateForm({
-    engine: preferredEngine,
-    icon,
-    id,
-    name,
-    url,
-    opts,
-  }));
+    dispatch(
+      updateForm({
+        engine: preferredEngine,
+        icon,
+        id,
+        name,
+        url,
+        opts,
+      }),
+    );
 
-  return dispatch({
-    type: DIALOG_CHOOSE_ENGINE_OPEN,
-    form: {
-      engine: preferredEngine,
-      icon,
-      id,
-      name,
-      url,
-      opts,
-    },
-  });
-};
+    return dispatch({
+      type: DIALOG_CHOOSE_ENGINE_OPEN,
+      form: {
+        engine: preferredEngine,
+        icon,
+        id,
+        name,
+        url,
+        opts,
+      },
+    });
+  };

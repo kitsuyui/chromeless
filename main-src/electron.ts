@@ -82,9 +82,7 @@ if (!gotTheLock) {
   });
 
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-      app.quit();
-    }
+    // Keep the menu-bar app alive when all windows are closed.
   });
 
   app.on('activate', () => {

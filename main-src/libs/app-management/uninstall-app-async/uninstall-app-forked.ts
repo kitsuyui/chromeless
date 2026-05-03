@@ -62,7 +62,7 @@ const sudoAsync = (prompt) =>
       if (error) {
         return reject(error);
       }
-      return resolve(stdout, stderr);
+      return resolve(stdout);
     });
   });
 
@@ -95,10 +95,7 @@ const execAsync = (cmd) =>
     });
   });
 
-const dotAppPath =
-  process.platform === 'darwin'
-    ? path.join(installationPath.replace('~', homePath), `${name}.app`)
-    : path.join(installationPath.replace('~', homePath), `${name}`);
+const dotAppPath = path.join(installationPath.replace('~', homePath), `${name}.app`);
 
 const relatedPaths = getRelatedPaths({
   appObj: {
@@ -128,7 +125,7 @@ Promise.resolve()
       const installationPathOwner = await execAsync(
         "ls -ld '/Applications/Chromeless Apps' | awk '{print $3}'",
       );
-      if (installationPathOwner.trim() === 'root') {
+      if (String(installationPathOwner).trim() === 'root') {
         // https://askubuntu.com/questions/6723/change-folder-permissions-and-ownership
         // https://stackoverflow.com/questions/23714097/sudo-chown-command-not-found
         await sudoAsync(`/usr/sbin/chown -R ${username} '/Applications/Chromeless Apps'`);
