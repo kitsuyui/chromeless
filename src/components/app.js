@@ -114,12 +114,8 @@ App.propTypes = {
   onFetchLatestTemplateVersionAsync: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  isFullScreen: state.general.isFullScreen,
-});
-
 const actionCreators = {
   fetchLatestTemplateVersionAsync,
 };
 
-export default connectComponent(App, mapStateToProps, actionCreators, styles);
+export default connectComponent(App, null, actionCreators, styles);

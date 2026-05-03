@@ -14,6 +14,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { requestShowAppMenu } from '../../senders';
 
 import connectComponent from '../../helpers/connect-component';
+import { useAppearance } from '../../contexts/appearance';
 
 const LEFT_RIGHT_WIDTH = window.process.platform !== 'darwin' ? 160 : 100;
 const TOOLBAR_HEIGHT = 32;
@@ -98,7 +99,9 @@ const styles = (theme) => ({
   },
 });
 
-const EnhancedAppBar = ({ center, classes, shouldUseDarkColors }) => {
+const EnhancedAppBar = ({ center, classes }) => {
+  const { shouldUseDarkColors } = useAppearance();
+
   const onDoubleClick = (e) => {
     // feature: double click on title bar to expand #656
     // https://github.com/webcatalog/webcatalog-app/issues/656
@@ -155,11 +158,6 @@ EnhancedAppBar.defaultProps = {
 EnhancedAppBar.propTypes = {
   center: PropTypes.node,
   classes: PropTypes.object.isRequired,
-  shouldUseDarkColors: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  shouldUseDarkColors: state.general.shouldUseDarkColors,
-});
-
-export default connectComponent(EnhancedAppBar, mapStateToProps, null, styles);
+export default connectComponent(EnhancedAppBar, null, null, styles);

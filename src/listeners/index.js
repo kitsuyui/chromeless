@@ -11,17 +11,6 @@ import {
 } from '../state/app-management/actions';
 import { setPreference, setPreferences } from '../state/preferences/actions';
 import { setSystemPreference } from '../state/system-preferences/actions';
-import { open as openDialogAbout } from '../state/dialog-about/actions';
-import { updateUpdater } from '../state/updater/actions';
-import {
-  updateInstallationProgress,
-  updateIsFullScreen,
-  updateIsMaximized,
-  updateShouldUseDarkColors,
-} from '../state/general/actions';
-import {
-  getShouldUseDarkColors,
-} from '../senders';
 
 const loadListeners = (store) => {
   window.ipcRenderer.on('log', (e, message) => {
@@ -59,32 +48,8 @@ const loadListeners = (store) => {
     store.dispatch(setSystemPreference(name, value));
   });
 
-  window.ipcRenderer.on('open-dialog-about', () => {
-    store.dispatch(openDialogAbout());
-  });
-
-  window.ipcRenderer.on('native-theme-updated', () => {
-    store.dispatch(updateShouldUseDarkColors(getShouldUseDarkColors()));
-  });
-
-  window.ipcRenderer.on('update-updater', (e, updaterObj) => {
-    store.dispatch(updateUpdater(updaterObj));
-  });
-
-  window.ipcRenderer.on('update-installation-progress', (e, progress) => {
-    store.dispatch(updateInstallationProgress(progress));
-  });
-
   window.ipcRenderer.on('set-scanning-for-installed', (e, scanning) => {
     store.dispatch(setScanningForInstalled(scanning));
-  });
-
-  window.ipcRenderer.on('set-is-full-screen', (e, isFullScreen) => {
-    store.dispatch(updateIsFullScreen(isFullScreen));
-  });
-
-  window.ipcRenderer.on('set-is-maximized', (e, isMaximized) => {
-    store.dispatch(updateIsMaximized(isMaximized));
   });
 };
 

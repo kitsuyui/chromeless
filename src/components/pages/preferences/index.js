@@ -24,12 +24,12 @@ import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import WidgetsIcon from '@mui/icons-material/Widgets';
 
 import connectComponent from '../../../helpers/connect-component';
+import { useDialogs } from '../../../contexts/dialogs';
+import { useUpdater } from '../../../contexts/updater';
 import getEngineName from '../../../helpers/get-engine-name';
 
 import { getInstallingAppsAsList } from '../../../state/app-management/utils';
 
-import { open as openDialogAbout } from '../../../state/dialog-about/actions';
-import { open as openDialogOpenSourceNotices } from '../../../state/dialog-open-source-notices/actions';
 import { open as openDialogSetInstallationPath } from '../../../state/dialog-set-installation-path/actions';
 import { open as openDialogSetPreferredEngine } from '../../../state/dialog-set-preferred-engine/actions';
 
@@ -145,18 +145,22 @@ const Preferences = ({
   defaultHome,
   installationPath,
   installingAppCount,
-  onOpenDialogAbout,
-  onOpenDialogOpenSourceNotices,
   onOpenDialogSetInstallationPath,
   onOpenDialogSetPreferredEngine,
   openAtLogin,
   preferredEngine,
   requireAdmin,
   themeSource,
-  updaterInfo,
-  updaterStatus,
   useHardwareAcceleration,
 }) => {
+  const {
+    updaterInfo,
+    updaterStatus,
+  } = useUpdater();
+  const {
+    openAbout,
+    openOpenSourceNotices,
+  } = useDialogs();
   const sections = {
     general: {
       text: 'General',
@@ -555,12 +559,12 @@ const Preferences = ({
           </Typography>
           <Paper elevation={0} className={classes.paper}>
             <List disablePadding dense>
-              <ListItem button onClick={onOpenDialogAbout}>
+              <ListItem button onClick={openAbout}>
                 <ListItemText primary="About" />
                 <ChevronRightIcon color="action" />
               </ListItem>
               <Divider />
-              <ListItem button onClick={onOpenDialogOpenSourceNotices}>
+              <ListItem button onClick={openOpenSourceNotices}>
                 <ListItemText primary="Open Source Notices" />
                 <ChevronRightIcon color="action" />
               </ListItem>
@@ -585,11 +589,6 @@ const Preferences = ({
   );
 };
 
-Preferences.defaultProps = {
-  updaterInfo: null,
-  updaterStatus: null,
-};
-
 Preferences.propTypes = {
   allowPrerelease: PropTypes.bool.isRequired,
   alwaysOnTop: PropTypes.bool.isRequired,
@@ -599,16 +598,12 @@ Preferences.propTypes = {
   defaultHome: PropTypes.string.isRequired,
   installationPath: PropTypes.string.isRequired,
   installingAppCount: PropTypes.number.isRequired,
-  onOpenDialogAbout: PropTypes.func.isRequired,
-  onOpenDialogOpenSourceNotices: PropTypes.func.isRequired,
   onOpenDialogSetInstallationPath: PropTypes.func.isRequired,
   onOpenDialogSetPreferredEngine: PropTypes.func.isRequired,
   openAtLogin: PropTypes.oneOf(['yes', 'yes-hidden', 'no']).isRequired,
   preferredEngine: PropTypes.string.isRequired,
   requireAdmin: PropTypes.bool.isRequired,
   themeSource: PropTypes.string.isRequired,
-  updaterInfo: PropTypes.object,
-  updaterStatus: PropTypes.string,
   useHardwareAcceleration: PropTypes.bool.isRequired,
 };
 
@@ -624,14 +619,10 @@ const mapStateToProps = (state) => ({
   preferredEngine: state.preferences.preferredEngine,
   requireAdmin: state.preferences.requireAdmin,
   themeSource: state.preferences.themeSource,
-  updaterInfo: state.updater.info,
-  updaterStatus: state.updater.status,
   useHardwareAcceleration: state.preferences.useHardwareAcceleration,
 });
 
 const actionCreators = {
-  openDialogAbout,
-  openDialogOpenSourceNotices,
   openDialogSetInstallationPath,
   openDialogSetPreferredEngine,
 };

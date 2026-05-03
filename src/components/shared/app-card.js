@@ -395,8 +395,6 @@ const mapStateToProps = (state, ownProps) => {
     latestTemplateVersion: state.general.latestTemplateVersion,
     name: ownProps.name || app.name,
     opts: app && app.opts ? app.opts : undefined,
-    progressDesc: state.general.installationProgress.desc,
-    progressPercent: state.general.installationProgress.percent,
     status: app ? app.status : null,
     url: ownProps.url || (app ? app.url : null),
     version: app ? app.version : null,

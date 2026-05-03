@@ -11,8 +11,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import connectComponent from '../../helpers/connect-component';
 
-import { close } from '../../state/dialog-about/actions';
-import { open as openDialogOpenSourceNotices } from '../../state/dialog-open-source-notices/actions';
+import { useDialogs } from '../../contexts/dialogs';
 import iconPng from '../../assets/products/chromeless-mac-icon-128@2x.png';
 
 import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
@@ -42,12 +41,17 @@ const styles = (theme) => ({
   },
 });
 
-const About = ({ classes, onClose, onOpenDialogOpenSourceNotices, open }) => {
+const About = ({ classes }) => {
+  const {
+    aboutOpen,
+    closeAbout,
+    openOpenSourceNotices,
+  } = useDialogs();
   const appVersion = window.remote.app.getVersion();
 
   return (
-    <Dialog className={classes.root} onClose={onClose} open={open}>
-      <EnhancedDialogTitle onClose={onClose}>About</EnhancedDialogTitle>
+    <Dialog className={classes.root} onClose={closeAbout} open={aboutOpen}>
+      <EnhancedDialogTitle onClose={closeAbout}>About</EnhancedDialogTitle>
       <DialogContent className={classes.dialogContent}>
         <img src={iconPng} alt="Chromeless" className={classes.icon} />
         <Typography variant="h6" className={classes.title}>
@@ -57,7 +61,7 @@ const About = ({ classes, onClose, onOpenDialogOpenSourceNotices, open }) => {
           {`Version v${appVersion}`}
         </Typography>
 
-        <Button onClick={onOpenDialogOpenSourceNotices}>Open Source Notices</Button>
+        <Button onClick={openOpenSourceNotices}>Open Source Notices</Button>
       </DialogContent>
     </Dialog>
   );
@@ -65,18 +69,6 @@ const About = ({ classes, onClose, onOpenDialogOpenSourceNotices, open }) => {
 
 About.propTypes = {
   classes: PropTypes.object.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onOpenDialogOpenSourceNotices: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  open: state.dialogAbout.open,
-});
-
-const actionCreators = {
-  close,
-  openDialogOpenSourceNotices,
-};
-
-export default connectComponent(About, mapStateToProps, actionCreators, styles);
+export default connectComponent(About, null, null, styles);

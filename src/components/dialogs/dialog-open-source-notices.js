@@ -9,7 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import connectComponent from '../../helpers/connect-component';
 
-import { close } from '../../state/dialog-open-source-notices/actions';
+import { useDialogs } from '../../contexts/dialogs';
 
 import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
 
@@ -24,9 +24,11 @@ const styles = (theme) => ({
 
 const DialogOpenSourceNotices = ({
   classes,
-  onClose,
-  open,
 }) => {
+  const {
+    closeOpenSourceNotices,
+    openSourceNoticesOpen,
+  } = useDialogs();
   const [content, setContent] = useState('');
   useEffect(() => {
     window.fetch('./open-source-notices.txt')
@@ -41,10 +43,10 @@ const DialogOpenSourceNotices = ({
   return (
     <Dialog
       className={classes.root}
-      onClose={onClose}
-      open={open}
+      onClose={closeOpenSourceNotices}
+      open={openSourceNoticesOpen}
     >
-      <EnhancedDialogTitle onClose={onClose}>
+      <EnhancedDialogTitle onClose={closeOpenSourceNotices}>
         Open Source Notices
       </EnhancedDialogTitle>
       <DialogContent className={classes.dialogContent}>
@@ -56,21 +58,11 @@ const DialogOpenSourceNotices = ({
 
 DialogOpenSourceNotices.propTypes = {
   classes: PropTypes.object.isRequired,
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-};
-
-const mapStateToProps = (state) => ({
-  open: state.dialogOpenSourceNotices.open,
-});
-
-const actionCreators = {
-  close,
 };
 
 export default connectComponent(
   DialogOpenSourceNotices,
-  mapStateToProps,
-  actionCreators,
+  null,
+  null,
   styles,
 );

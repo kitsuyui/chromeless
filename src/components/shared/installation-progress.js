@@ -8,6 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 
 import connectComponent from '../../helpers/connect-component';
+import { useInstallationProgress } from '../../contexts/installation-progress';
 
 const styles = (theme) => ({
   root: {
@@ -42,56 +43,46 @@ const styles = (theme) => ({
 const AppCard = ({
   classes,
   defaultDesc,
-  progressDesc,
-  progressPercent,
-}) => (
-  <div className={classes.root}>
-    <Tooltip
-      title={progressDesc || defaultDesc}
-      aria-label={progressDesc || defaultDesc}
-      placement="right"
-      classes={{
-        tooltip: classes.tooltip,
-      }}
-    >
+}) => {
+  const { progressDesc, progressPercent } = useInstallationProgress();
+
+  return (
+    <div className={classes.root}>
+      <Tooltip
+        title={progressDesc || defaultDesc}
+        aria-label={progressDesc || defaultDesc}
+        placement="right"
+        classes={{
+          tooltip: classes.tooltip,
+        }}
+      >
+        <CircularProgress
+          variant="determinate"
+          value={progressPercent}
+          className={classes.top}
+          size={28}
+          thickness={4}
+        />
+      </Tooltip>
       <CircularProgress
         variant="determinate"
-        value={progressPercent}
-        className={classes.top}
+        value={100}
+        className={classes.bottom}
         size={28}
         thickness={4}
       />
-    </Tooltip>
-    <CircularProgress
-      variant="determinate"
-      value={100}
-      className={classes.bottom}
-      size={28}
-      thickness={4}
-    />
-  </div>
-);
-
-AppCard.defaultProps = {
-  progressDesc: null,
-  progressPercent: 0,
+    </div>
+  );
 };
 
 AppCard.propTypes = {
   classes: PropTypes.object.isRequired,
-  progressDesc: PropTypes.string,
-  progressPercent: PropTypes.number,
   defaultDesc: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  progressPercent: state.general.installationProgress.percent,
-  progressDesc: state.general.installationProgress.desc,
-});
-
 export default connectComponent(
   AppCard,
-  mapStateToProps,
+  null,
   null,
   styles,
 );

@@ -11,7 +11,11 @@ import '@fontsource/roboto/500.css';
 import './index.css';
 
 import store from './state';
+import { AppearanceProvider } from './contexts/appearance';
+import { DialogsProvider } from './contexts/dialogs';
+import { InstallationProgressProvider } from './contexts/installation-progress';
 import { NavigationProvider } from './contexts/navigation';
+import { UpdaterProvider } from './contexts/updater';
 
 // listeners to communicate with main process
 import loadListeners from './listeners';
@@ -23,7 +27,15 @@ loadListeners(store);
 ReactDOM.render(
   <Provider store={store}>
     <NavigationProvider>
-      <AppWrapper />
+      <AppearanceProvider>
+        <InstallationProgressProvider>
+          <UpdaterProvider>
+            <DialogsProvider>
+              <AppWrapper />
+            </DialogsProvider>
+          </UpdaterProvider>
+        </InstallationProgressProvider>
+      </AppearanceProvider>
     </NavigationProvider>
   </Provider>,
   document.getElementById('app'),

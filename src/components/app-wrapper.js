@@ -2,16 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey, pink as red, teal } from '@mui/material/colors';
 
-import connectComponent from '../helpers/connect-component';
+import { useAppearance } from '../contexts/appearance';
 
 import App from './app';
 
-const AppWrapper = ({ shouldUseDarkColors }) => {
+const AppWrapper = () => {
+  const { shouldUseDarkColors } = useAppearance();
   const themeObj = {
     typography: {
       fontFamily: '"Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
@@ -47,17 +47,4 @@ const AppWrapper = ({ shouldUseDarkColors }) => {
   );
 };
 
-AppWrapper.propTypes = {
-  shouldUseDarkColors: PropTypes.bool.isRequired,
-};
-
-const mapStateToProps = (state) => ({
-  shouldUseDarkColors: state.general.shouldUseDarkColors,
-});
-
-export default connectComponent(
-  AppWrapper,
-  mapStateToProps,
-  null,
-  null,
-);
+export default AppWrapper;

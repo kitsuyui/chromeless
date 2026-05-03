@@ -93,7 +93,6 @@ EnhancedBottomNavigation.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  activated: state.general.activated,
   appBadgeCount: getAppBadgeCount(state),
 });
 
