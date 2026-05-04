@@ -159,6 +159,79 @@ const firefoxProfileId = `chromeless-${id}`;
 
 const engineInfo = getEngineInfo(engine);
 
+const getFirefoxUrlParam = () => {
+  if (!url) return '';
+  return useTabs ? `"${url}"` : `--ssb="${url}"`;
+};
+
+const getFirefoxExecFileContent = () => `#!/bin/sh
+DIR=$(dirname "$0");
+cd "$DIR";
+cd ..;
+cd Resources;
+
+cp "$PWD"/icon.icns "$PWD"/${addSlash(name)}.app/Contents/Resources/firefox.icns
+
+open -n "$PWD"/${addSlash(name)}.app --args ${getFirefoxUrlParam()} -P ${firefoxProfileId}
+`;
+
+const getChromiumTabbedExecFileContent = () => `#!/bin/sh
+DIR=$(dirname "$0");
+cd "$DIR";
+cd ..;
+cd Resources;
+
+cp -rf ~/Library/Application\\ Support/${addSlash(engineInfo.userDataDir)}/NativeMessagingHosts ~/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id}/NativeMessagingHosts
+
+pgrepResult=$(pgrep -f "$DIR/${addSlash(name)}.app")
+numProc=$(echo "$pgrepResult" | wc -l)
+if [ $numProc -ge 2 ]
+  then
+  exit;
+fi
+pgrepResult=$(pgrep -f "$PWD"/${addSlash(name)}.app/Contents/MacOS/${addSlash(engineInfo.execFile)})
+if [ -n "$pgrepResult" -a $# -eq 0 ]; then
+  exit
+fi
+
+sed -i '' "s/\\"has_seen_welcome_page\\":false/\\"has_seen_welcome_page\\":true/g" "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/adobe-color/Default/Preferences"
+if (grep -q "\\"restore_on_startup\\":1" "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/adobe-color/Default/Secure Preferences") && [ -e "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/adobe-color/Default/Current Tabs" ]; then
+  Tabs=""
+else
+  Tabs="${url || ''}"
+fi
+
+open -n "$PWD"/${addSlash(name)}.app --args $Tabs --no-sandbox --test-type --user-data-dir="$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id} --load-extension="$PWD"/chromeless-helper "$@"
+`;
+
+const getChromiumAppExecFileContent = () => `#!/bin/sh
+DIR=$(dirname "$0");
+cd "$DIR";
+cd ..;
+cd Resources;
+
+cp -rf ~/Library/Application\\ Support/${addSlash(engineInfo.userDataDir)}/NativeMessagingHosts ~/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id}/NativeMessagingHosts
+
+pgrepResult=$(pgrep -f "$DIR/${addSlash(name)}.app")
+numProc=$(echo "$pgrepResult" | wc -l)
+if [ $numProc -ge 2 -a $# -eq 0 ]
+  then
+  exit;
+fi
+pgrepResult=$(pgrep -f "$PWD"/${addSlash(name)}.app/Contents/MacOS/${addSlash(engineInfo.execFile)})
+if [ -n "$pgrepResult" ]; then
+  exit
+fi
+
+open -n "$PWD"/${addSlash(name)}.app --args --no-sandbox --test-type --app="${url}" --user-data-dir="$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id} --load-extension="$PWD"/chromeless-helper "$@"
+`;
+
+const getExecFileContent = () => {
+  if (browserId === 'firefox') return getFirefoxExecFileContent();
+  if (useTabs) return getChromiumTabbedExecFileContent();
+  return getChromiumAppExecFileContent();
+};
+
 Promise.resolve()
   .then(() => {
     if (!engineInfo) {
@@ -217,77 +290,8 @@ Promise.resolve()
       .then(() => fsExtra.copy(helperPath, helperDestPath))
       .then(() => {
         const execFilePath = path.join(contentsPath, 'MacOS', 'chromeless_root_app');
-
-        let execFileContent = '';
-        if (browserId === 'firefox') {
-          let urlParam = '';
-          if (url) {
-            urlParam = useTabs ? `"${url}"` : `--ssb="${url}"`;
-          }
-          execFileContent = `#!/bin/sh
-DIR=$(dirname "$0");
-cd "$DIR";
-cd ..;
-cd Resources;
-
-cp "$PWD"/icon.icns "$PWD"/${addSlash(name)}.app/Contents/Resources/firefox.icns
-
-open -n "$PWD"/${addSlash(name)}.app --args ${urlParam} -P ${firefoxProfileId}
-`;
-        } else if (useTabs) {
-          execFileContent = `#!/bin/sh
-DIR=$(dirname "$0");
-cd "$DIR";
-cd ..;
-cd Resources;
-
-cp -rf ~/Library/Application\\ Support/${addSlash(engineInfo.userDataDir)}/NativeMessagingHosts ~/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id}/NativeMessagingHosts
-
-pgrepResult=$(pgrep -f "$DIR/${addSlash(name)}.app")
-numProc=$(echo "$pgrepResult" | wc -l)
-if [ $numProc -ge 2 ]
-  then
-  exit;
-fi
-pgrepResult=$(pgrep -f "$PWD"/${addSlash(name)}.app/Contents/MacOS/${addSlash(engineInfo.execFile)})
-if [ -n "$pgrepResult" -a $# -eq 0 ]; then
-  exit
-fi
-
-sed -i '' "s/\\"has_seen_welcome_page\\":false/\\"has_seen_welcome_page\\":true/g" "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/adobe-color/Default/Preferences"
-if (grep -q "\\"restore_on_startup\\":1" "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/adobe-color/Default/Secure Preferences") && [ -e "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/adobe-color/Default/Current Tabs" ]; then
-  Tabs=""
-else
-  Tabs="${url || ''}"
-fi
-
-open -n "$PWD"/${addSlash(name)}.app --args $Tabs --no-sandbox --test-type --user-data-dir="$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id} --load-extension="$PWD"/chromeless-helper "$@"
-`;
-        } else {
-          execFileContent = `#!/bin/sh
-DIR=$(dirname "$0");
-cd "$DIR";
-cd ..;
-cd Resources;
-
-cp -rf ~/Library/Application\\ Support/${addSlash(engineInfo.userDataDir)}/NativeMessagingHosts ~/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id}/NativeMessagingHosts
-
-pgrepResult=$(pgrep -f "$DIR/${addSlash(name)}.app")
-numProc=$(echo "$pgrepResult" | wc -l)
-if [ $numProc -ge 2 -a $# -eq 0 ]
-  then
-  exit;
-fi
-pgrepResult=$(pgrep -f "$PWD"/${addSlash(name)}.app/Contents/MacOS/${addSlash(engineInfo.execFile)})
-if [ -n "$pgrepResult" ]; then
-  exit
-fi
-
-open -n "$PWD"/${addSlash(name)}.app --args --no-sandbox --test-type --app="${url}" --user-data-dir="$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id} --load-extension="$PWD"/chromeless-helper "$@"
-`;
-        }
         return fsExtra
-          .outputFile(execFilePath, execFileContent)
+          .outputFile(execFilePath, getExecFileContent())
           .then(() => fsExtra.chmod(execFilePath, '755'));
       })
       .then(() => {

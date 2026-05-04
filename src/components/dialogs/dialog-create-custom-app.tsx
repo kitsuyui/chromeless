@@ -14,15 +14,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import defaultIcon from '../../assets/default-icon.png';
 import connectComponent from '../../helpers/connect-component';
-import isUrl from '../../helpers/is-url';
 import {
   close,
   create,
   getIconFromInternet,
   updateForm,
 } from '../../state/dialog-create-custom-app/actions';
-
 import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
+import { getAppIconPath, selectLocalImage } from './app-icon';
 
 const styles = (theme) => ({
   grid: {
@@ -71,13 +70,7 @@ const DialogCreateCustomApp = (props) => {
     urlError,
   } = props;
 
-  let iconPath = defaultIcon;
-  if (icon) {
-    if (isUrl(icon)) iconPath = icon;
-    else iconPath = `file://${icon}`;
-  } else if (internetIcon) {
-    iconPath = internetIcon;
-  }
+  const iconPath = getAppIconPath({ defaultIcon, icon, internetIcon });
 
   return (
     <Dialog fullWidth maxWidth="sm" onClose={onClose} open={open}>
@@ -121,22 +114,10 @@ const DialogCreateCustomApp = (props) => {
               variant="outlined"
               size="small"
               onClick={() => {
-                window.remote.dialog
-                  .showOpenDialog({
-                    filters: [
-                      {
-                        name: 'Images',
-                        extensions: ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'tif', 'bmp', 'dib'],
-                      },
-                    ],
-                    properties: ['openFile'],
-                  })
-                  .then(({ canceled, filePaths }) => {
-                    if (!canceled && filePaths && filePaths.length > 0) {
-                      onUpdateForm({ icon: filePaths[0] });
-                    }
-                  })
-                  .catch(console.log); // eslint-disable-line
+                selectLocalImage({
+                  onSelect: (nextIcon) => onUpdateForm({ icon: nextIcon }),
+                  showOpenDialog: (options) => window.remote.dialog.showOpenDialog(options),
+                });
               }}
               disabled={downloadingIcon}
             >

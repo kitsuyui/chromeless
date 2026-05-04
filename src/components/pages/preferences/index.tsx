@@ -12,12 +12,9 @@ import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
-import Select from '@mui/material/Select';
-import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
@@ -35,11 +32,22 @@ import {
   requestSetPreference,
   requestSetSystemPreference,
 } from '../../../senders';
-import { getInstallingAppsAsList } from '../../../state/app-management/utils';
 import { open as openDialogSetInstallationPath } from '../../../state/dialog-set-installation-path/actions';
 import { open as openDialogSetPreferredEngine } from '../../../state/dialog-set-preferred-engine/actions';
-
+import { PreferenceSelect, PreferenceSwitchItem } from './controls';
 import DefinedAppBar from './defined-app-bar';
+import { applyInstallationPathPreference, confirmResetPreferences } from './effects';
+import {
+  DEFAULT_ADMIN_INSTALLATION_PATH,
+  DEFAULT_USER_INSTALLATION_PATH,
+  getInstallationPathLabel,
+  getUpdaterDesc,
+  isUpdateCheckDisabled,
+  parseInstallationPathPreference,
+  selectPreferencesProps,
+  shouldShowCurrentInstallationPathOption,
+  stringifyInstallationPathPreference,
+} from './model';
 
 const styles = (theme) => ({
   root: {
@@ -108,39 +116,6 @@ const styles = (theme) => ({
     paddingLeft: theme.spacing(1.5),
   },
 });
-
-const formatBytes = (bytes, decimals = 2) => {
-  if (bytes === 0) return '0 Bytes';
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${Number.parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
-};
-
-const getUpdaterDesc = (status, info) => {
-  if (status === 'download-progress') {
-    if (info != null) {
-      const { transferred, total, bytesPerSecond } = info;
-      return `Downloading updates (${formatBytes(transferred)}/${formatBytes(total)} at ${formatBytes(bytesPerSecond)}/s)...`;
-    }
-    return 'Downloading updates...';
-  }
-  if (status === 'checking-for-update') {
-    return 'Checking for updates...';
-  }
-  if (status === 'update-available') {
-    return 'Downloading updates...';
-  }
-  if (status === 'update-downloaded') {
-    if (info && info.version) return `A new version (${info.version}) has been downloaded.`;
-    return 'A new version has been downloaded.';
-  }
-  return null;
-};
 
 const Preferences = ({
   allowPrerelease,
@@ -230,16 +205,10 @@ const Preferences = ({
             <List disablePadding dense>
               <ListItem>
                 <ListItemText primary="Theme" />
-                <Select
+                <PreferenceSelect
+                  classes={classes}
                   value={themeSource}
                   onChange={(e) => requestSetPreference('themeSource', e.target.value)}
-                  variant="filled"
-                  disableUnderline
-                  margin="dense"
-                  classes={{
-                    select: classes.select,
-                  }}
-                  className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                 >
                   <MenuItem dense value="system">
                     System default
@@ -250,60 +219,38 @@ const Preferences = ({
                   <MenuItem dense value="dark">
                     Dark
                   </MenuItem>
-                </Select>
+                </PreferenceSelect>
               </ListItem>
               <Divider />
-              <ListItem>
-                <ListItemText
-                  primary="Attach to menu bar"
-                  secondary="Tip: Right-click on app icon to access context menu."
-                />
-                <ListItemSecondaryAction>
-                  <Switch
-                    edge="end"
-                    color="primary"
-                    checked={attachToMenubar}
-                    onChange={(e) => {
-                      requestSetPreference('attachToMenubar', e.target.checked);
-                      enqueueRequestRestartSnackbar();
-                    }}
-                  />
-                </ListItemSecondaryAction>
-              </ListItem>
+              <PreferenceSwitchItem
+                primary="Attach to menu bar"
+                secondary="Tip: Right-click on app icon to access context menu."
+                checked={attachToMenubar}
+                onChange={(checked) => {
+                  requestSetPreference('attachToMenubar', checked);
+                  enqueueRequestRestartSnackbar();
+                }}
+              />
               <Divider />
-              <ListItem>
-                <ListItemText
-                  primary="Keep window always on top"
-                  secondary="The window won't be hidden even when you click outside."
-                />
-                <ListItemSecondaryAction>
-                  <Switch
-                    edge="end"
-                    color="primary"
-                    checked={alwaysOnTop}
-                    onChange={(e) => {
-                      requestSetPreference('alwaysOnTop', e.target.checked);
-                      enqueueRequestRestartSnackbar();
-                    }}
-                  />
-                </ListItemSecondaryAction>
-              </ListItem>
+              <PreferenceSwitchItem
+                primary="Keep window always on top"
+                secondary="The window won't be hidden even when you click outside."
+                checked={alwaysOnTop}
+                onChange={(checked) => {
+                  requestSetPreference('alwaysOnTop', checked);
+                  enqueueRequestRestartSnackbar();
+                }}
+              />
               <Divider />
               <ListItem>
                 <ListItemText
                   primary="Startup page"
                   secondary="Startup page is the one that shows when you launch the app."
                 />
-                <Select
+                <PreferenceSelect
+                  classes={classes}
                   value={defaultHome}
                   onChange={(e) => requestSetPreference('defaultHome', e.target.value)}
-                  variant="filled"
-                  disableUnderline
-                  margin="dense"
-                  classes={{
-                    select: classes.select,
-                  }}
-                  className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                 >
                   <MenuItem dense value="browsers">
                     Browsers
@@ -314,21 +261,15 @@ const Preferences = ({
                   <MenuItem dense value="preferences">
                     Preferences
                   </MenuItem>
-                </Select>
+                </PreferenceSelect>
               </ListItem>
               <Divider />
               <ListItem>
                 <ListItemText primary="Open at login" />
-                <Select
+                <PreferenceSelect
+                  classes={classes}
                   value={openAtLogin}
                   onChange={(e) => requestSetSystemPreference('openAtLogin', e.target.value)}
-                  variant="filled"
-                  disableUnderline
-                  margin="dense"
-                  classes={{
-                    select: classes.select,
-                  }}
-                  className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                 >
                   <MenuItem dense value="yes">
                     Yes
@@ -339,7 +280,7 @@ const Preferences = ({
                   <MenuItem dense value="no">
                     No
                   </MenuItem>
-                </Select>
+                </PreferenceSelect>
               </ListItem>
             </List>
           </Paper>
@@ -369,96 +310,74 @@ const Preferences = ({
               <Divider />
               <ListItem>
                 <ListItemText primary="Installation path" />
-                <Select
+                <PreferenceSelect
+                  classes={classes}
                   value=""
-                  renderValue={() =>
-                    `${installationPath} ${requireAdmin && installationPath !== '~/Applications/Chromeless Apps' && installationPath !== '/Applications/Chromeless Apps' ? '(require sudo)' : ''}`
-                  }
+                  renderValue={() => getInstallationPathLabel({ installationPath, requireAdmin })}
                   onChange={(e) => {
-                    const val = e.target.value;
-
-                    if (val == null) return;
-                    const nextPreference =
-                      typeof val === 'string' && val.length > 0 ? JSON.parse(val) : null;
-                    if (nextPreference == null) return;
-
-                    if (appCount > 0) {
-                      window.remote.dialog
-                        .showMessageBox(window.remote.getCurrentWindow(), {
+                    const nextPreference = parseInstallationPathPreference(e.target.value);
+                    applyInstallationPathPreference({
+                      appCount,
+                      nextPreference,
+                      requestSetPreference,
+                      showBlockedDialog: () =>
+                        window.remote.dialog.showMessageBox(window.remote.getCurrentWindow(), {
                           title: 'Uninstall all of Chromeless apps first',
                           message:
                             'You need to uninstall all of your Chromeless apps before changing this preference.',
                           buttons: ['OK'],
                           cancelId: 0,
                           defaultId: 0,
-                        })
-                        .catch(console.log); // eslint-disable-line
-                    } else {
-                      requestSetPreference('requireAdmin', nextPreference.requireAdmin);
-                      requestSetPreference('installationPath', nextPreference.installationPath);
-                    }
+                        }),
+                    });
                   }}
-                  variant="filled"
-                  disableUnderline
-                  margin="dense"
-                  classes={{
-                    select: classes.select,
-                  }}
-                  className={`${classes.selectRoot} ${classes.selectRootExtraMargin}`}
                   disabled={installingAppCount > 0}
                 >
                   {[
-                    installationPath !== '~/Applications/Chromeless Apps' &&
-                      installationPath !== '/Applications/WebCatalog Apps' && (
-                        <MenuItem dense key="installation-path-menu-item" value={null}>
-                          {installationPath}
-                        </MenuItem>
-                      ),
+                    shouldShowCurrentInstallationPathOption(installationPath) && (
+                      <MenuItem dense key="installation-path-menu-item" value={null}>
+                        {installationPath}
+                      </MenuItem>
+                    ),
                     <MenuItem
                       dense
                       key="default-installation-path-menu-item"
-                      value={JSON.stringify({
-                        installationPath: '~/Applications/Chromeless Apps',
+                      value={stringifyInstallationPathPreference({
+                        installationPath: DEFAULT_USER_INSTALLATION_PATH,
                         requireAdmin: false,
                       })}
                     >
-                      ~/Applications/Chromeless Apps (default)
+                      {DEFAULT_USER_INSTALLATION_PATH} (default)
                     </MenuItem>,
                     <MenuItem
                       dense
                       key="default-sudo-installation-path-menu-item"
-                      value={JSON.stringify({
-                        installationPath: '/Applications/Chromeless Apps',
+                      value={stringifyInstallationPathPreference({
+                        installationPath: DEFAULT_ADMIN_INSTALLATION_PATH,
                         requireAdmin: true,
                       })}
                     >
-                      /Applications/Chromeless Apps
+                      {DEFAULT_ADMIN_INSTALLATION_PATH}
                     </MenuItem>,
                   ]}
                   <MenuItem dense onClick={onOpenDialogSetInstallationPath}>
                     Custom
                   </MenuItem>
-                </Select>
+                </PreferenceSelect>
               </ListItem>
               <ListItem button onClick={requestOpenInstallLocation}>
                 <ListItemText primary="Open installation path in Finder" />
                 <ChevronRightIcon color="action" />
               </ListItem>
               <Divider />
-              <ListItem>
-                <ListItemText primary="Use hardware acceleration when available" />
-                <ListItemSecondaryAction>
-                  <Switch
-                    edge="end"
-                    color="primary"
-                    checked={useHardwareAcceleration}
-                    onChange={(e) => {
-                      requestSetPreference('useHardwareAcceleration', e.target.checked);
-                      enqueueRequestRestartSnackbar();
-                    }}
-                  />
-                </ListItemSecondaryAction>
-              </ListItem>
+              <PreferenceSwitchItem
+                primary="Use hardware acceleration when available"
+                checked={useHardwareAcceleration}
+                onChange={(checked) => {
+                  requestSetPreference('useHardwareAcceleration', checked);
+                  enqueueRequestRestartSnackbar();
+                }}
+              />
             </List>
           </Paper>
 
@@ -475,12 +394,7 @@ const Preferences = ({
               <ListItem
                 button
                 onClick={() => requestCheckForUpdates(false)}
-                disabled={
-                  updaterStatus === 'checking-for-update' ||
-                  updaterStatus === 'download-progress' ||
-                  updaterStatus === 'download-progress' ||
-                  updaterStatus === 'update-available'
-                }
+                disabled={isUpdateCheckDisabled(updaterStatus)}
               >
                 <ListItemText
                   primary={
@@ -493,20 +407,14 @@ const Preferences = ({
                 <ChevronRightIcon color="action" />
               </ListItem>
               <Divider />
-              <ListItem>
-                <ListItemText primary="Receive pre-release updates" />
-                <ListItemSecondaryAction>
-                  <Switch
-                    edge="end"
-                    color="primary"
-                    checked={allowPrerelease}
-                    onChange={(e) => {
-                      requestSetPreference('allowPrerelease', e.target.checked);
-                      enqueueRequestRestartSnackbar();
-                    }}
-                  />
-                </ListItemSecondaryAction>
-              </ListItem>
+              <PreferenceSwitchItem
+                primary="Receive pre-release updates"
+                checked={allowPrerelease}
+                onChange={(checked) => {
+                  requestSetPreference('allowPrerelease', checked);
+                  enqueueRequestRestartSnackbar();
+                }}
+              />
             </List>
           </Paper>
 
@@ -523,23 +431,21 @@ const Preferences = ({
               <ListItem
                 button
                 onClick={() => {
-                  window.remote.dialog
-                    .showMessageBox(window.remote.getCurrentWindow(), {
-                      type: 'question',
-                      buttons: ['Reset Now', 'Cancel'],
-                      message:
-                        "Are you sure? All preferences will be restored to their original defaults. Browsing data won't be affected. This action cannot be undone.",
-                      cancelId: 1,
-                    })
-                    .then(({ response }) => {
-                      if (response === 0) {
-                        window.ipcRenderer.once('set-preferences', () => {
-                          enqueueRequestRestartSnackbar();
-                        });
-                        requestResetPreferences();
-                      }
-                    })
-                    .catch(console.log); // eslint-disable-line
+                  confirmResetPreferences({
+                    enqueueRequestRestartSnackbar,
+                    onceSetPreferences: (listener) => {
+                      window.ipcRenderer.once('set-preferences', listener);
+                    },
+                    requestResetPreferences,
+                    showResetDialog: () =>
+                      window.remote.dialog.showMessageBox(window.remote.getCurrentWindow(), {
+                        type: 'question',
+                        buttons: ['Reset Now', 'Cancel'],
+                        message:
+                          "Are you sure? All preferences will be restored to their original defaults. Browsing data won't be affected. This action cannot be undone.",
+                        cancelId: 1,
+                      }),
+                  }).catch(console.log); // eslint-disable-line
                 }}
               >
                 <ListItemText primary="Restore preferences to their original defaults" />
@@ -606,24 +512,9 @@ Preferences.propTypes = {
   useHardwareAcceleration: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  allowPrerelease: state.preferences.allowPrerelease,
-  alwaysOnTop: state.preferences.alwaysOnTop,
-  appCount: Object.keys(state.appManagement.apps).length,
-  attachToMenubar: state.preferences.attachToMenubar,
-  defaultHome: state.preferences.defaultHome,
-  installationPath: state.preferences.installationPath,
-  installingAppCount: getInstallingAppsAsList(state).length,
-  openAtLogin: state.systemPreferences.openAtLogin,
-  preferredEngine: state.preferences.preferredEngine,
-  requireAdmin: state.preferences.requireAdmin,
-  themeSource: state.preferences.themeSource,
-  useHardwareAcceleration: state.preferences.useHardwareAcceleration,
-});
-
 const actionCreators = {
   openDialogSetInstallationPath,
   openDialogSetPreferredEngine,
 };
 
-export default connectComponent(Preferences, mapStateToProps, actionCreators, styles);
+export default connectComponent(Preferences, selectPreferencesProps, actionCreators, styles);

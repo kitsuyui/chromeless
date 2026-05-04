@@ -1,7 +1,12 @@
-#!/bin/bash
-for x in $*; do
-head -$COPYRIGHTLEN $x | diff copyright.txt - || ( ( cat copyright.txt; echo; cat $x) > /tmp/file;
-mv /tmp/file $x )
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+for x in "$@"; do
+  head -"$COPYRIGHTLEN" "$x" | diff copyright.txt - || (
+    (cat copyright.txt; echo; cat "$x") > /tmp/file
+    mv /tmp/file "$x"
+  )
 done
 
 # https://blog.greenroots.info/add-copyright-or-license-text-to-the-source-files-recursively-ck93zodue042h7us1nur56u4f

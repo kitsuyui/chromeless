@@ -23,13 +23,15 @@ const {
 const { createMenu, showMenu } = require('./menu');
 
 const mainWindow = require('./windows/main');
-
-const send = (webContents, ...args) => {
-  // check to make sure webContents is not destroyed
-  if (webContents && !webContents.isDestroyed()) {
-    webContents.send(...args);
-  }
-};
+const { canCheckForUpdates } = require('./updater-availability');
+const { getUpdateFailureMessage } = require('./app-update-error');
+const { getInstallFailureMessage } = require('./app-install-error');
+const {
+  createInstallTaskManager,
+  handleUpdateCheckRequest,
+  resolveInstallationPath,
+  send,
+} = require('./listener-handlers');
 
 const loadListeners = () => {
   ipcMain.on('request-open-in-browser', (e, browserUrl) => {
@@ -89,7 +91,10 @@ const loadListeners = () => {
   });
 
   ipcMain.on('request-open-install-location', () => {
-    const installationPath = getPreference('installationPath').replace('~', app.getPath('home'));
+    const installationPath = resolveInstallationPath(
+      getPreference('installationPath'),
+      app.getPath('home'),
+    );
     shell.openPath(installationPath);
   });
 
@@ -157,143 +162,46 @@ const loadListeners = () => {
       .catch(console.log); // eslint-disable-line
   });
 
-  // Chain app installing promises
-  let p = Promise.resolve();
-
-  const promiseFuncMap = {};
+  const installTaskManager = createInstallTaskManager({
+    getInstallFailureMessage,
+    getUpdateFailureMessage,
+    installAppAsync,
+    now: () => new Date().getTime(),
+    send,
+  });
 
   ipcMain.on('request-install-app', (e, engine, id, name, url, icon, opts) => {
     Promise.resolve().then(() => {
-      send(e.sender, 'set-app', id, {
-        status: 'INSTALLING',
-        lastUpdated: new Date().getTime(),
+      installTaskManager.requestInstallApp(e, {
         engine,
+        icon,
         id,
         name,
-        url,
-        icon,
         opts,
-        cancelable: true,
-      });
-
-      promiseFuncMap[id] = () => {
-        // prevent canceling when installation has already started
-        send(e.sender, 'set-app', id, {
-          cancelable: false,
-        });
-
-        return installAppAsync(engine, id, name, url, icon, opts)
-          .then((newApp) => {
-            send(e.sender, 'set-app', id, {
-              ...newApp,
-              status: 'INSTALLED',
-            });
-            delete promiseFuncMap[id];
-          })
-          .catch((error) => {
-            // eslint-disable-next-line no-console
-            console.log(error);
-            if (error && error.message && error.message.includes('is not installed')) {
-              send(e.sender, 'enqueue-snackbar', error.message, 'error');
-            } else if (
-              error &&
-              error.message &&
-              error.message.startsWith('Chromeless is outdated')
-            ) {
-              send(e.sender, 'enqueue-snackbar', error.message, 'error');
-            } else {
-              send(e.sender, 'enqueue-snackbar', `Failed to install ${name}.`, 'error');
-            }
-            send(e.sender, 'remove-app', id);
-            delete promiseFuncMap[id];
-          });
-      };
-
-      p = p.then(() => {
-        if (promiseFuncMap[id]) {
-          return promiseFuncMap[id]();
-        }
-        return null;
+        url,
       });
     });
   });
 
   ipcMain.on('request-update-app', (e, engine, id, name, url, icon, opts) => {
     Promise.resolve().then(() => {
-      send(e.sender, 'set-app', id, {
-        status: 'INSTALLING',
-        cancelable: true,
-      });
-
-      promiseFuncMap[id] = () => {
-        // prevent canceling when installation has already started
-        send(e.sender, 'set-app', id, {
-          cancelable: false,
-        });
-
-        return installAppAsync(engine, id, name, url, icon, opts)
-          .then((newApp) => {
-            send(e.sender, 'set-app', id, {
-              ...newApp,
-              status: 'INSTALLED',
-              lastUpdated: new Date().getTime(),
-            });
-          })
-          .catch((error) => {
-            // eslint-disable-next-line no-console
-            console.log(error);
-            if (error && error.message && error.message.includes('is not installed')) {
-              send(e.sender, 'enqueue-snackbar', error.message, 'error');
-            } else if (
-              error &&
-              error.message &&
-              (error.message.startsWith('EBUSY') || error.message === 'Application is in use.')
-            ) {
-              send(
-                e.sender,
-                'enqueue-snackbar',
-                `Failed to update ${name} as the application is in use.`,
-                'error',
-              );
-            } else if (
-              error &&
-              error.message &&
-              error.message.startsWith('Chromeless is outdated')
-            ) {
-              send(e.sender, 'enqueue-snackbar', error.message, 'error');
-            } else {
-              send(e.sender, 'enqueue-snackbar', `Failed to update ${name}.`, 'error');
-            }
-            send(e.sender, 'set-app', id, {
-              status: 'INSTALLED',
-            });
-          });
-      };
-
-      p = p.then(() => {
-        if (promiseFuncMap[id]) {
-          return promiseFuncMap[id]();
-        }
-        return null;
+      installTaskManager.requestUpdateApp(e, {
+        engine,
+        icon,
+        id,
+        name,
+        opts,
+        url,
       });
     });
   });
 
   ipcMain.on('request-cancel-install-app', (e, id) => {
-    if (promiseFuncMap[id]) {
-      send(e.sender, 'remove-app', id);
-      delete promiseFuncMap[id];
-    }
+    installTaskManager.cancelInstallApp(e, id);
   });
 
   ipcMain.on('request-cancel-update-app', (e, id) => {
-    if (promiseFuncMap[id]) {
-      send(e.sender, 'set-app', id, {
-        status: 'INSTALLED',
-        cancelable: false,
-      });
-      delete promiseFuncMap[id];
-    }
+    installTaskManager.cancelUpdateApp(e, id);
   });
 
   ipcMain.on('request-quit', () => {
@@ -302,22 +210,17 @@ const loadListeners = () => {
 
   ipcMain.on('request-check-for-updates', (e, isSilent) => {
     // https://github.com/electron-userland/electron-builder/issues/4028
-    if (!autoUpdater.isUpdaterActive()) return;
-
-    // restart & apply updates
-    if (global.updaterObj && global.updaterObj.status === 'update-downloaded') {
-      setImmediate(() => {
-        app.removeAllListeners('window-all-closed');
-        if (mainWindow.get() != null) {
-          mainWindow.get().close();
-        }
-        autoUpdater.quitAndInstall(false);
-      });
-    }
-
-    // check for updates
-    global.updateSilent = Boolean(isSilent);
-    autoUpdater.checkForUpdates();
+    handleUpdateCheckRequest(
+      {
+        app,
+        autoUpdater,
+        canCheckForUpdates,
+        getMainWindow: mainWindow.get,
+        globalObj: global,
+        setImmediateFn: setImmediate,
+      },
+      isSilent,
+    );
   });
 
   // to be replaced with invoke (electron 7+)

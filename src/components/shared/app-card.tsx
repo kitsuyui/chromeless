@@ -11,7 +11,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { INSTALLED, INSTALLING, UNINSTALLING } from '../../constants/app-statuses';
+import { INSTALLED, INSTALLING } from '../../constants/app-statuses';
 import connectComponent from '../../helpers/connect-component';
 import getEngineIcon from '../../helpers/get-engine-icon';
 import getEngineName from '../../helpers/get-engine-name';
@@ -25,11 +25,13 @@ import {
   requestUninstallApp,
 } from '../../senders';
 import { updateApp } from '../../state/app-management/actions';
-import { isOutdatedApp } from '../../state/app-management/utils';
 import { open as openDialogChooseEngine } from '../../state/dialog-choose-engine/actions';
 import { open as openDialogCreateCustomApp } from '../../state/dialog-create-custom-app/actions';
 import { open as openDialogEditApp } from '../../state/dialog-edit-app/actions';
 
+import { getPendingActionState } from './app-card-actions-state';
+import { createAppCardMenuTemplate } from './app-card-menu';
+import { selectAppCardProps } from './app-card-state';
 import InstallationProgress from './installation-progress';
 
 const styles = (theme) => ({
@@ -126,159 +128,89 @@ const AppCard = (props) => {
   const engineIcon = engine ? getEngineIcon(engine) : null;
 
   const showMenu = () => {
-    const template = [
+    const template = createAppCardMenuTemplate(
       {
-        label: version ? 'Cancel Update' : 'Cancel Installation',
-        visible: status === INSTALLING && cancelable,
-        click: () => {
-          if (version) return requestCancelUpdateApp(id);
-          return requestCancelInstallApp(id);
-        },
+        cancelable,
+        combinedOpts,
+        engine,
+        engineName,
+        icon,
+        id,
+        isOutdated,
+        name,
+        onOpenDialogCreateCustomApp,
+        onOpenDialogEditApp,
+        onUpdateApp,
+        showItemInFolder: window.remote.shell.showItemInFolder,
+        status,
+        url,
+        version,
       },
       {
-        label: 'Edit',
-        visible: status === INSTALLED,
-        click: () =>
-          onOpenDialogEditApp({
-            engine,
-            id,
-            name,
-            url,
-            urlDisabled: Boolean(!url),
-            icon,
-            opts: combinedOpts,
-          }),
+        getRelatedPathsAsync,
+        requestCancelInstallApp,
+        requestCancelUpdateApp,
+        requestOpenInBrowser,
+        requestUninstallApp,
       },
-      {
-        label: 'Uninstall',
-        visible: status === INSTALLED && isOutdated,
-        click: () => requestUninstallApp(id, name, engine),
-      },
-      {
-        label: 'Clone',
-        click: () =>
-          onOpenDialogCreateCustomApp({
-            name: `${name} 2`,
-            url,
-            urlDisabled: Boolean(!url),
-            icon,
-          }),
-      },
-      {
-        label: 'Reinstall (Repair)',
-        visible: status === INSTALLED && !isOutdated,
-        click: () => onUpdateApp(id),
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: 'Show App in Finder',
-        visible: status === INSTALLED,
-        click: async () => {
-          const relatedPaths = await getRelatedPathsAsync({ id, name, engine });
-          window.remote.shell.showItemInFolder(relatedPaths[0].path);
-        },
-      },
-      {
-        label: 'Show Data Directory in Finder',
-        visible: status === INSTALLED,
-        click: async () => {
-          const relatedPaths = await getRelatedPathsAsync({ id, name, engine });
-          window.remote.shell.showItemInFolder(relatedPaths[1].path);
-        },
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: "What's New",
-        click: () =>
-          requestOpenInBrowser(
-            'https://github.com/kitsuyui/chromeless/releases?utm_source=chromeless_app',
-          ),
-        visible: Boolean(engine && version),
-      },
-      {
-        label: `Powered by ${engineName} (script v${version})`,
-        enabled: false,
-        visible: Boolean(engine && version),
-      },
-      // visible doesn't work with type='separator'
-      // https://github.com/electron/electron/issues/3494#issuecomment-455822039
-    ].filter((item) => item.visible !== false);
+    );
 
     const menu = window.remote.Menu.buildFromTemplate(template);
     menu.popup(window.remote.getCurrentWindow());
   };
 
+  const renderInstalledActionsElement = () => (
+    <div>
+      <Button
+        className={classes.actionButton}
+        size="medium"
+        variant="text"
+        disableElevation
+        onClick={(e) => {
+          e.stopPropagation();
+          requestOpenApp(id, name);
+        }}
+      >
+        Open
+      </Button>
+      {isOutdated ? (
+        <Button
+          className={classes.actionButton}
+          color="primary"
+          size="medium"
+          variant="text"
+          disableElevation
+          onClick={(e) => {
+            e.stopPropagation();
+            onUpdateApp(id);
+          }}
+        >
+          Update
+        </Button>
+      ) : (
+        <Button
+          className={classes.actionButton}
+          color="secondary"
+          variant="text"
+          size="medium"
+          disableElevation
+          onClick={(e) => {
+            e.stopPropagation();
+            requestUninstallApp(id, name, engine);
+          }}
+        >
+          Uninstall
+        </Button>
+      )}
+    </div>
+  );
+
   const renderActionsElement = () => {
-    if (status === INSTALLED) {
-      return (
-        <div>
-          <Button
-            className={classes.actionButton}
-            size="medium"
-            variant="text"
-            disableElevation
-            onClick={(e) => {
-              e.stopPropagation();
-              requestOpenApp(id, name);
-            }}
-          >
-            Open
-          </Button>
-          {isOutdated && (
-            <Button
-              className={classes.actionButton}
-              color="primary"
-              size="medium"
-              variant="text"
-              disableElevation
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdateApp(id);
-              }}
-            >
-              Update
-            </Button>
-          )}
-          {!isOutdated && (
-            <Button
-              className={classes.actionButton}
-              color="secondary"
-              variant="text"
-              size="medium"
-              disableElevation
-              onClick={(e) => {
-                e.stopPropagation();
-                requestUninstallApp(id, name, engine);
-              }}
-            >
-              Uninstall
-            </Button>
-          )}
-        </div>
-      );
-    }
+    if (status === INSTALLED) return renderInstalledActionsElement();
 
-    let showProgress = false;
-    let label = 'Install';
-    if (status === INSTALLING && version) {
-      if (cancelable) label = 'Queueing...';
-      else {
-        label = 'Updating...';
-        showProgress = true;
-      }
-    } else if (status === INSTALLING) {
-      if (cancelable) label = 'Queueing...';
-      else {
-        label = 'Installing...';
-        showProgress = true;
-      }
-    } else if (status === UNINSTALLING) label = 'Uninstalling...';
+    const pendingAction = getPendingActionState({ cancelable, status, version });
 
-    if (showProgress) {
+    if (pendingAction.showProgress) {
       return <InstallationProgress defaultDesc="Checking requirements..." />;
     }
 
@@ -289,13 +221,13 @@ const AppCard = (props) => {
         size="medium"
         variant="text"
         disableElevation
-        disabled={status !== null}
+        disabled={pendingAction.disabled}
         onClick={(e) => {
           e.stopPropagation();
           onOpenDialogChooseEngine(id, name, url, icon, combinedOpts);
         }}
       >
-        {label}
+        {pendingAction.label}
       </Button>
     );
   };
@@ -369,25 +301,6 @@ AppCard.propTypes = {
   version: PropTypes.string,
 };
 
-const mapStateToProps = (state, ownProps) => {
-  const app = state.appManagement.apps[ownProps.id];
-
-  return {
-    cancelable: Boolean(app ? app.cancelable : false),
-    category: ownProps.category || (app && app.opts ? app.opts.category : undefined),
-    engine: app ? app.engine : null,
-    icon: ownProps.icon || app.icon,
-    iconThumbnail: ownProps.iconThumbnail || (app ? app.icon128 : null),
-    isOutdated: isOutdatedApp(ownProps.id, state),
-    latestTemplateVersion: state.general.latestTemplateVersion,
-    name: ownProps.name || app.name,
-    opts: app && app.opts ? app.opts : undefined,
-    status: app ? app.status : null,
-    url: ownProps.url || (app ? app.url : null),
-    version: app ? app.version : null,
-  };
-};
-
 const actionCreators = {
   openDialogChooseEngine,
   openDialogCreateCustomApp,
@@ -395,4 +308,4 @@ const actionCreators = {
   updateApp,
 };
 
-export default connectComponent(AppCard, mapStateToProps, actionCreators, styles);
+export default connectComponent(AppCard, selectAppCardProps, actionCreators, styles);

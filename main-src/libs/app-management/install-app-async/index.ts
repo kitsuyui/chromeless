@@ -21,10 +21,82 @@ const isEngineInstalled = (engine) => {
   return false;
 };
 
+const assertEngineInstalled = (engine) => {
+  if (isEngineInstalled(engine)) return;
+
+  const engineInfo = getEngineInfo(engine);
+  const engineName = engineInfo ? engineInfo.name : 'Browser';
+  throw new Error(`${engineName} is not installed.`);
+};
+
+const getHelperPath = (url) => {
+  // the helper extension for apps has window management logic, but that logic prevents users from
+  // opening new windows in browser instances. See upstream issue #88 for context.
+  const helperDirName = url != null ? 'chromeless-helper' : 'chromeless-helper-browser-instances';
+
+  if (process.env.NODE_ENV === 'production') {
+    return path.resolve(__dirname, helperDirName).replace('app.asar', 'app.asar.unpacked');
+  }
+
+  return path.resolve(__dirname, '..', '..', '..', '..', 'public', helperDirName);
+};
+
+const buildForkParams = ({
+  cacheRoot,
+  engine,
+  icon,
+  id,
+  installationPath,
+  name,
+  opts,
+  requireAdmin,
+  url,
+}) => {
+  const params = [
+    '--engine',
+    engine,
+    '--id',
+    id,
+    '--name',
+    name,
+    '--icon',
+    icon,
+    '--opts',
+    JSON.stringify(opts),
+    '--helperPath',
+    getHelperPath(url),
+    '--homePath',
+    app.getPath('home'),
+    '--appDataPath',
+    app.getPath('appData'),
+    '--installationPath',
+    installationPath,
+    '--requireAdmin',
+    requireAdmin.toString(),
+    '--username',
+    process.env.USER, // required by sudo-prompt
+    '--cacheRoot',
+    cacheRoot,
+  ];
+
+  if (url != null) {
+    params.push('--url');
+    params.push(url);
+  }
+
+  return params;
+};
+
+const toForkError = (message) => {
+  const err = new Error(message.error.message);
+  err.stack = message.error.stack;
+  err.name = message.error.name;
+  return err;
+};
+
 const installAppAsync = (engine, id, name, url, icon, _opts = {}) => {
   let v = '0.0.0'; // app version
   let scriptFileName = null;
-  const browserPath = null;
 
   const opts = { ..._opts };
 
@@ -50,61 +122,24 @@ const installAppAsync = (engine, id, name, url, icon, _opts = {}) => {
     .then(
       async () =>
         new Promise<void>((resolve, reject) => {
-          if (!isEngineInstalled(engine)) {
-            const engineInfo = getEngineInfo(engine);
-            const engineName = engineInfo ? engineInfo.name : 'Browser';
-            reject(new Error(`${engineName} is not installed.`));
+          try {
+            assertEngineInstalled(engine);
+          } catch (error) {
+            reject(error);
             return;
           }
 
-          // the helper extension for apps has window management logic
-          // but that logic prevents user from opening new window in browser instances
-          // so we have a separate helper for browser instances without that logic
-          // https://github.com/webcatalog/chromeless/issues/88#issuecomment-1029733417
-          const helperDirName =
-            url != null ? 'chromeless-helper' : 'chromeless-helper-browser-instances';
-
-          const helperPath =
-            process.env.NODE_ENV === 'production'
-              ? path.resolve(__dirname, helperDirName).replace('app.asar', 'app.asar.unpacked') // must use app.asar.unpacked because files copied from asar has wrong permission
-              : path.resolve(__dirname, '..', '..', '..', '..', 'public', helperDirName);
-
-          const params = [
-            '--engine',
-            engine,
-            '--id',
-            id,
-            '--name',
-            name,
-            '--icon',
-            icon,
-            '--opts',
-            JSON.stringify(opts),
-            '--helperPath',
-            helperPath,
-            '--homePath',
-            app.getPath('home'),
-            '--appDataPath',
-            app.getPath('appData'),
-            '--installationPath',
-            installationPath,
-            '--requireAdmin',
-            requireAdmin.toString(),
-            '--username',
-            process.env.USER, // required by sudo-prompt,
-            '--cacheRoot',
+          const params = buildForkParams({
             cacheRoot,
-          ];
-
-          if (url != null) {
-            params.push('--url');
-            params.push(url);
-          }
-
-          if (browserPath) {
-            params.push('--browserPath');
-            params.push(browserPath);
-          }
+            engine,
+            icon,
+            id,
+            installationPath,
+            name,
+            opts,
+            requireAdmin,
+            url,
+          });
 
           const scriptPath = path
             .join(__dirname, scriptFileName)
@@ -122,9 +157,7 @@ const installAppAsync = (engine, id, name, url, icon, _opts = {}) => {
             if (message && message.progress) {
               sendToAllWindows('update-installation-progress', message.progress);
             } else if (message && message.error) {
-              err = new Error(message.error.message);
-              err.stack = message.error.stack;
-              err.name = message.error.name;
+              err = toForkError(message);
             } else {
               console.log(message); // eslint-disable-line no-console
             }
