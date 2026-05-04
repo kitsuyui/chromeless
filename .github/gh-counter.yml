@@ -1,0 +1,64 @@
+version: 1
+publish:
+  enabled: true
+  branch: gh-counter-assets
+comment:
+  key: maintenance-comments
+counters:
+  - id: maintenance-comments
+    label: TODO/FIXME
+    badge:
+      label: TODO/FIXME
+    matchers:
+      - files:
+          - dist.ts
+          - main-src/**/*.ts
+          - scripts/**/*.ts
+          - src/**/*.ts
+          - src/**/*.tsx
+          - tsdown.config.ts
+          - vite.config.ts
+          - vitest.config.ts
+        type: regex
+        pattern: "\\b(?:TODO|FIXME)\\b"
+  - id: type-escape
+    label: Type escape
+    badge:
+      label: Type escape
+    matchers:
+      - files:
+          - dist.ts
+          - main-src/**/*.ts
+          - scripts/**/*.ts
+          - src/**/*.ts
+          - src/**/*.tsx
+          - tsdown.config.ts
+          - vite.config.ts
+          - vitest.config.ts
+        type: regex
+        pattern: "(?:\\bas\\s+any\\b|:\\s*any\\b|@ts-ignore\\b|@ts-expect-error\\b)"
+  - id: lint-suppression
+    label: Lint suppression
+    badge:
+      label: Lint suppression
+    matchers:
+      - files:
+          - dist.ts
+          - main-src/**/*.ts
+          - scripts/**/*.ts
+          - src/**/*.ts
+          - src/**/*.tsx
+          - tsdown.config.ts
+          - vite.config.ts
+          - vitest.config.ts
+        type: regex
+        pattern: "(?:\\beslint-disable\\b|\\bbiome-ignore\\b)"
+  - id: electron-web-preferences-risk
+    label: Electron webPreferences risk
+    badge:
+      label: Electron webPreferences
+    matchers:
+      - files:
+          - main-src/**/*.ts
+        type: regex
+        pattern: "\\b(?:nodeIntegration:\\s*true|contextIsolation:\\s*false)\\b"

@@ -14,7 +14,14 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!build", "!dist", "!node_modules", "!public/open-source-notices.txt"]
+    "includes": [
+      "**",
+      "!build",
+      "!coverage",
+      "!dist",
+      "!node_modules",
+      "!public/open-source-notices.txt"
+    ]
   },
   "formatter": {
     "enabled": true,

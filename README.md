@@ -1,5 +1,11 @@
 # Chromeless [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](LICENSE)
 
+![Coverage](https://raw.githubusercontent.com/kitsuyui/octocov-central/main/badges/kitsuyui/chromeless/coverage.svg)
+[![TODO/FIXME](https://raw.githubusercontent.com/kitsuyui/chromeless/gh-counter-assets/badges/maintenance-comments.svg)](https://github.com/kitsuyui/chromeless/search?q=%28TODO+OR+FIXME%29&type=code)
+[![Type escape](https://raw.githubusercontent.com/kitsuyui/chromeless/gh-counter-assets/badges/type-escape.svg)](https://github.com/kitsuyui/chromeless/search?q=%28%22as+any%22+OR+%22%3A+any%22+OR+%22%40ts-ignore%22+OR+%22%40ts-expect-error%22%29&type=code)
+[![Lint suppression](https://raw.githubusercontent.com/kitsuyui/chromeless/gh-counter-assets/badges/lint-suppression.svg)](https://github.com/kitsuyui/chromeless/search?q=%28eslint-disable+OR+biome-ignore%29&type=code)
+[![Electron webPreferences](https://raw.githubusercontent.com/kitsuyui/chromeless/gh-counter-assets/badges/electron-web-preferences-risk.svg)](https://github.com/kitsuyui/chromeless/search?q=%28nodeIntegration%3A+true+OR+contextIsolation%3A+false%29&type=code)
+
 |macOS|
 |---|
 |[![macOS](https://github.com/kitsuyui/chromeless/workflows/macOS/badge.svg)](https://github.com/kitsuyui/chromeless/actions?query=workflow:%22macOS%22)|
@@ -52,6 +58,12 @@ bun install
 # run the app
 bun run electron-dev
 
+# run tests with coverage
+bun run test
+
 # Build for production
 bun run dist
 ```
+
+See [Maintenance Strategy](docs/maintenance.md) for the current quality gates and refactoring
+policy.

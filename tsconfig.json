@@ -12,5 +12,13 @@
     "strict": false,
     "target": "ES2022"
   },
-  "include": ["src", "main-src", "scripts", "dist.ts", "vite.config.ts", "tsdown.config.ts"]
+  "include": [
+    "src",
+    "main-src",
+    "scripts",
+    "dist.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "tsdown.config.ts"
+  ]
 }

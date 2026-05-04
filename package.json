@@ -18,6 +18,8 @@
     "lint": "biome check .",
     "lint-fix": "biome check --write .",
     "start": "vite",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
     "electron-dev": "concurrently \"cross-env BROWSER=none bun run start\" \"bun scripts/wait-for-url.ts http://localhost:3000 && cross-env API_URL=http://localhost:3000/api electron .\" -k",
     "dist": "bun run build && cross-env NODE_ENV=production bun dist.ts",
     "dist-dev": "bun run build && cross-env NODE_ENV=production CSC_IDENTITY_AUTO_DISCOVERY=false bun dist.ts",
@@ -43,6 +45,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "18",
     "@types/react-dom": "18",
+    "@vitest/coverage-v8": "4.1.2",
     "cheerio": "1.2.0",
     "comlink": "4.4.2",
     "concurrently": "9.2.1",
@@ -74,7 +77,8 @@
     "sudo-prompt": "9.2.1",
     "tsdown": "0.21.10",
     "typescript": "^6.0.3",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "vitest": "4.1.2"
   },
   "overrides": {
     "@electron/asar": "4.2.0",
