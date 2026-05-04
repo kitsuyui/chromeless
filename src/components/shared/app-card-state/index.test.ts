@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import packageJson from '../../../../package.json';
 import { INSTALLED } from '../../../constants/app-statuses';
 import type { RootState } from '../../../state';
-import { selectAppCardProps } from './index';
+import { selectAppCardProps } from './select-app-card-props';
 
 const closedDialogState = {
   form: {},

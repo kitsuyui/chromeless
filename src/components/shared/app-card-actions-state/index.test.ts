@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { INSTALLING, UNINSTALLING } from '../../../constants/app-statuses';
-import { getPendingActionState } from './index';
+import { getPendingActionState } from './pending-action-state';
 
 describe('getPendingActionState', () => {
   it('describes an installable app', () => {

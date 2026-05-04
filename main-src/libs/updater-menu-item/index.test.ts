@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { describe, expect, it } from 'vitest';
 
-import { getUpdaterMenuItemState } from './index';
+import { getUpdaterMenuItemState } from './menu-item-state';
 
 describe('getUpdaterMenuItemState', () => {
   it('uses the default check label without updater state', () => {

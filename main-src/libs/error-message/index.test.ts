@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { describe, expect, it } from 'vitest';
 
-import { getErrorMessage } from './index';
+import { getErrorMessage } from './message';
 
 describe('getErrorMessage', () => {
   it('returns Error messages', () => {

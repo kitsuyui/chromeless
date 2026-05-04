@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { describe, expect, it } from 'vitest';
 
-import { selectFirstAvailableIconHref, selectLargestPngIconHref } from './index';
+import { selectFirstAvailableIconHref, selectLargestPngIconHref } from './select-icon';
 
 describe('website icon selection', () => {
   it('selects the largest png candidate', () => {

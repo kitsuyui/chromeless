@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { describe, expect, it } from 'vitest';
 
-import { getInstallFailureMessage } from './index';
+import { getInstallFailureMessage } from './failure-message';
 
 describe('getInstallFailureMessage', () => {
   it('passes through missing engine errors', () => {
