@@ -1,35 +1,32 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-const path = require('path');
 const semver = require('semver');
 const settings = require('electron-settings');
 const { app, nativeTheme } = require('electron');
 
 const sendToAllWindows = require('./send-to-all-windows');
+const {
+  DEFAULT_ADMIN_INSTALLATION_PATH,
+  PREFERENCES_SCOPE,
+  applyPreferenceCacheUpdate,
+  createDefaultPreferences,
+  getMigratedRootInstallLocationValue,
+  mergePreferences,
+  shouldMigrateRootInstallLocation,
+} = require('./preference-store');
 
 // scope
-const v = '2018';
+const v = PREFERENCES_SCOPE;
 
-const getDefaultInstallationPath = () => path.join('~', 'Applications', 'Chromeless Apps');
-
-const defaultPreferences = {
-  allowPrerelease: Boolean(semver.prerelease(app.getVersion())),
-  alwaysOnTop: false, // for menubar
-  attachToMenubar: false,
-  defaultHome: 'browsers',
-  installationPath: getDefaultInstallationPath(),
-  preferredEngine: 'chrome',
-  requireAdmin: false,
-  sortInstalledAppBy: 'last-updated',
-  themeSource: 'system',
-  useHardwareAcceleration: true,
-};
+const defaultPreferences = createDefaultPreferences({
+  hasPrereleaseVersion: Boolean(semver.prerelease(app.getVersion())),
+});
 
 let cachedPreferences = null;
 
 const initCachedPreferences = () => {
-  cachedPreferences = { ...defaultPreferences, ...settings.getSync(`preferences.${v}`) };
+  cachedPreferences = mergePreferences(defaultPreferences, settings.getSync(`preferences.${v}`));
 };
 
 const getPreferences = () => {
@@ -48,13 +45,24 @@ const getPreferences = () => {
 };
 
 const setPreference = (name, value) => {
-  sendToAllWindows('set-preference', name, value);
-  cachedPreferences[name] = value;
-  Promise.resolve().then(() => settings.setSync(`preferences.${v}.${name}`, value));
-
-  if (name === 'themeSource') {
-    nativeTheme.themeSource = value;
+  if (cachedPreferences == null) {
+    initCachedPreferences();
   }
+
+  applyPreferenceCacheUpdate({
+    cachedPreferences,
+    name,
+    notify: (preferenceName, preferenceValue) =>
+      sendToAllWindows('set-preference', preferenceName, preferenceValue),
+    persist: (preferenceName, preferenceValue) =>
+      Promise.resolve().then(() =>
+        settings.setSync(`preferences.${v}.${preferenceName}`, preferenceValue),
+      ),
+    setThemeSource: (themeSource) => {
+      nativeTheme.themeSource = themeSource;
+    },
+    value,
+  });
 };
 
 const getPreference = (name) => {
@@ -65,16 +73,13 @@ const getPreference = (name) => {
     // ensure compatibility with old version
     if (name === 'installationPath' || name === 'requireAdmin') {
       // old pref, home or root
-      if (settings.getSync('preferences.2018.installLocation') === 'root') {
+      if (shouldMigrateRootInstallLocation(name, settings.getSync)) {
         settings.unsetSync('preferences.2018.installLocation');
 
-        setPreference('installationPath', '/Applications/Chromeless Apps');
+        setPreference('installationPath', DEFAULT_ADMIN_INSTALLATION_PATH);
         setPreference('requireAdmin', true);
 
-        if (name === 'installationPath') {
-          return '/Applications/Chromeless Apps';
-        }
-        return true;
+        return getMigratedRootInstallLocationValue(name);
       }
     }
 
