@@ -28,6 +28,8 @@ const rootReducer = combineReducers({
   systemPreferences,
 });
 
+export type RootState = ReturnType<typeof rootReducer>;
+
 const configureStore = (initialState = undefined) =>
   createStore(rootReducer, initialState, applyMiddleware(thunkMiddleware));
 

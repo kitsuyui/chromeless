@@ -25,11 +25,11 @@ import {
   requestUninstallApp,
 } from '../../senders';
 import { updateApp } from '../../state/app-management/actions';
-import { isOutdatedApp } from '../../state/app-management/utils';
 import { open as openDialogChooseEngine } from '../../state/dialog-choose-engine/actions';
 import { open as openDialogCreateCustomApp } from '../../state/dialog-create-custom-app/actions';
 import { open as openDialogEditApp } from '../../state/dialog-edit-app/actions';
 
+import { selectAppCardProps } from './app-card-state';
 import InstallationProgress from './installation-progress';
 
 const styles = (theme) => ({
@@ -369,24 +369,6 @@ AppCard.propTypes = {
   version: PropTypes.string,
 };
 
-const mapStateToProps = (state, ownProps) => {
-  const app = state.appManagement.apps[ownProps.id];
-
-  return {
-    cancelable: Boolean(app ? app.cancelable : false),
-    category: ownProps.category || (app && app.opts ? app.opts.category : undefined),
-    engine: app ? app.engine : null,
-    icon: ownProps.icon || app.icon,
-    iconThumbnail: ownProps.iconThumbnail || (app ? app.icon128 : null),
-    isOutdated: isOutdatedApp(ownProps.id, state),
-    name: ownProps.name || app.name,
-    opts: app && app.opts ? app.opts : undefined,
-    status: app ? app.status : null,
-    url: ownProps.url || (app ? app.url : null),
-    version: app ? app.version : null,
-  };
-};
-
 const actionCreators = {
   openDialogChooseEngine,
   openDialogCreateCustomApp,
@@ -394,4 +376,4 @@ const actionCreators = {
   updateApp,
 };
 
-export default connectComponent(AppCard, mapStateToProps, actionCreators, styles);
+export default connectComponent(AppCard, selectAppCardProps, actionCreators, styles);
