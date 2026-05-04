@@ -55,27 +55,27 @@
     },
     {
       "path": "main-src/libs/listeners.ts",
-      "line": 50,
+      "line": 51,
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/listeners.ts",
-      "line": 115,
+      "line": 116,
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/listeners.ts",
-      "line": 140,
+      "line": 141,
       "text": "// eslint-disable-next-line no-console"
     },
     {
       "path": "main-src/libs/listeners.ts",
-      "line": 162,
+      "line": 163,
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/listeners.ts",
-      "line": 234,
+      "line": 235,
       "text": "console.log(err); // eslint-disable-line no-console"
     },
     {
