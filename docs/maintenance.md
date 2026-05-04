@@ -29,3 +29,7 @@ Debt counters should include markers that are mechanically recognizable as maint
 as type escapes, lint suppressions, and insecure Electron webPreferences. A counter does not mean
 each occurrence must be removed immediately; it keeps the debt visible while related refactors are
 planned.
+
+Security-sensitive surfaces are tracked in [Security Hardening Plan](security-hardening.md). Update
+that plan before changing helper extension permissions, preload bridges, or Electron
+`webPreferences`.

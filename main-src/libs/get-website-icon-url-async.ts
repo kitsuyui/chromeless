@@ -1,11 +1,11 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-const cheerio = require('cheerio');
+import * as cheerio from 'cheerio';
 
-const customizedFetch = require('./customized-fetch.ts');
-const { selectLargestManifestIconSrc } = require('./website-icon-selection/manifest-icon.ts');
-const { selectFirstAvailableIconHref } = require('./website-icon-selection/select-icon.ts');
+import customizedFetch from './customized-fetch';
+import { selectLargestManifestIconSrc } from './website-icon-selection/manifest-icon';
+import { selectFirstAvailableIconHref } from './website-icon-selection/select-icon';
 
 const toIconCandidates = ($, rootElm) =>
   rootElm.toArray().map((elm) => {
@@ -94,4 +94,4 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
         .catch(() => undefined);
     });
 
-module.exports = getWebsiteIconUrlAsync;
+export default getWebsiteIconUrlAsync;

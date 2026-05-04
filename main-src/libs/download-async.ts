@@ -5,7 +5,8 @@ const fsExtra = require('fs-extra');
 const { Readable } = require('stream');
 const { pipeline } = require('stream/promises');
 
-const customizedFetch = require('./customized-fetch');
+const customizedFetchModule = require('./customized-fetch');
+const customizedFetch = customizedFetchModule.default || customizedFetchModule;
 
 const getNodeReadableStream = (body) => {
   if (typeof body.pipe === 'function') return body;
