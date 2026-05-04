@@ -4,22 +4,30 @@
 
 const path = require('path');
 const fsExtra = require('fs-extra');
-const { findFirefoxProfilePath } = require('./firefox-profile');
+const { findFirefoxProfilePath } = require('./firefox-profile.ts');
+const { getInstalledAppBundlePath } = require('./installation-path.ts');
 
-const getRelatedPaths = ({
-  appObj,
-  installationPath,
-  homePath,
-  userDataPath,
-  // installationPath = getPreference('installationPath'),
-  // homePath = app.getPath('home'),
-}) => {
+const getRelatedPaths = (
+  {
+    appObj,
+    installationPath,
+    homePath,
+    userDataPath,
+    // installationPath = getPreference('installationPath'),
+    // homePath = app.getPath('home'),
+  },
+  fsAccess = fsExtra,
+) => {
   const { id, name, engine } = appObj;
 
   const relatedPaths = [];
 
   // App
-  const dotAppPath = path.join(installationPath.replace('~', homePath), `${name}.app`);
+  const dotAppPath = getInstalledAppBundlePath({
+    appName: name,
+    homePath,
+    installationPath,
+  });
 
   relatedPaths.push({ path: dotAppPath, type: 'app' });
 
@@ -32,11 +40,11 @@ const getRelatedPaths = ({
       const firefoxUserDataPath = path.join(homePath, 'Library', 'Application Support', 'Firefox');
       const profilesIniPath = path.join(firefoxUserDataPath, 'profiles.ini');
 
-      const exists = fsExtra.pathExistsSync(profilesIniPath);
+      const exists = fsAccess.pathExistsSync(profilesIniPath);
       // If user has never opened Firefox app
       // profiles.ini doesn't exist
       if (exists) {
-        const profilesIniContent = fsExtra.readFileSync(profilesIniPath, 'utf-8');
+        const profilesIniContent = fsAccess.readFileSync(profilesIniPath, 'utf-8');
 
         const profilePath = findFirefoxProfilePath(profilesIniContent, profileId);
         if (profilePath) {
