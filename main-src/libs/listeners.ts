@@ -5,7 +5,8 @@ const { app, dialog, ipcMain, nativeTheme, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
 const sendToAllWindows = require('./send-to-all-windows');
-const getWebsiteIconUrlAsync = require('./get-website-icon-url-async');
+const getWebsiteIconUrlAsyncModule = require('./get-website-icon-url-async');
+const getWebsiteIconUrlAsync = getWebsiteIconUrlAsyncModule.default || getWebsiteIconUrlAsyncModule;
 
 const openApp = require('./app-management/open-app');
 const installAppAsync = require('./app-management/install-app-async');

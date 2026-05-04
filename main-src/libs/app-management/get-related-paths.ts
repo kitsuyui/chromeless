@@ -2,10 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-const path = require('path');
-const fsExtra = require('fs-extra');
-const { findFirefoxProfilePath } = require('./firefox-profile.ts');
-const { getInstalledAppBundlePath } = require('./installation-path.ts');
+import path from 'node:path';
+import fsExtra from 'fs-extra';
+
+import { findFirefoxProfilePath } from './firefox-profile';
+import { getInstalledAppBundlePath } from './installation-path';
+
+type FsAccess = {
+  pathExistsSync: typeof fsExtra.pathExistsSync;
+  readFileSync: (filePath: string, encoding: string) => string;
+};
 
 const getRelatedPaths = (
   {
@@ -16,7 +22,7 @@ const getRelatedPaths = (
     // installationPath = getPreference('installationPath'),
     // homePath = app.getPath('home'),
   },
-  fsAccess = fsExtra,
+  fsAccess: FsAccess = fsExtra as FsAccess,
 ) => {
   const { id, name, engine } = appObj;
 
@@ -69,4 +75,4 @@ const getRelatedPaths = (
   return relatedPaths;
 };
 
-module.exports = getRelatedPaths;
+export default getRelatedPaths;

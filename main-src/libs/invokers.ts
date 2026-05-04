@@ -3,7 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 const { ipcMain, app } = require('electron');
 
-const getRelatedPaths = require('./app-management/get-related-paths');
+const getRelatedPathsModule = require('./app-management/get-related-paths');
+const getRelatedPaths = getRelatedPathsModule.default || getRelatedPathsModule;
 const { getPreference } = require('./preferences');
 
 const loadInvokers = () => {

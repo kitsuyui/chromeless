@@ -3,4 +3,4 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 const customizedFetch = (url: RequestInfo | URL, opts?: RequestInit) => fetch(url, opts);
 
-module.exports = customizedFetch;
+export default customizedFetch;

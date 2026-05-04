@@ -21,7 +21,8 @@ const sudo = require('sudo-prompt');
 const { exec } = require('child_process');
 const os = require('os');
 
-const getRelatedPaths = require('../get-related-paths');
+const getRelatedPathsModule = require('../get-related-paths');
+const getRelatedPaths = getRelatedPathsModule.default || getRelatedPathsModule;
 
 const argv = parseArgs([
   'appDataPath',

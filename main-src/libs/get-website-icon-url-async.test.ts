@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const getWebsiteIconUrlAsync = require('./get-website-icon-url-async.ts');
+import getWebsiteIconUrlAsync from './get-website-icon-url-async';
 
 const createTextResponse = ({
   body,

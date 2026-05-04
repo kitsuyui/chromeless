@@ -4,7 +4,7 @@
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 
-const getRelatedPaths = require('./get-related-paths.ts');
+import getRelatedPaths from './get-related-paths';
 
 const baseInput = {
   homePath: '/Users/alice',
