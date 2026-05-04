@@ -1,20 +1,21 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import slugify from 'slugify';
 import {
   DIALOG_CREATE_CUSTOM_APP_CLOSE,
   DIALOG_CREATE_CUSTOM_APP_DOWNLOADING_ICON_UPDATE,
   DIALOG_CREATE_CUSTOM_APP_FORM_UPDATE,
   DIALOG_CREATE_CUSTOM_APP_OPEN,
-} from '../../constants/actions';
-import getStaticGlobal from '../../helpers/get-static-global';
-import hasErrors from '../../helpers/has-errors';
-import isUrl from '../../helpers/is-url';
-import validate from '../../helpers/validate';
-import { requestShowMessageBox } from '../../senders';
-import { isNameExisted } from '../app-management/utils';
-import { open as openDialogChooseEngine } from '../dialog-choose-engine/actions';
+} from '../../../constants/actions';
+import getStaticGlobal from '../../../helpers/get-static-global';
+import validate from '../../../helpers/validate';
+import { requestShowMessageBox } from '../../../senders';
+import { isNameExisted } from '../../app-management/utils';
+import { open as openDialogChooseEngine } from '../../dialog-choose-engine/actions';
+import {
+  buildCreateCustomAppSubmission,
+  getCreateCustomAppValidationRules,
+} from './create-submission';
 
 export const close = () => ({
   type: DIALOG_CREATE_CUSTOM_APP_CLOSE,
@@ -86,27 +87,12 @@ export const getIconFromInternet = () => (dispatch, getState) => {
     });
 };
 
-const getValidationRules = (urlDisabled) => ({
-  name: {
-    fieldName: 'Name',
-    required: true,
-    filePath: true,
-  },
-  url: !urlDisabled
-    ? {
-        fieldName: 'URL',
-        required: true,
-        lessStrictUrl: true,
-      }
-    : undefined,
-});
-
 export const updateForm = (changes) => (dispatch, getState) => {
   const { urlDisabled } = getState().dialogCreateCustomApp.form;
 
   dispatch({
     type: DIALOG_CREATE_CUSTOM_APP_FORM_UPDATE,
-    changes: validate(changes, getValidationRules(urlDisabled)),
+    changes: validate(changes, getCreateCustomAppValidationRules(urlDisabled)),
   });
 };
 
@@ -115,39 +101,24 @@ export const create = () => (dispatch, getState) => {
 
   const { form } = state.dialogCreateCustomApp;
 
-  const validatedChanges = validate(form, getValidationRules(form.urlDisabled));
-  if (hasErrors(validatedChanges)) {
-    return dispatch(updateForm(validatedChanges));
-  }
-
-  const { name, url, urlDisabled } = form;
-
-  // id max length: 43 chars
-  // if longer, it would crash the app on macOS (https://github.com/webcatalog/chromeless/pull/1328)
-  const id = `custom-${Date.now().toString()}`;
-
-  const icon = form.icon || form.internetIcon || getStaticGlobal('defaultIcon');
-  const protocolledUrl = isUrl(url) ? url : `http://${url}`;
-
-  const opts: Record<string, unknown> = {};
-
-  // custom app ID makes it hard to identify app directories in Finder
-  // see https://github.com/webcatalog/webcatalog-app/issues/1327
-  // so we will try to append slug to app data dir name if possible
-  // opts.slug is used by webcatalog-engine for the mentioned purpose
-  const slug = slugify(name, {
-    lower: true,
+  const submission = buildCreateCustomAppSubmission({
+    defaultIcon: getStaticGlobal('defaultIcon'),
+    form,
+    nameExists: isNameExisted(form.name, state),
+    now: Date.now(),
   });
-  if (slug.length > 0) {
-    opts.slug = slug;
+
+  if (submission.status === 'invalid') {
+    return dispatch(updateForm(submission.changes));
   }
 
-  if (isNameExisted(name, state)) {
-    requestShowMessageBox(`An app named ${name} already exists.`, 'error');
+  if (submission.status === 'duplicate') {
+    requestShowMessageBox(submission.message, 'error');
     return null;
   }
 
-  dispatch(openDialogChooseEngine(id, name, urlDisabled ? null : protocolledUrl, icon, opts));
+  const { id, name, url, icon, opts } = submission.payload;
+  dispatch(openDialogChooseEngine(id, name, url, icon, opts));
 
   dispatch(close());
   return null;

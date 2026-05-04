@@ -6,13 +6,12 @@ import {
   DIALOG_EDIT_APP_DOWNLOADING_ICON_UPDATE,
   DIALOG_EDIT_APP_FORM_UPDATE,
   DIALOG_EDIT_APP_OPEN,
-} from '../../constants/actions';
-import getStaticGlobal from '../../helpers/get-static-global';
-import hasErrors from '../../helpers/has-errors';
-import isUrl from '../../helpers/is-url';
-import validate from '../../helpers/validate';
+} from '../../../constants/actions';
+import getStaticGlobal from '../../../helpers/get-static-global';
+import validate from '../../../helpers/validate';
 
-import { updateApp } from '../app-management/actions';
+import { updateApp } from '../../app-management/actions';
+import { buildEditAppSubmission, getEditAppValidationRules } from './save-submission';
 
 export const close = () => ({
   type: DIALOG_EDIT_APP_CLOSE,
@@ -83,27 +82,12 @@ export const getIconFromInternet = () => (dispatch, getState) => {
     });
 };
 
-const getValidationRules = (urlDisabled) => ({
-  name: {
-    fieldName: 'Name',
-    required: true,
-    filePath: true,
-  },
-  url: !urlDisabled
-    ? {
-        fieldName: 'URL',
-        required: true,
-        lessStrictUrl: true,
-      }
-    : undefined,
-});
-
 export const updateForm = (changes) => (dispatch, getState) => {
   const { urlDisabled } = getState().dialogEditApp.form;
 
   dispatch({
     type: DIALOG_EDIT_APP_FORM_UPDATE,
-    changes: validate(changes, getValidationRules(urlDisabled)),
+    changes: validate(changes, getEditAppValidationRules(urlDisabled)),
   });
 };
 
@@ -125,19 +109,16 @@ export const save = () => (dispatch, getState) => {
   const state = getState();
 
   const { form } = state.dialogEditApp;
-  const { id, name, url, urlDisabled } = form;
-
-  const opts = { ...form.opts };
-
-  const validatedChanges = validate(form, getValidationRules(urlDisabled));
-  if (hasErrors(validatedChanges)) {
-    return dispatch(updateForm(validatedChanges));
+  const submission = buildEditAppSubmission({
+    defaultIcon: getStaticGlobal('defaultIcon'),
+    form,
+  });
+  if (submission.status === 'invalid') {
+    return dispatch(updateForm(submission.changes));
   }
 
-  const icon = form.icon || form.internetIcon || getStaticGlobal('defaultIcon');
-  const protocolledUrl = isUrl(url) ? url : `http://${url}`;
-
-  dispatch(updateApp(id, name, urlDisabled ? null : protocolledUrl, icon, opts));
+  const { id, name, url, icon, opts } = submission.payload;
+  dispatch(updateApp(id, name, url, icon, opts));
 
   dispatch(close());
   return null;
