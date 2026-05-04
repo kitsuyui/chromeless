@@ -7,9 +7,9 @@ import {
   SET_APP,
   SET_SCANNING_FOR_INSTALLED,
   SORT_APPS,
-} from '../../constants/actions';
-import { requestInstallApp, requestShowMessageBox, requestUpdateApp } from '../../senders';
-import { getOutdatedAppsAsList, isNameExisted } from './utils';
+} from '../../../constants/actions';
+import { requestInstallApp, requestShowMessageBox, requestUpdateApp } from '../../../senders';
+import { getOutdatedAppsAsList, isNameExisted } from '../utils';
 
 export const clean = () => (dispatch, getState) => {
   const state = getState();

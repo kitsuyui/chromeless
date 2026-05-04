@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import * as Comlink from 'comlink';
 
-async function filterApps(apps, sortedAppIds, query) {
+export async function filterApps(apps, sortedAppIds, query) {
   const processedQuery = query.trim().toLowerCase();
   return sortedAppIds.filter((id) => {
     const app = apps[id];
