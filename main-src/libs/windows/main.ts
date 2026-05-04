@@ -12,7 +12,7 @@ const sendToAllWindows = require('../send-to-all-windows');
 const { getPreference } = require('../preferences');
 const { REACT_PATH } = require('../constants/paths');
 
-const formatBytes = require('../format-bytes');
+import formatBytes from '../format-bytes';
 
 const contextMenu = contextMenuModule.default || contextMenuModule;
 

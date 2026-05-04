@@ -1,6 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+import parseArgs from '../../parse-args';
+
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
   process.send({
@@ -20,7 +22,6 @@ const { exec } = require('child_process');
 const os = require('os');
 
 const getRelatedPaths = require('../get-related-paths');
-const parseArgs = require('../../parse-args');
 
 const argv = parseArgs([
   'appDataPath',

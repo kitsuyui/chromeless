@@ -1,16 +1,16 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-const { parseArgs } = require('util');
+import { parseArgs } from 'node:util';
 
-const parseStringArgs = (stringArgs) => {
-  const options = Object.fromEntries(stringArgs.map((name) => [name, { type: 'string' }]));
+const parseStringArgs = (stringArgs: string[]): Record<string, string | undefined> => {
+  const options = Object.fromEntries(stringArgs.map((name) => [name, { type: 'string' as const }]));
   return parseArgs({
     args: process.argv.slice(1),
     allowPositionals: true,
     options,
     strict: false,
-  }).values;
+  }).values as Record<string, string | undefined>;
 };
 
-module.exports = parseStringArgs;
+export default parseStringArgs;
