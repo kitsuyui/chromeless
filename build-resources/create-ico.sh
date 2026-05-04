@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
 mkdir icon-ico
 sips -z 16 16     icon-unplated.png --out icon-ico/icon_16x16.png
 sips -z 24 24     icon-unplated.png --out icon-ico/icon_24x24.png

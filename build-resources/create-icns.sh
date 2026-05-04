@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
 # https://stackoverflow.com/questions/12306223/how-to-manually-create-icns-files-using-iconutil
 # mkdir icon.iconset
 # sips -z 16 16     icon.png --out icon.iconset/icon_16x16.png

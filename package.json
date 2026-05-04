@@ -17,6 +17,7 @@
     "format": "biome check --write .",
     "lint": "biome check .",
     "lint-fix": "biome check --write .",
+    "shellcheck": "scripts/shellcheck.sh",
     "start": "bun run build && electron .",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
