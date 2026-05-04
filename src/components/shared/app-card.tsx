@@ -11,7 +11,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { INSTALLED, INSTALLING, UNINSTALLING } from '../../constants/app-statuses';
+import { INSTALLED, INSTALLING } from '../../constants/app-statuses';
 import connectComponent from '../../helpers/connect-component';
 import getEngineIcon from '../../helpers/get-engine-icon';
 import getEngineName from '../../helpers/get-engine-name';
@@ -29,6 +29,7 @@ import { open as openDialogChooseEngine } from '../../state/dialog-choose-engine
 import { open as openDialogCreateCustomApp } from '../../state/dialog-create-custom-app/actions';
 import { open as openDialogEditApp } from '../../state/dialog-edit-app/actions';
 
+import { getPendingActionState } from './app-card-actions-state';
 import { selectAppCardProps } from './app-card-state';
 import InstallationProgress from './installation-progress';
 
@@ -212,73 +213,58 @@ const AppCard = (props) => {
     menu.popup(window.remote.getCurrentWindow());
   };
 
+  const renderInstalledActionsElement = () => (
+    <div>
+      <Button
+        className={classes.actionButton}
+        size="medium"
+        variant="text"
+        disableElevation
+        onClick={(e) => {
+          e.stopPropagation();
+          requestOpenApp(id, name);
+        }}
+      >
+        Open
+      </Button>
+      {isOutdated ? (
+        <Button
+          className={classes.actionButton}
+          color="primary"
+          size="medium"
+          variant="text"
+          disableElevation
+          onClick={(e) => {
+            e.stopPropagation();
+            onUpdateApp(id);
+          }}
+        >
+          Update
+        </Button>
+      ) : (
+        <Button
+          className={classes.actionButton}
+          color="secondary"
+          variant="text"
+          size="medium"
+          disableElevation
+          onClick={(e) => {
+            e.stopPropagation();
+            requestUninstallApp(id, name, engine);
+          }}
+        >
+          Uninstall
+        </Button>
+      )}
+    </div>
+  );
+
   const renderActionsElement = () => {
-    if (status === INSTALLED) {
-      return (
-        <div>
-          <Button
-            className={classes.actionButton}
-            size="medium"
-            variant="text"
-            disableElevation
-            onClick={(e) => {
-              e.stopPropagation();
-              requestOpenApp(id, name);
-            }}
-          >
-            Open
-          </Button>
-          {isOutdated && (
-            <Button
-              className={classes.actionButton}
-              color="primary"
-              size="medium"
-              variant="text"
-              disableElevation
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdateApp(id);
-              }}
-            >
-              Update
-            </Button>
-          )}
-          {!isOutdated && (
-            <Button
-              className={classes.actionButton}
-              color="secondary"
-              variant="text"
-              size="medium"
-              disableElevation
-              onClick={(e) => {
-                e.stopPropagation();
-                requestUninstallApp(id, name, engine);
-              }}
-            >
-              Uninstall
-            </Button>
-          )}
-        </div>
-      );
-    }
+    if (status === INSTALLED) return renderInstalledActionsElement();
 
-    let showProgress = false;
-    let label = 'Install';
-    if (status === INSTALLING && version) {
-      if (cancelable) label = 'Queueing...';
-      else {
-        label = 'Updating...';
-        showProgress = true;
-      }
-    } else if (status === INSTALLING) {
-      if (cancelable) label = 'Queueing...';
-      else {
-        label = 'Installing...';
-        showProgress = true;
-      }
-    } else if (status === UNINSTALLING) label = 'Uninstalling...';
+    const pendingAction = getPendingActionState({ cancelable, status, version });
 
-    if (showProgress) {
+    if (pendingAction.showProgress) {
       return <InstallationProgress defaultDesc="Checking requirements..." />;
     }
 
@@ -289,13 +275,13 @@ const AppCard = (props) => {
         size="medium"
         variant="text"
         disableElevation
-        disabled={status !== null}
+        disabled={pendingAction.disabled}
         onClick={(e) => {
           e.stopPropagation();
           onOpenDialogChooseEngine(id, name, url, icon, combinedOpts);
         }}
       >
-        {label}
+        {pendingAction.label}
       </Button>
     );
   };

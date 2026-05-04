@@ -25,20 +25,34 @@ export type AppCardOwnProps = {
   url?: string | null;
 };
 
+const toAppFallbackProps = (app: AppRecord | undefined) => ({
+  cancelable: Boolean(app?.cancelable),
+  category: app?.opts?.category,
+  engine: app?.engine ?? null,
+  icon: app?.icon,
+  iconThumbnail: app?.icon128 ?? null,
+  name: app?.name,
+  opts: app?.opts,
+  status: app?.status ?? null,
+  url: app?.url ?? null,
+  version: app?.version ?? null,
+});
+
 export const selectAppCardProps = (state: RootState, ownProps: AppCardOwnProps) => {
   const app = state.appManagement.apps[ownProps.id] as AppRecord | undefined;
+  const fallback = toAppFallbackProps(app);
 
   return {
-    cancelable: Boolean(app ? app.cancelable : false),
-    category: ownProps.category || (app && app.opts ? app.opts.category : undefined),
-    engine: app ? app.engine : null,
-    icon: ownProps.icon || app?.icon,
-    iconThumbnail: ownProps.iconThumbnail || (app ? app.icon128 : null),
+    cancelable: fallback.cancelable,
+    category: ownProps.category || fallback.category,
+    engine: fallback.engine,
+    icon: ownProps.icon || fallback.icon,
+    iconThumbnail: ownProps.iconThumbnail || fallback.iconThumbnail,
     isOutdated: isOutdatedApp(ownProps.id, state),
-    name: ownProps.name || app?.name,
-    opts: app && app.opts ? app.opts : undefined,
-    status: app ? app.status : null,
-    url: ownProps.url || (app ? app.url : null),
-    version: app ? app.version : null,
+    name: ownProps.name || fallback.name,
+    opts: fallback.opts,
+    status: fallback.status,
+    url: ownProps.url || fallback.url,
+    version: fallback.version,
   };
 };

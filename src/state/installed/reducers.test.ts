@@ -100,4 +100,20 @@ describe('installed reducers', () => {
 
     expect(state.filteredSortedAppIds).toEqual(['alpha', 'beta']);
   });
+
+  it('repositions an existing app when its sorting value changes', () => {
+    const state = reducer(
+      { filteredSortedAppIds: ['beta', 'alpha'] },
+      {
+        type: SET_APP,
+        activeQuery: 'example',
+        app: { lastUpdated: 400 },
+        apps,
+        id: 'alpha',
+        sortInstalledAppBy: 'last-updated',
+      },
+    );
+
+    expect(state.filteredSortedAppIds).toEqual(['alpha', 'beta']);
+  });
 });

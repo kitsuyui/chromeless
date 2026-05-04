@@ -5,6 +5,19 @@ const cheerio = require('cheerio');
 const url = require('url');
 
 const customizedFetch = require('./customized-fetch');
+const { selectFirstAvailableIconHref } = require('./website-icon-selection');
+
+const toIconCandidates = ($, rootElm) =>
+  rootElm.toArray().map((elm) => {
+    const $elm = $(elm);
+    return {
+      href: $elm.attr('href'),
+      sizes: $elm.attr('sizes'),
+      type: $elm.attr('type'),
+    };
+  });
+
+const resolveSelectedIcon = (baseUrl, href) => (href ? url.resolve(baseUrl, href) : undefined);
 
 const getWebsiteIconUrlAsync = (websiteURL) =>
   customizedFetch(websiteURL)
@@ -18,64 +31,15 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
         return url.resolve(redirectedUrl, $fluidIcon.attr('href'));
       }
 
-      const getMaxSizeIcon = (rootElm) => {
-        let icon = null;
-        let maxSize = 0;
-        // find the icon with largest size
-        rootElm.each((i, _elm) => {
-          const elm = $(_elm);
-          // make sure icon is png
-          // check if type is PNG
-          // also check to make sure links doesn't end with .ico
-          // as some websites specify icon type wrong
-          // see https://github.com/webcatalog/webcatalog-app/issues/630 for more details
-          if (
-            (elm.attr('type') === 'image/png' && !elm.attr('href').endsWith('.ico')) ||
-            elm.attr('href').endsWith('.png')
-          ) {
-            // if type is not specified but link ends with .png then assumes that the icon is PNG
-            const size = elm.attr('sizes') ? Number.parseInt(elm.attr('sizes').split('x'), 10) : 0;
-            if (size >= maxSize) {
-              maxSize = size;
-              icon = url.resolve(redirectedUrl, elm.attr('href'));
-            }
-          }
-        });
-        return icon;
-      };
-
-      // for code sharing
-      // I know this is lazy, but it works so whatever
       const lessPriorityCheck = () => {
-        // rel=icon
-        // less preferred because it's not always in high resolution
-        const $icon = $('head > link[rel=icon]');
-        if ($icon.length > 0) {
-          const icon = getMaxSizeIcon($icon);
-          if (icon) return icon;
-        }
-        // rel=icon
-        // less preferred because it's not always in high resolution
-        const $shortcutIcon = $("head > link[rel='shortcut icon']");
-        if ($shortcutIcon.length > 0) {
-          const icon = getMaxSizeIcon($shortcutIcon);
-          if (icon) return icon;
-        }
-        // rel=apple-touch-icon
-        // less preferred because it's not transparent
-        const $appleTouchIcon = $('head > link[rel=apple-touch-icon]');
-        if ($appleTouchIcon.length > 0) {
-          const icon = getMaxSizeIcon($appleTouchIcon);
-          if (icon) return icon;
-        }
-        // rel=apple-touch-icon-precomposed
-        // less preferred because it's not transparent
-        const $appleTouchIconPrecomposed = $('head > link[rel=apple-touch-icon-precomposed]');
-        if ($appleTouchIconPrecomposed.length > 0) {
-          const icon = getMaxSizeIcon($appleTouchIconPrecomposed);
-          if (icon) return icon;
-        }
-        return undefined;
+        const href = selectFirstAvailableIconHref([
+          toIconCandidates($, $('head > link[rel=icon]')),
+          toIconCandidates($, $("head > link[rel='shortcut icon']")),
+          toIconCandidates($, $('head > link[rel=apple-touch-icon]')),
+          toIconCandidates($, $('head > link[rel=apple-touch-icon-precomposed]')),
+        ]);
+
+        return resolveSelectedIcon(redirectedUrl, href);
       };
 
       // manifest.json icon

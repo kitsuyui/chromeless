@@ -24,6 +24,8 @@ const { createMenu, showMenu } = require('./menu');
 
 const mainWindow = require('./windows/main');
 const { canCheckForUpdates } = require('./updater-availability');
+const { getUpdateFailureMessage } = require('./app-update-error');
+const { getInstallFailureMessage } = require('./app-install-error');
 
 const send = (webContents, ...args) => {
   // check to make sure webContents is not destroyed
@@ -194,17 +196,7 @@ const loadListeners = () => {
           .catch((error) => {
             // eslint-disable-next-line no-console
             console.log(error);
-            if (error && error.message && error.message.includes('is not installed')) {
-              send(e.sender, 'enqueue-snackbar', error.message, 'error');
-            } else if (
-              error &&
-              error.message &&
-              error.message.startsWith('Chromeless is outdated')
-            ) {
-              send(e.sender, 'enqueue-snackbar', error.message, 'error');
-            } else {
-              send(e.sender, 'enqueue-snackbar', `Failed to install ${name}.`, 'error');
-            }
+            send(e.sender, 'enqueue-snackbar', getInstallFailureMessage(error, name), 'error');
             send(e.sender, 'remove-app', id);
             delete promiseFuncMap[id];
           });
@@ -243,28 +235,7 @@ const loadListeners = () => {
           .catch((error) => {
             // eslint-disable-next-line no-console
             console.log(error);
-            if (error && error.message && error.message.includes('is not installed')) {
-              send(e.sender, 'enqueue-snackbar', error.message, 'error');
-            } else if (
-              error &&
-              error.message &&
-              (error.message.startsWith('EBUSY') || error.message === 'Application is in use.')
-            ) {
-              send(
-                e.sender,
-                'enqueue-snackbar',
-                `Failed to update ${name} as the application is in use.`,
-                'error',
-              );
-            } else if (
-              error &&
-              error.message &&
-              error.message.startsWith('Chromeless is outdated')
-            ) {
-              send(e.sender, 'enqueue-snackbar', error.message, 'error');
-            } else {
-              send(e.sender, 'enqueue-snackbar', `Failed to update ${name}.`, 'error');
-            }
+            send(e.sender, 'enqueue-snackbar', getUpdateFailureMessage(error, name), 'error');
             send(e.sender, 'set-app', id, {
               status: 'INSTALLED',
             });

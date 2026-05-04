@@ -12,7 +12,7 @@ const sendToAllWindows = require('../send-to-all-windows');
 const { getPreference } = require('../preferences');
 const { REACT_PATH } = require('../constants/paths');
 
-import formatBytes from '../format-bytes';
+import { getUpdaterMenuItemState } from '../updater-menu-item';
 
 const contextMenu = contextMenuModule.default || contextMenuModule;
 
@@ -95,24 +95,12 @@ const createAsync = () =>
 
         mb.tray.on('right-click', () => {
           const updaterEnabled = !process.mas;
+          const updaterMenuItemState = getUpdaterMenuItemState(global.updaterObj);
           const updaterMenuItem: MenuItemConstructorOptions = {
-            label: 'Check for Updates...',
+            ...updaterMenuItemState,
             click: () => ipcMain.emit('request-check-for-updates'),
             visible: updaterEnabled,
           };
-          if (global.updaterObj && global.updaterObj.status === 'update-downloaded') {
-            updaterMenuItem.label = 'Restart to Apply Updates...';
-          } else if (global.updaterObj && global.updaterObj.status === 'update-available') {
-            updaterMenuItem.label = 'Downloading Updates...';
-            updaterMenuItem.enabled = false;
-          } else if (global.updaterObj && global.updaterObj.status === 'download-progress') {
-            const { transferred, total, bytesPerSecond } = global.updaterObj.info;
-            updaterMenuItem.label = `Downloading Updates (${formatBytes(transferred)}/${formatBytes(total)} at ${formatBytes(bytesPerSecond)}/s)...`;
-            updaterMenuItem.enabled = false;
-          } else if (global.updaterObj && global.updaterObj.status === 'checking-for-update') {
-            updaterMenuItem.label = 'Checking for Updates...';
-            updaterMenuItem.enabled = false;
-          }
 
           const trayContextMenu = Menu.buildFromTemplate([
             {

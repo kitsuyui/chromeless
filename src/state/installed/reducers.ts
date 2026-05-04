@@ -53,6 +53,44 @@ const iterateeFunc = (app, sortInstalledAppBy) => {
   // action.sortInstalledAppBy === 'last-updated'
   return -(app.lastUpdated || 0);
 };
+
+const appMatchesQuery = (app, query) => {
+  const processedQuery = query.trim().toLowerCase();
+  const appName = app.name.toLowerCase();
+  const appUrl = app.url ? app.url.toLowerCase() : '';
+
+  return appName.includes(processedQuery) || appUrl.includes(processedQuery);
+};
+
+const buildCurrentApp = (action) => ({ ...action.apps[action.id], ...action.app });
+
+const insertSortedAppId = (state, action) => {
+  const newState = [...state];
+  const index = sortedIndexBy(newState, action.id, (id) => {
+    const app = id === action.id ? buildCurrentApp(action) : action.apps[id];
+    return iterateeFunc(app, action.sortInstalledAppBy);
+  });
+  newState.splice(index, 0, action.id);
+  return newState;
+};
+
+const sortingValueChanged = (action) =>
+  (action.sortInstalledAppBy === 'name' && action.app.name) ||
+  (action.sortInstalledAppBy === 'last-updated' && action.app.lastUpdated);
+
+const updateFilteredSortedAppIdsForSetApp = (state, action) => {
+  const currentApp = buildCurrentApp(action);
+  if (!appMatchesQuery(currentApp, action.activeQuery)) return state;
+
+  if (state.indexOf(action.id) < 0) {
+    return insertSortedAppId(state, action);
+  }
+
+  if (!sortingValueChanged(action)) return state;
+
+  return insertSortedAppId(without(state, action.id), action);
+};
+
 const filteredSortedAppIds = (state = null, action) => {
   switch (action.type) {
     case INSTALLED_UPDATE_SORTED_APP_IDS: {
@@ -66,43 +104,7 @@ const filteredSortedAppIds = (state = null, action) => {
     }
     case SET_APP: {
       if (!state) return null;
-
-      // if the app is not supposed to be in search result
-      // just return the current state
-      const processedQuery = action.activeQuery.trim().toLowerCase();
-      const currentApp = { ...action.apps[action.id], ...action.app };
-      if (
-        !(
-          currentApp.name.toLowerCase().includes(processedQuery) ||
-          (currentApp.url && currentApp.url.toLowerCase().includes(processedQuery))
-        )
-      ) {
-        return state;
-      }
-
-      // if id is not in list, insert at sorted position
-      if (state.indexOf(action.id) < 0) {
-        const index = sortedIndexBy(state, action.id, (id) => {
-          const app = id === action.id ? { ...action.apps[id], ...action.app } : action.apps[id];
-          return iterateeFunc(app, action.sortInstalledAppBy);
-        });
-        state.splice(index, 0, action.id);
-        return [...state];
-      }
-      // if sorting value is updated, remove and reinsert id at new index
-      if (
-        (action.sortInstalledAppBy === 'name' && action.app.name) ||
-        (action.sortInstalledAppBy === 'last-updated' && action.app.lastUpdated)
-      ) {
-        const newState = without(state, action.id);
-        const index = sortedIndexBy(newState, action.id, (id) => {
-          const app = id === action.id ? { ...action.apps[id], ...action.app } : action.apps[id];
-          return iterateeFunc(app, action.sortInstalledAppBy);
-        });
-        newState.splice(index, 0, action.id);
-        return newState;
-      }
-      return state;
+      return updateFilteredSortedAppIdsForSetApp(state, action);
     }
     case REMOVE_APP: {
       if (!state) return null;

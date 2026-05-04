@@ -60,6 +60,12 @@
     "rules": {
       "recommended": true,
       "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 12
+          }
+        },
         "useDateNow": "off",
         "useOptionalChain": "off"
       },
