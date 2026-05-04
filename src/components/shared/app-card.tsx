@@ -30,6 +30,7 @@ import { open as openDialogCreateCustomApp } from '../../state/dialog-create-cus
 import { open as openDialogEditApp } from '../../state/dialog-edit-app/actions';
 
 import { getPendingActionState } from './app-card-actions-state';
+import { createAppCardMenuTemplate } from './app-card-menu';
 import { selectAppCardProps } from './app-card-state';
 import InstallationProgress from './installation-progress';
 
@@ -127,87 +128,32 @@ const AppCard = (props) => {
   const engineIcon = engine ? getEngineIcon(engine) : null;
 
   const showMenu = () => {
-    const template = [
+    const template = createAppCardMenuTemplate(
       {
-        label: version ? 'Cancel Update' : 'Cancel Installation',
-        visible: status === INSTALLING && cancelable,
-        click: () => {
-          if (version) return requestCancelUpdateApp(id);
-          return requestCancelInstallApp(id);
-        },
+        cancelable,
+        combinedOpts,
+        engine,
+        engineName,
+        icon,
+        id,
+        isOutdated,
+        name,
+        onOpenDialogCreateCustomApp,
+        onOpenDialogEditApp,
+        onUpdateApp,
+        showItemInFolder: window.remote.shell.showItemInFolder,
+        status,
+        url,
+        version,
       },
       {
-        label: 'Edit',
-        visible: status === INSTALLED,
-        click: () =>
-          onOpenDialogEditApp({
-            engine,
-            id,
-            name,
-            url,
-            urlDisabled: Boolean(!url),
-            icon,
-            opts: combinedOpts,
-          }),
+        getRelatedPathsAsync,
+        requestCancelInstallApp,
+        requestCancelUpdateApp,
+        requestOpenInBrowser,
+        requestUninstallApp,
       },
-      {
-        label: 'Uninstall',
-        visible: status === INSTALLED && isOutdated,
-        click: () => requestUninstallApp(id, name, engine),
-      },
-      {
-        label: 'Clone',
-        click: () =>
-          onOpenDialogCreateCustomApp({
-            name: `${name} 2`,
-            url,
-            urlDisabled: Boolean(!url),
-            icon,
-          }),
-      },
-      {
-        label: 'Reinstall (Repair)',
-        visible: status === INSTALLED && !isOutdated,
-        click: () => onUpdateApp(id),
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: 'Show App in Finder',
-        visible: status === INSTALLED,
-        click: async () => {
-          const relatedPaths = await getRelatedPathsAsync({ id, name, engine });
-          window.remote.shell.showItemInFolder(relatedPaths[0].path);
-        },
-      },
-      {
-        label: 'Show Data Directory in Finder',
-        visible: status === INSTALLED,
-        click: async () => {
-          const relatedPaths = await getRelatedPathsAsync({ id, name, engine });
-          window.remote.shell.showItemInFolder(relatedPaths[1].path);
-        },
-      },
-      {
-        type: 'separator',
-      },
-      {
-        label: "What's New",
-        click: () =>
-          requestOpenInBrowser(
-            'https://github.com/kitsuyui/chromeless/releases?utm_source=chromeless_app',
-          ),
-        visible: Boolean(engine && version),
-      },
-      {
-        label: `Powered by ${engineName} (script v${version})`,
-        enabled: false,
-        visible: Boolean(engine && version),
-      },
-      // visible doesn't work with type='separator'
-      // https://github.com/electron/electron/issues/3494#issuecomment-455822039
-    ].filter((item) => item.visible !== false);
+    );
 
     const menu = window.remote.Menu.buildFromTemplate(template);
     menu.popup(window.remote.getCurrentWindow());
