@@ -379,7 +379,6 @@ const mapStateToProps = (state, ownProps) => {
     icon: ownProps.icon || app.icon,
     iconThumbnail: ownProps.iconThumbnail || (app ? app.icon128 : null),
     isOutdated: isOutdatedApp(ownProps.id, state),
-    latestTemplateVersion: state.general.latestTemplateVersion,
     name: ownProps.name || app.name,
     opts: app && app.opts ? app.opts : undefined,
     status: app ? app.status : null,

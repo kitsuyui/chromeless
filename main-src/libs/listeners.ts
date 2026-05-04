@@ -1,6 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+const fs = require('fs');
+const path = require('path');
 const { app, dialog, ipcMain, nativeTheme, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
@@ -303,6 +305,7 @@ const loadListeners = () => {
   ipcMain.on('request-check-for-updates', (e, isSilent) => {
     // https://github.com/electron-userland/electron-builder/issues/4028
     if (!autoUpdater.isUpdaterActive()) return;
+    if (!fs.existsSync(path.join(process.resourcesPath, 'app-update.yml'))) return;
 
     // restart & apply updates
     if (global.updaterObj && global.updaterObj.status === 'update-downloaded') {
