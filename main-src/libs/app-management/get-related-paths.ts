@@ -3,8 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 const path = require('path');
-const os = require('os');
 const fsExtra = require('fs-extra');
+const { findFirefoxProfilePath } = require('./firefox-profile');
 
 const getRelatedPaths = ({
   appObj,
@@ -38,35 +38,9 @@ const getRelatedPaths = ({
       if (exists) {
         const profilesIniContent = fsExtra.readFileSync(profilesIniPath, 'utf-8');
 
-        // get profile path and delete it
-        const entries = profilesIniContent.split(`${os.EOL}${os.EOL}`).map((entryText) => {
-          /*
-          [Profile0]
-          Name=facebook
-          IsRelative=1
-          Path=Profiles/8kv8728b.facebook
-          Default=1
-          */
-          const lines = entryText.split(os.EOL);
-
-          const entry: Record<string, string> = {};
-          lines.forEach((line, i) => {
-            if (i === 0) {
-              // eslint-disable-next-line dot-notation
-              entry.Header = line;
-              return;
-            }
-            const parts = line.split(/=(.+)/);
-            // eslint-disable-next-line prefer-destructuring
-            entry[parts[0]] = parts[1];
-          });
-
-          return entry;
-        });
-
-        const profileDetails = entries.find((entry) => entry.Name === profileId);
-        if (profileDetails && profileDetails.Path) {
-          const profileDataPath = path.join(firefoxUserDataPath, profileDetails.Path);
+        const profilePath = findFirefoxProfilePath(profilesIniContent, profileId);
+        if (profilePath) {
+          const profileDataPath = path.join(firefoxUserDataPath, profilePath);
           relatedPaths.push({
             path: profileDataPath,
             type: 'data',

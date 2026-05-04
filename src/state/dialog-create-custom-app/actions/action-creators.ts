@@ -102,7 +102,7 @@ export const create = () => (dispatch, getState) => {
   const { form } = state.dialogCreateCustomApp;
 
   const submission = buildCreateCustomAppSubmission({
-    defaultIcon: getStaticGlobal('defaultIcon'),
+    defaultIcon: getStaticGlobal('defaultIcon') as string,
     form,
     nameExists: isNameExisted(form.name, state),
     now: Date.now(),
