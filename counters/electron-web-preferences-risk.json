@@ -1,0 +1,27 @@
+{
+  "id": "electron-web-preferences-risk",
+  "label": "Electron webPreferences risk",
+  "count": 4,
+  "matches": [
+    {
+      "path": "main-src/libs/windows/main.ts",
+      "line": 68,
+      "text": "contextIsolation: false,"
+    },
+    {
+      "path": "main-src/libs/windows/main.ts",
+      "line": 69,
+      "text": "nodeIntegration: true,"
+    },
+    {
+      "path": "main-src/libs/windows/main.ts",
+      "line": 180,
+      "text": "contextIsolation: false,"
+    },
+    {
+      "path": "main-src/libs/windows/main.ts",
+      "line": 181,
+      "text": "nodeIntegration: true,"
+    }
+  ]
+}

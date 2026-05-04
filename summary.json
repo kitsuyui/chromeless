@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-05-04T02:49:39.527Z",
+  "repository": "kitsuyui/chromeless",
+  "default_branch": "main",
+  "publish_branch": "gh-counter-assets",
+  "event_name": "push",
+  "base_reference": null,
+  "head_reference": "33b0ba58a036f20ab426c8e20985ec2f9c436fb5",
+  "bootstrap_message": null,
+  "counters": [
+    {
+      "id": "maintenance-comments",
+      "label": "TODO/FIXME",
+      "current": 0,
+      "base": null,
+      "delta": null,
+      "commentable": true,
+      "touched_files": [],
+      "violations": [],
+      "badge_path": ".gh-counter/badges/maintenance-comments.svg",
+      "counter_path": ".gh-counter/counters/maintenance-comments.json"
+    },
+    {
+      "id": "type-escape",
+      "label": "Type escape",
+      "current": 0,
+      "base": null,
+      "delta": null,
+      "commentable": true,
+      "touched_files": [],
+      "violations": [],
+      "badge_path": ".gh-counter/badges/type-escape.svg",
+      "counter_path": ".gh-counter/counters/type-escape.json"
+    },
+    {
+      "id": "lint-suppression",
+      "label": "Lint suppression",
+      "current": 41,
+      "base": null,
+      "delta": null,
+      "commentable": true,
+      "touched_files": [],
+      "violations": [],
+      "badge_path": ".gh-counter/badges/lint-suppression.svg",
+      "counter_path": ".gh-counter/counters/lint-suppression.json"
+    },
+    {
+      "id": "electron-web-preferences-risk",
+      "label": "Electron webPreferences risk",
+      "current": 4,
+      "base": null,
+      "delta": null,
+      "commentable": true,
+      "touched_files": [],
+      "violations": [],
+      "badge_path": ".gh-counter/badges/electron-web-preferences-risk.svg",
+      "counter_path": ".gh-counter/counters/electron-web-preferences-risk.json"
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "id": "lint-suppression",
+  "label": "Lint suppression",
+  "count": 41,
+  "matches": [
+    {
+      "path": "dist.ts",
+      "line": 4,
+      "text": "/* eslint-disable no-console */"
+    },
+    {
+      "path": "dist.ts",
+      "line": 16,
+      "text": "// eslint-disable-next-line no-console"
+    },
+    {
+      "path": "dist.ts",
+      "line": 103,
+      "text": "// eslint-disable-next-line no-console"
+    },
+    {
+      "path": "main-src/libs/app-management/get-installed-apps-async.ts",
+      "line": 57,
+      "text": "// eslint-disable-next-line no-console"
+    },
+    {
+      "path": "main-src/libs/app-management/get-related-paths.ts",
+      "line": 55,
+      "text": "// eslint-disable-next-line dot-notation"
+    },
+    {
+      "path": "main-src/libs/app-management/get-related-paths.ts",
+      "line": 60,
+      "text": "// eslint-disable-next-line prefer-destructuring"
+    },
+    {
+      "path": "main-src/libs/app-management/install-app-async/index.ts",
+      "line": 4,
+      "text": "/* eslint-disable prefer-destructuring */"
+    },
+    {
+      "path": "main-src/libs/app-management/install-app-async/index.ts",
+      "line": 129,
+      "text": "console.log(message); // eslint-disable-line no-console"
+    },
+    {
+      "path": "main-src/libs/app-management/install-app-async/install-app-forked-lite-v2.ts",
+      "line": 102,
+      "text": "/* eslint-disable prefer-template */"
+    },
+    {
+      "path": "main-src/libs/app-management/uninstall-app-async/index.ts",
+      "line": 57,
+      "text": "console.log(message); // eslint-disable-line no-console"
+    },
+    {
+      "path": "main-src/libs/listeners.ts",
+      "line": 48,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "main-src/libs/listeners.ts",
+      "line": 110,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "main-src/libs/listeners.ts",
+      "line": 135,
+      "text": "// eslint-disable-next-line no-console"
+    },
+    {
+      "path": "main-src/libs/listeners.ts",
+      "line": 157,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "main-src/libs/listeners.ts",
+      "line": 194,
+      "text": "// eslint-disable-next-line no-console"
+    },
+    {
+      "path": "main-src/libs/listeners.ts",
+      "line": 243,
+      "text": "// eslint-disable-next-line no-console"
+    },
+    {
+      "path": "main-src/libs/listeners.ts",
+      "line": 331,
+      "text": "console.log(err); // eslint-disable-line no-console"
+    },
+    {
+      "path": "main-src/libs/updater.ts",
+      "line": 42,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "main-src/libs/updater.ts",
+      "line": 64,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "main-src/libs/updater.ts",
+      "line": 86,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "main-src/libs/updater.ts",
+      "line": 152,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "scripts/wait-for-url.ts",
+      "line": 32,
+      "text": "console.error(e.message); // eslint-disable-line no-console"
+    },
+    {
+      "path": "src/components/dialogs/dialog-create-custom-app.tsx",
+      "line": 4,
+      "text": "/* eslint-disable jsx-a11y/anchor-is-valid */"
+    },
+    {
+      "path": "src/components/dialogs/dialog-create-custom-app.tsx",
+      "line": 139,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "src/components/dialogs/dialog-edit-app.tsx",
+      "line": 4,
+      "text": "/* eslint-disable jsx-a11y/anchor-is-valid */"
+    },
+    {
+      "path": "src/components/dialogs/dialog-edit-app.tsx",
+      "line": 158,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "src/components/dialogs/dialog-open-source-notices.tsx",
+      "line": 33,
+      "text": "// eslint-disable-next-line no-console"
+    },
+    {
+      "path": "src/components/dialogs/dialog-set-installation-path.tsx",
+      "line": 66,
+      "text": ".then(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "src/components/pages/browsers/defined-app-bar.tsx",
+      "line": 4,
+      "text": "/* eslint-disable no-constant-condition */"
+    },
+    {
+      "path": "src/components/pages/installed/defined-app-bar.tsx",
+      "line": 4,
+      "text": "/* eslint-disable no-constant-condition */"
+    },
+    {
+      "path": "src/components/pages/preferences/defined-app-bar.tsx",
+      "line": 4,
+      "text": "/* eslint-disable no-constant-condition */"
+    },
+    {
+      "path": "src/components/pages/preferences/index.tsx",
+      "line": 395,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "src/components/pages/preferences/index.tsx",
+      "line": 542,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "src/components/shared/enhanced-app-bar.tsx",
+      "line": 4,
+      "text": "/* eslint-disable no-constant-condition */"
+    },
+    {
+      "path": "src/helpers/extract-hostname.ts",
+      "line": 4,
+      "text": "/* eslint-disable prefer-destructuring */"
+    },
+    {
+      "path": "src/helpers/is-url.ts",
+      "line": 6,
+      "text": "new URL(string); // eslint-disable-line"
+    },
+    {
+      "path": "src/listeners/index.ts",
+      "line": 17,
+      "text": "// eslint-disable-next-line"
+    },
+    {
+      "path": "src/state/dialog-create-custom-app/actions.ts",
+      "line": 79,
+      "text": ".catch(console.log) // eslint-disable-line no-console"
+    },
+    {
+      "path": "src/state/dialog-edit-app/actions.ts",
+      "line": 76,
+      "text": ".catch(console.log) // eslint-disable-line no-console"
+    },
+    {
+      "path": "src/state/dialog-set-installation-path/actions.ts",
+      "line": 52,
+      "text": ".catch(console.log); // eslint-disable-line"
+    },
+    {
+      "path": "src/state/installed/actions.ts",
+      "line": 58,
+      "text": "// eslint-disable-next-line no-console"
+    }
+  ]
+}
