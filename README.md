@@ -56,7 +56,7 @@ cd chromeless
 bun install
 
 # run the app
-bun run electron-dev
+bun run start
 
 # run tests with coverage
 bun run test
