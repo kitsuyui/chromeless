@@ -1,22 +1,21 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
-import Paper from '@mui/material/Paper';
+
+import PublicIcon from '@mui/icons-material/Public';
+import SettingsIcon from '@mui/icons-material/Settings';
+import SystemUpdateIcon from '@mui/icons-material/SystemUpdate';
+import Badge from '@mui/material/Badge';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import SystemUpdateIcon from '@mui/icons-material/SystemUpdate';
-import SettingsIcon from '@mui/icons-material/Settings';
-import PublicIcon from '@mui/icons-material/Public';
-import Badge from '@mui/material/Badge';
-
-import connectComponent from '../../helpers/connect-component';
+import Paper from '@mui/material/Paper';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { ROUTE_BROWSERS, ROUTE_INSTALLED, ROUTE_PREFERENCES } from '../../constants/routes';
 
 import { useNavigation } from '../../contexts/navigation';
+import connectComponent from '../../helpers/connect-component';
 import { getAppBadgeCount } from '../../state/app-management/utils';
-
-import { ROUTE_BROWSERS, ROUTE_INSTALLED, ROUTE_PREFERENCES } from '../../constants/routes';
 
 const styles = {
   paper: {
@@ -27,8 +26,9 @@ const styles = {
   bottomNavigation: {
     height: 40,
   },
-  bottomNavigationActionWrapper: {
+  bottomNavigationActionRoot: {
     flexDirection: 'row',
+    minWidth: 80,
   },
   bottomNavigationActionLabel: {
     fontSize: '0.8rem !important',
@@ -52,7 +52,7 @@ const EnhancedBottomNavigation = ({ classes, appBadgeCount }) => {
           icon={<PublicIcon />}
           value={ROUTE_BROWSERS}
           classes={{
-            wrapper: classes.bottomNavigationActionWrapper,
+            root: classes.bottomNavigationActionRoot,
             label: classes.bottomNavigationActionLabel,
           }}
         />
@@ -69,7 +69,7 @@ const EnhancedBottomNavigation = ({ classes, appBadgeCount }) => {
           }
           value={ROUTE_INSTALLED}
           classes={{
-            wrapper: classes.bottomNavigationActionWrapper,
+            root: classes.bottomNavigationActionRoot,
             label: classes.bottomNavigationActionLabel,
           }}
         />
@@ -78,7 +78,7 @@ const EnhancedBottomNavigation = ({ classes, appBadgeCount }) => {
           icon={<SettingsIcon />}
           value={ROUTE_PREFERENCES}
           classes={{
-            wrapper: classes.bottomNavigationActionWrapper,
+            root: classes.bottomNavigationActionRoot,
             label: classes.bottomNavigationActionLabel,
           }}
         />

@@ -1,8 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
 import PropTypes from 'prop-types';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { ROUTE_BROWSERS, ROUTE_INSTALLED, ROUTE_PREFERENCES } from '../constants/routes';
 import { getPreference } from '../senders';
@@ -39,11 +40,7 @@ export const NavigationProvider = ({ children }) => {
     [route],
   );
 
-  return (
-    <NavigationContext.Provider value={value}>
-      {children}
-    </NavigationContext.Provider>
-  );
+  return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
 };
 
 NavigationProvider.propTypes = {

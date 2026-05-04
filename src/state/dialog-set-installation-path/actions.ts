@@ -7,9 +7,7 @@ import {
   DIALOG_SET_INSTALLATION_PATH_OPEN,
 } from '../../constants/actions';
 
-import {
-  requestSetPreference,
-} from '../../senders';
+import { requestSetPreference } from '../../senders';
 
 export const close = () => ({
   type: DIALOG_SET_INSTALLATION_PATH_CLOSE,
@@ -42,13 +40,16 @@ export const save = () => (dispatch, getState) => {
   const appCount = Object.keys(state.appManagement.apps).length;
 
   if (appCount > 0) {
-    window.remote.dialog.showMessageBox(window.remote.getCurrentWindow(), {
-      title: 'Uninstall all of Chromeless apps first',
-      message: 'You need to uninstall all of your Chromeless apps before changing this preference.',
-      buttons: ['OK'],
-      cancelId: 0,
-      defaultId: 0,
-    }).catch(console.log); // eslint-disable-line
+    window.remote.dialog
+      .showMessageBox(window.remote.getCurrentWindow(), {
+        title: 'Uninstall all of Chromeless apps first',
+        message:
+          'You need to uninstall all of your Chromeless apps before changing this preference.',
+        buttons: ['OK'],
+        cancelId: 0,
+        defaultId: 0,
+      })
+      .catch(console.log); // eslint-disable-line
   } else {
     requestSetPreference('requireAdmin', requireAdmin);
     requestSetPreference('installationPath', installationPath);

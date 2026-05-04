@@ -7,9 +7,7 @@ import {
   DIALOG_SET_PREFERRED_ENGINE_OPEN,
 } from '../../constants/actions';
 
-import {
-  requestSetPreference,
-} from '../../senders';
+import { requestSetPreference } from '../../senders';
 
 export const close = () => ({
   type: DIALOG_SET_PREFERRED_ENGINE_CLOSE,
@@ -25,9 +23,7 @@ export const save = () => (dispatch, getState) => {
 
   const { form } = state.dialogSetPreferredEngine;
 
-  const {
-    engine,
-  } = form;
+  const { engine } = form;
 
   requestSetPreference('preferredEngine', engine);
 

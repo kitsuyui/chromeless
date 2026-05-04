@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-disable no-constant-condition */
-import React from 'react';
+
 import PropTypes from 'prop-types';
+import React from 'react';
 
 import connectComponent from '../../../helpers/connect-component';
 
@@ -17,16 +18,8 @@ const styles = () => ({
   },
 });
 
-const DefinedAppBar = ({
-  classes,
-}) => (
-  <EnhancedAppBar
-    center={(
-      <div className={classes.centerContainer}>
-        Browser Instances
-      </div>
-    )}
-  />
+const DefinedAppBar = ({ classes }) => (
+  <EnhancedAppBar center={<div className={classes.centerContainer}>Browser Instances</div>} />
 );
 
 DefinedAppBar.propTypes = {
@@ -37,9 +30,4 @@ const actionCreators = {
   openDialogCreateCustomApp,
 };
 
-export default connectComponent(
-  DefinedAppBar,
-  null,
-  actionCreators,
-  styles,
-);
+export default connectComponent(DefinedAppBar, null, actionCreators, styles);

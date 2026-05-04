@@ -1,29 +1,22 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import PropTypes from 'prop-types';
-import React from 'react';
 
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-
+import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { INSTALLED, INSTALLING, UNINSTALLING } from '../../constants/app-statuses';
 import connectComponent from '../../helpers/connect-component';
-import isUrl from '../../helpers/is-url';
-import getEngineName from '../../helpers/get-engine-name';
 import getEngineIcon from '../../helpers/get-engine-icon';
-
-import {
-  INSTALLED,
-  INSTALLING,
-  UNINSTALLING,
-} from '../../constants/app-statuses';
-
+import getEngineName from '../../helpers/get-engine-name';
+import isUrl from '../../helpers/is-url';
+import { getRelatedPathsAsync } from '../../invokers';
 import {
   requestCancelInstallApp,
   requestCancelUpdateApp,
@@ -31,13 +24,8 @@ import {
   requestOpenInBrowser,
   requestUninstallApp,
 } from '../../senders';
-
-import {
-  getRelatedPathsAsync,
-} from '../../invokers';
-
-import { isOutdatedApp } from '../../state/app-management/utils';
 import { updateApp } from '../../state/app-management/actions';
+import { isOutdatedApp } from '../../state/app-management/utils';
 import { open as openDialogChooseEngine } from '../../state/dialog-choose-engine/actions';
 import { open as openDialogCreateCustomApp } from '../../state/dialog-create-custom-app/actions';
 import { open as openDialogEditApp } from '../../state/dialog-edit-app/actions';
@@ -150,15 +138,16 @@ const AppCard = (props) => {
       {
         label: 'Edit',
         visible: status === INSTALLED,
-        click: () => onOpenDialogEditApp({
-          engine,
-          id,
-          name,
-          url,
-          urlDisabled: Boolean(!url),
-          icon,
-          opts: combinedOpts,
-        }),
+        click: () =>
+          onOpenDialogEditApp({
+            engine,
+            id,
+            name,
+            url,
+            urlDisabled: Boolean(!url),
+            icon,
+            opts: combinedOpts,
+          }),
       },
       {
         label: 'Uninstall',
@@ -167,12 +156,13 @@ const AppCard = (props) => {
       },
       {
         label: 'Clone',
-        click: () => onOpenDialogCreateCustomApp({
-          name: `${name} 2`,
-          url,
-          urlDisabled: Boolean(!url),
-          icon,
-        }),
+        click: () =>
+          onOpenDialogCreateCustomApp({
+            name: `${name} 2`,
+            url,
+            urlDisabled: Boolean(!url),
+            icon,
+          }),
       },
       {
         label: 'Reinstall (Repair)',
@@ -202,8 +192,11 @@ const AppCard = (props) => {
         type: 'separator',
       },
       {
-        label: 'What\'s New',
-        click: () => requestOpenInBrowser('https://github.com/kitsuyui/chromeless/releases?utm_source=chromeless_app'),
+        label: "What's New",
+        click: () =>
+          requestOpenInBrowser(
+            'https://github.com/kitsuyui/chromeless/releases?utm_source=chromeless_app',
+          ),
         visible: Boolean(engine && version),
       },
       {
@@ -211,8 +204,8 @@ const AppCard = (props) => {
         enabled: false,
         visible: Boolean(engine && version),
       },
-    // visible doesn't work with type='separator'
-    // https://github.com/electron/electron/issues/3494#issuecomment-455822039
+      // visible doesn't work with type='separator'
+      // https://github.com/electron/electron/issues/3494#issuecomment-455822039
     ].filter((item) => item.visible !== false);
 
     const menu = window.remote.Menu.buildFromTemplate(template);
@@ -286,7 +279,7 @@ const AppCard = (props) => {
     } else if (status === UNINSTALLING) label = 'Uninstalling...';
 
     if (showProgress) {
-      return (<InstallationProgress defaultDesc="Checking requirements..." />);
+      return <InstallationProgress defaultDesc="Checking requirements..." />;
     }
 
     return (
@@ -321,16 +314,10 @@ const AppCard = (props) => {
           className={classes.paperIcon}
           src={iconThumbnail || (isUrl(icon) ? icon : `file://${icon}`)}
         />
-        <Typography
-          className={classes.appName}
-          title={name}
-          variant="subtitle2"
-        >
+        <Typography className={classes.appName} title={name} variant="subtitle2">
           {name}
         </Typography>
-        <div className={classes.actionContainer}>
-          {renderActionsElement()}
-        </div>
+        <div className={classes.actionContainer}>{renderActionsElement()}</div>
         {engineIcon && (
           <Tooltip title={`Powered by ${engineName}${version ? ` (script v${version})` : ''}`}>
             <img src={engineIcon} alt={engineName} className={classes.topLeft} />
@@ -408,9 +395,4 @@ const actionCreators = {
   updateApp,
 };
 
-export default connectComponent(
-  AppCard,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(AppCard, mapStateToProps, actionCreators, styles);

@@ -14,34 +14,17 @@ const getRelatedPaths = ({
   // installationPath = getPreference('installationPath'),
   // homePath = app.getPath('home'),
 }) => {
-  const {
-    id,
-    name,
-    engine,
-  } = appObj;
+  const { id, name, engine } = appObj;
 
   const relatedPaths = [];
 
   // App
-  const dotAppPath = process.platform === 'darwin'
-    ? path.join(installationPath.replace('~', homePath), `${name}.app`)
-    : path.join(installationPath.replace('~', homePath), `${name}`);
+  const dotAppPath = path.join(installationPath.replace('~', homePath), `${name}.app`);
 
   relatedPaths.push({ path: dotAppPath, type: 'app' });
 
   // Data
   switch (engine) {
-    case 'webkit': {
-      relatedPaths.push({
-        path: path.join(homePath, 'Library', 'WebKit', `com.chromeless.webkit.${id}`),
-        type: 'data',
-      });
-      relatedPaths.push({
-        path: path.join(homePath, 'Caches', `com.chromeless.webkit.${id}`),
-        type: 'data',
-      });
-      break;
-    }
     case 'firefox/tabs':
     case 'firefox': {
       const profileId = `chromeless-${id}`;
@@ -56,7 +39,6 @@ const getRelatedPaths = ({
         const profilesIniContent = fsExtra.readFileSync(profilesIniPath, 'utf-8');
 
         // get profile path and delete it
-        // https://coderwall.com/p/mrio6w/split-lines-cross-platform-in-node-js
         const entries = profilesIniContent.split(`${os.EOL}${os.EOL}`).map((entryText) => {
           /*
           [Profile0]
@@ -67,7 +49,7 @@ const getRelatedPaths = ({
           */
           const lines = entryText.split(os.EOL);
 
-          const entry = {};
+          const entry: Record<string, string> = {};
           lines.forEach((line, i) => {
             if (i === 0) {
               // eslint-disable-next-line dot-notation
@@ -95,20 +77,10 @@ const getRelatedPaths = ({
     }
     // Chromium-based browsers
     default: {
-      // chromium-based browsers
-      // forked-script-lite-v2
-      if (process.platform === 'darwin') {
-        relatedPaths.push({
-          path: path.join(userDataPath, 'ChromiumProfiles', id),
-          type: 'data',
-        });
-      } else {
-        // forked-script-lite-v1
-        relatedPaths.push({
-          path: path.join(homePath, '.chromeless', 'chromium-data', id),
-          type: 'data',
-        });
-      }
+      relatedPaths.push({
+        path: path.join(userDataPath, 'ChromiumProfiles', id),
+        type: 'data',
+      });
     }
   }
 

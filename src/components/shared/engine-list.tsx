@@ -1,8 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
+
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import HelpIcon from '@mui/icons-material/Help';
 
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
@@ -13,22 +14,15 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { withStyles } from '@mui/styles';
-
-import HelpIcon from '@mui/icons-material/Help';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-
-import connectComponent from '../../helpers/connect-component';
-
-import HelpTooltip from './help-tooltip';
-
+import PropTypes from 'prop-types';
+import React from 'react';
 import engines from '../../constants/engines';
-
-import {
-  requestOpenInBrowser,
-} from '../../senders';
+import connectComponent from '../../helpers/connect-component';
+import { requestOpenInBrowser } from '../../senders';
+import HelpTooltip from './help-tooltip';
 
 const CustomHelpIcon = withStyles((theme) => ({
   fontSizeSmall: {
@@ -37,10 +31,6 @@ const CustomHelpIcon = withStyles((theme) => ({
 }))(HelpIcon);
 
 const getDesc = (engineCode, browserName) => {
-  if (engineCode === 'webkit') {
-    return `This option creates lightweight ${browserName}-based app, optimized to save memory & battery.`;
-  }
-
   const standardDesc = `This option creates bare-bone ${browserName}-based app${engineCode !== 'firefox' ? ' with WebExtension support' : ''}.`;
   const tabbedDesc = `This option creates ${browserName}-based app with traditional browser user interface, tab and WebExtension support.`;
   if (engineCode === 'opera' || engineCode.startsWith('firefox')) {
@@ -79,12 +69,7 @@ const styles = (theme) => ({
   },
 });
 
-const EngineList = ({
-  classes,
-  engine,
-  isMultisite,
-  onEngineSelected,
-}) => {
+const EngineList = ({ classes, engine, isMultisite, onEngineSelected }) => {
   const renderItem = ({
     engineVal,
     engineName,
@@ -99,7 +84,9 @@ const EngineList = ({
       button
       onClick={() => {
         if (engine.startsWith(engineVal)) return;
-        onEngineSelected(disableStandardMode || defaultMode === 'tabbed' ? `${engineVal}/tabs` : engineVal);
+        onEngineSelected(
+          disableStandardMode || defaultMode === 'tabbed' ? `${engineVal}/tabs` : engineVal,
+        );
       }}
       selected={engine.startsWith(engineVal)}
     >
@@ -107,7 +94,7 @@ const EngineList = ({
         <Avatar alt={engineName} src={iconPath} className={classes.smallAvatar} />
       </ListItemAvatar>
       <ListItemText
-        primary={(
+        primary={
           <Grid container direction="row" alignItems="center" spacing={1}>
             <Grid item>
               <Typography variant="body2" noWrap>
@@ -116,18 +103,16 @@ const EngineList = ({
             </Grid>
             <Grid item>
               <HelpTooltip
-                title={(
+                title={
                   <Typography variant="body2" color="textPrimary">
                     {getDesc(engineVal, engineName)}
                   </Typography>
-                )}
+                }
               >
                 <CustomHelpIcon fontSize="small" color="disabled" />
               </HelpTooltip>
               {downloadUrl && (
-                <Tooltip
-                  title="Download Browser"
-                >
+                <Tooltip title="Download Browser">
                   <CloudDownloadIcon
                     className={classes.download}
                     fontSize="small"
@@ -141,7 +126,7 @@ const EngineList = ({
               )}
             </Grid>
           </Grid>
-        )}
+        }
       />
       {!isMultisite && (
         <ListItemSecondaryAction>
@@ -198,9 +183,4 @@ EngineList.propTypes = {
   onEngineSelected: PropTypes.func.isRequired,
 };
 
-export default connectComponent(
-  EngineList,
-  null,
-  null,
-  styles,
-);
+export default connectComponent(EngineList, null, null, styles);

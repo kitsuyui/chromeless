@@ -1,15 +1,12 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React, { useEffect, useCallback } from 'react';
 
 import Button from '@mui/material/Button';
-
 import { useSnackbar } from 'notistack';
+import React, { useCallback, useEffect } from 'react';
 
-import {
-  requestRestart,
-} from '../../../senders';
+import { requestRestart } from '../../../senders';
 
 const SnackbarTriggerInner = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();

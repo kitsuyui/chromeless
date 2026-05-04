@@ -18,19 +18,23 @@ const getInstalledAppsAsync = () => {
       const apps = [];
 
       if (fsExtra.pathExistsSync(installationPath)) {
-        return fsExtra.readdir(installationPath, { withFileTypes: true })
+        return fsExtra
+          .readdir(installationPath, { withFileTypes: true })
           .then((files) => {
             files.forEach((file) => {
               if (!file.isDirectory()) return;
               const fileName = file.name;
 
-              const resourcesPath = process.platform === 'darwin'
-                ? path.join(installationPath, fileName, 'Contents', 'Resources')
-                : path.join(installationPath, fileName, 'resources');
+              const resourcesPath = path.join(installationPath, fileName, 'Contents', 'Resources');
 
               const packageJsonPath = path.join(resourcesPath, 'app.asar.unpacked', 'package.json');
 
-              const appJsonPath = path.join(resourcesPath, 'app.asar.unpacked', 'build', 'app.json');
+              const appJsonPath = path.join(
+                resourcesPath,
+                'app.asar.unpacked',
+                'build',
+                'app.json',
+              );
               const iconPath = path.join(resourcesPath, 'app.asar.unpacked', 'build', 'icon.png');
 
               let version = '0.0.0';

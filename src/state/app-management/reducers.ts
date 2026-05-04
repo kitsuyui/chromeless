@@ -1,17 +1,17 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import { combineReducers } from 'redux';
-import { without, sortedIndexBy, orderBy } from 'lodash';
 
-import { INSTALLING } from '../../constants/app-statuses';
+import { orderBy, sortedIndexBy, without } from 'lodash';
+import { combineReducers } from 'redux';
 import {
-  SET_APP,
-  REMOVE_APP,
   CLEAN_APP_MANAGEMENT,
+  REMOVE_APP,
+  SET_APP,
   SET_SCANNING_FOR_INSTALLED,
   SORT_APPS,
 } from '../../constants/actions';
+import { INSTALLING } from '../../constants/app-statuses';
 
 const apps = (state = {}, action) => {
   switch (action.type) {
@@ -37,7 +37,8 @@ const apps = (state = {}, action) => {
       delete newState[action.id];
       return newState;
     }
-    default: return state;
+    default:
+      return state;
   }
 };
 
@@ -52,7 +53,7 @@ const sortedAppIds = (state = [], action) => {
   switch (action.type) {
     case CLEAN_APP_MANAGEMENT: {
       // keep apps which are in installing/updating state
-      const newLst = state.filter((id) => (action.apps[id].status === INSTALLING));
+      const newLst = state.filter((id) => action.apps[id].status === INSTALLING);
       return newLst;
     }
     case SET_APP: {
@@ -67,8 +68,8 @@ const sortedAppIds = (state = [], action) => {
       }
       // if sorting value is updated, remove and reinsert id at new index
       if (
-        (action.sortInstalledAppBy === 'name' && action.app.name)
-        || (action.sortInstalledAppBy === 'last-updated' && (action.app.lastUpdated))
+        (action.sortInstalledAppBy === 'name' && action.app.name) ||
+        (action.sortInstalledAppBy === 'last-updated' && action.app.lastUpdated)
       ) {
         const newState = without(state, action.id);
         const index = sortedIndexBy(newState, action.id, (id) => {
@@ -88,20 +89,28 @@ const sortedAppIds = (state = [], action) => {
       const parts = action.sortInstalledAppBy.split('/');
       const key = parts[0];
       const order = parts.length > 0 ? parts[1] : 'asc';
-      return orderBy(state, (id) => {
-        const app = action.apps[id];
-        return iterateeFunc(app, key);
-      }, [order]);
+      return orderBy(
+        state,
+        (id) => {
+          const app = action.apps[id];
+          return iterateeFunc(app, key);
+        },
+        [order],
+      );
     }
-    default: return state;
+    default:
+      return state;
   }
 };
 
 const scanning = (state = true, action) => {
   switch (action.type) {
-    case CLEAN_APP_MANAGEMENT: return true;
-    case SET_SCANNING_FOR_INSTALLED: return action.scanning;
-    default: return state;
+    case CLEAN_APP_MANAGEMENT:
+      return true;
+    case SET_SCANNING_FOR_INSTALLED:
+      return action.scanning;
+    default:
+      return state;
   }
 };
 

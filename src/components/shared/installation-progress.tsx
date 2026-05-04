@@ -1,14 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import PropTypes from 'prop-types';
-import React from 'react';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
-
-import connectComponent from '../../helpers/connect-component';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { useInstallationProgress } from '../../contexts/installation-progress';
+import connectComponent from '../../helpers/connect-component';
 
 const styles = (theme) => ({
   root: {
@@ -40,10 +39,7 @@ const styles = (theme) => ({
   },
 });
 
-const AppCard = ({
-  classes,
-  defaultDesc,
-}) => {
+const AppCard = ({ classes, defaultDesc }) => {
   const { progressDesc, progressPercent } = useInstallationProgress();
 
   return (
@@ -80,9 +76,4 @@ AppCard.propTypes = {
   defaultDesc: PropTypes.string.isRequired,
 };
 
-export default connectComponent(
-  AppCard,
-  null,
-  null,
-  styles,
-);
+export default connectComponent(AppCard, null, null, styles);

@@ -10,7 +10,7 @@ import '@fontsource/roboto/500.css';
 
 import './index.css';
 
-import store from './state';
+import AppWrapper from './components/app-wrapper';
 import { AppearanceProvider } from './contexts/appearance';
 import { DialogsProvider } from './contexts/dialogs';
 import { InstallationProgressProvider } from './contexts/installation-progress';
@@ -19,8 +19,7 @@ import { UpdaterProvider } from './contexts/updater';
 
 // listeners to communicate with main process
 import loadListeners from './listeners';
-
-import AppWrapper from './components/app-wrapper';
+import store from './state';
 
 loadListeners(store);
 

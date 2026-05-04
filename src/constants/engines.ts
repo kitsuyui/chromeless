@@ -4,18 +4,17 @@
 import braveIcon from '../assets/brave.png';
 import chromeIcon from '../assets/chrome.png';
 import chromeBetaIcon from '../assets/chrome-beta.png';
-import chromeDevIcon from '../assets/chrome-dev.png';
 import chromeCanaryIcon from '../assets/chrome-canary.png';
+import chromeDevIcon from '../assets/chrome-dev.png';
 import chromiumIcon from '../assets/chromium.png';
 import coccocIcon from '../assets/coccoc.png';
 import edgeIcon from '../assets/edge.png';
 import edgeBetaIcon from '../assets/edge-beta.png';
-import edgeDevIcon from '../assets/edge-dev.png';
 import edgeCanaryIcon from '../assets/edge-canary.png';
+import edgeDevIcon from '../assets/edge-dev.png';
 import firefoxIcon from '../assets/firefox.png';
 import operaIcon from '../assets/opera.png';
 import vivaldiIcon from '../assets/vivaldi.png';
-import webkitIcon from '../assets/webkit.png';
 import yandexIcon from '../assets/yandex.png';
 
 const engines = {
@@ -60,12 +59,6 @@ const engines = {
     disableStandardMode: true,
     defaultMode: 'tabbed',
     downloadUrl: 'https://www.opera.com/',
-  },
-  webkit: {
-    engineName: 'WebKit',
-    iconPath: webkitIcon,
-    disableTabbedMode: true,
-    disableMultisiteMode: true,
   },
   firefox: {
     engineName: 'Mozilla Firefox (experimental)',

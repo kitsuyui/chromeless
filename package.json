@@ -14,13 +14,14 @@
     "generate-open-source-notices": "license-checker-rseidelsohn --markdown > public/open-source-notices.txt",
     "build": "vite build && tsdown --config-loader unrun",
     "bundle": "tsdown --config-loader unrun",
-    "format": "biome format --write .",
-    "lint": "biome lint .",
+    "format": "biome check --write .",
+    "lint": "biome check .",
     "lint-fix": "biome check --write .",
     "start": "vite",
     "electron-dev": "concurrently \"cross-env BROWSER=none bun run start\" \"bun scripts/wait-for-url.ts http://localhost:3000 && cross-env API_URL=http://localhost:3000/api electron .\" -k",
     "dist": "bun run build && cross-env NODE_ENV=production bun dist.ts",
-    "dist-dev": "bun run build && cross-env NODE_ENV=production CSC_IDENTITY_AUTO_DISCOVERY=false bun dist.ts"
+    "dist-dev": "bun run build && cross-env NODE_ENV=production CSC_IDENTITY_AUTO_DISCOVERY=false bun dist.ts",
+    "typecheck": "tsc --noEmit"
   },
   "repository": "https://github.com/kitsuyui/chromeless",
   "author": {
@@ -46,7 +47,6 @@
     "comlink": "4.4.2",
     "concurrently": "9.2.1",
     "cross-env": "10.1.0",
-    "decompress": "4.2.1",
     "electron": "41.5.0",
     "electron-builder": "26.8.1",
     "electron-context-menu": "4.1.2",

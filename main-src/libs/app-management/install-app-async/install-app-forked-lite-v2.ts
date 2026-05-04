@@ -61,15 +61,22 @@ const addSlash = (str) => str.replace(/ /g, '\\ ');
 
 const isUrl = (value) => URL.canParse(value);
 
+type StringsFileValue =
+  | string
+  | {
+      comment: string;
+      value: string;
+    };
+
 // https://github.com/iteufel/node-strings-file/blob/master/index.js
-const strings2Obj = (data, wantComments) => {
-  if (data.indexOf('\n') === -1) {
-    // eslint-disable-next-line no-param-reassign
-    data += '\n';
+const strings2Obj = (data, wantComments = false): Record<string, StringsFileValue> => {
+  let normalizedData = data;
+  if (normalizedData.indexOf('\n') === -1) {
+    normalizedData += '\n';
   }
   const re = /(?:\/\*(.+)\*\/\n)?(.+)\s*=\s*"(.+)";\n/gim;
-  const res = {};
-  let m = re.exec(data);
+  const res: Record<string, StringsFileValue> = {};
+  let m = re.exec(normalizedData);
   while (m !== null) {
     if (m.index === re.lastIndex) {
       re.lastIndex += 1;
@@ -86,7 +93,7 @@ const strings2Obj = (data, wantComments) => {
     } else {
       res[m[2]] = unescapeString(m[3]);
     }
-    m = re.exec(data);
+    m = re.exec(normalizedData);
   }
   return res;
 };
@@ -119,25 +126,17 @@ const sudoAsync = (prompt) =>
       if (error) {
         return reject(error);
       }
-      return resolve(stdout, stderr);
+      return resolve(stdout);
     });
   });
 
-const getAppFolderName = () => {
-  if (process.platform === 'darwin') {
-    return `${name}.app`;
-  }
-  throw Error('Unsupported platform');
-};
+const getAppFolderName = () => `${name}.app`;
 
 const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'chromeless-'));
 const appFolderPath = path.join(tmpPath, getAppFolderName());
-// Mock Electron for backward compatiblity
+// Mock Electron for backward compatibility
 const contentsPath = path.join(appFolderPath, 'Contents');
-const resourcesPath =
-  process.platform === 'darwin'
-    ? path.join(contentsPath, 'Resources')
-    : path.join(appFolderPath, 'resources');
+const resourcesPath = path.join(contentsPath, 'Resources');
 const appAsarUnpackedPath = path.join(resourcesPath, 'app.asar.unpacked');
 const packageJsonPath = path.join(appAsarUnpackedPath, 'package.json');
 const appJsonPath = path.join(appAsarUnpackedPath, 'build', 'app.json');
@@ -149,10 +148,7 @@ const iconIcnsPath = path.join(buildResourcesPath, 'e.icns');
 const iconPngPath = path.join(buildResourcesPath, 'e.png');
 
 const allAppsPath = installationPath.replace('~', homePath);
-const finalPath =
-  process.platform === 'darwin'
-    ? path.join(allAppsPath, `${name}.app`)
-    : path.join(allAppsPath, name);
+const finalPath = path.join(allAppsPath, `${name}.app`);
 
 const helperDestPath = path.join(resourcesPath, 'chromeless-helper');
 
@@ -185,10 +181,7 @@ Promise.resolve()
   })
   .then(() => Jimp.read(iconPngPath))
   .then((img) => {
-    const sizes =
-      process.platform === 'darwin'
-        ? [16, 32, 64, 128, 256, 512, 1024]
-        : [16, 24, 32, 48, 64, 128, 256];
+    const sizes = [16, 32, 64, 128, 256, 512, 1024];
 
     const p = sizes.map((size) =>
       img
@@ -198,18 +191,15 @@ Promise.resolve()
         .writeAsync(path.join(buildResourcesPath, `${size}.png`)),
     );
 
-    return Promise.all(p).then(() => {
-      if (process.platform === 'darwin') {
-        return icongen(buildResourcesPath, buildResourcesPath, {
-          report: true,
-          icns: {
-            name: 'e',
-            sizes,
-          },
-        });
-      }
-      return null;
-    });
+    return Promise.all(p).then(() =>
+      icongen(buildResourcesPath, buildResourcesPath, {
+        report: true,
+        icns: {
+          name: 'e',
+          sizes,
+        },
+      }),
+    );
   })
   .then(() => {
     process.send({
@@ -219,25 +209,21 @@ Promise.resolve()
       },
     });
 
-    if (process.platform === 'darwin') {
-      return Promise.resolve()
-        .then(() => fsExtra.ensureDir(appAsarUnpackedPath))
-        .then(() => fsExtra.copy(iconPngPath, publicIconPngPath))
-        .then(() => fsExtra.copy(iconIcnsPath, publicIconIcnsPath))
-        .then(() => fsExtra.copy(helperPath, helperDestPath))
-        .then(() => {
-          const execFilePath =
-            process.platform === 'darwin'
-              ? path.join(contentsPath, 'MacOS', 'chromeless_root_app')
-              : path.join(appFolderPath, name);
+    return Promise.resolve()
+      .then(() => fsExtra.ensureDir(appAsarUnpackedPath))
+      .then(() => fsExtra.copy(iconPngPath, publicIconPngPath))
+      .then(() => fsExtra.copy(iconIcnsPath, publicIconIcnsPath))
+      .then(() => fsExtra.copy(helperPath, helperDestPath))
+      .then(() => {
+        const execFilePath = path.join(contentsPath, 'MacOS', 'chromeless_root_app');
 
-          let execFileContent = '';
-          if (browserId === 'firefox') {
-            let urlParam = '';
-            if (url) {
-              urlParam = useTabs ? `"${url}"` : `--ssb="${url}"`;
-            }
-            execFileContent = `#!/bin/sh
+        let execFileContent = '';
+        if (browserId === 'firefox') {
+          let urlParam = '';
+          if (url) {
+            urlParam = useTabs ? `"${url}"` : `--ssb="${url}"`;
+          }
+          execFileContent = `#!/bin/sh
 DIR=$(dirname "$0");
 cd "$DIR";
 cd ..;
@@ -247,8 +233,8 @@ cp "$PWD"/icon.icns "$PWD"/${addSlash(name)}.app/Contents/Resources/firefox.icns
 
 open -n "$PWD"/${addSlash(name)}.app --args ${urlParam} -P ${firefoxProfileId}
 `;
-          } else if (useTabs) {
-            execFileContent = `#!/bin/sh
+        } else if (useTabs) {
+          execFileContent = `#!/bin/sh
 DIR=$(dirname "$0");
 cd "$DIR";
 cd ..;
@@ -276,8 +262,8 @@ fi
 
 open -n "$PWD"/${addSlash(name)}.app --args $Tabs --no-sandbox --test-type --user-data-dir="$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id} --load-extension="$PWD"/chromeless-helper "$@"
 `;
-          } else {
-            execFileContent = `#!/bin/sh
+        } else {
+          execFileContent = `#!/bin/sh
 DIR=$(dirname "$0");
 cd "$DIR";
 cd ..;
@@ -298,14 +284,14 @@ fi
 
 open -n "$PWD"/${addSlash(name)}.app --args --no-sandbox --test-type --app="${url}" --user-data-dir="$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id} --load-extension="$PWD"/chromeless-helper "$@"
 `;
-          }
-          return fsExtra
-            .outputFile(execFilePath, execFileContent)
-            .then(() => fsExtra.chmod(execFilePath, '755'));
-        })
-        .then(() => {
-          const infoPlistPath = path.join(contentsPath, 'Info.plist');
-          const infoPlistContent = `<?xml version="1.0" encoding="UTF-8"?>
+        }
+        return fsExtra
+          .outputFile(execFilePath, execFileContent)
+          .then(() => fsExtra.chmod(execFilePath, '755'));
+      })
+      .then(() => {
+        const infoPlistPath = path.join(contentsPath, 'Info.plist');
+        const infoPlistContent = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -320,164 +306,161 @@ open -n "$PWD"/${addSlash(name)}.app --args --no-sandbox --test-type --app="${ur
 </dict>
 </plist>
 `;
-          return fsExtra.outputFile(infoPlistPath, infoPlistContent);
-        })
-        .then(() => {
-          // init profile
-          // hard code instead of relying on Electron app.getPath('userData')
-          // as it is also hard coded in the exec bash script
-          if (browserId !== 'firefox') {
-            const profilePath = path.join(
-              homePath,
-              'Library',
-              'Application Support',
-              'Chromeless',
-              'ChromiumProfiles',
-              id,
-            );
+        return fsExtra.outputFile(infoPlistPath, infoPlistContent);
+      })
+      .then(() => {
+        // init profile
+        // hard code instead of relying on Electron app.getPath('userData')
+        // as it is also hard coded in the exec bash script
+        if (browserId !== 'firefox') {
+          const profilePath = path.join(
+            homePath,
+            'Library',
+            'Application Support',
+            'Chromeless',
+            'ChromiumProfiles',
+            id,
+          );
 
-            // move data from v1
-            const legacyProfilePath = path.join(homePath, '.chromeless', 'chromium-data', id);
-            if (fsExtra.existsSync(legacyProfilePath)) {
-              fsExtra.moveSync(legacyProfilePath, profilePath, { overwrite: true });
-            }
-
-            // (redundant as ensureFileSync would ensureDir too
-            fsExtra.ensureDirSync(profilePath);
-
-            // add empty "First Run" file so default browser prompt doesn't show up
-            fsExtra.ensureFileSync(path.join(profilePath, 'First Run'));
-
-            // this file is needed
-            // if not, Chromium will crash on first launch
-            // details: https://github.com/webcatalog/chromeless/issues/4#issuecomment-805901787
-            fsExtra.writeFileSync(
-              path.join(profilePath, 'Local State'),
-              '{"profile":{"info_cache":{}}}',
-            );
-          }
-        })
-        .then(() => {
-          const browserPath = getEngineAppPath(engine, homePath);
-
-          // for Firefox
-          // duplicate the whole app
-          if (browserId === 'firefox') {
-            const clonedBrowserPath = path.join(resourcesPath, `${name}.app`);
-            return (
-              fsExtra
-                .copy(browserPath, clonedBrowserPath)
-                // create Firefox profile for the app
-                .then(() => {
-                  // https://developer.mozilla.org/en-US/docs/Mozilla/Command_Line_Options
-                  const execPath = path.join(browserPath, 'Contents', 'MacOS', 'firefox');
-                  return execAsync(`"${execPath}" -CreateProfile ${firefoxProfileId}`);
-                })
-                // enable flag for ssb (site-specific-browser) (Firefox experimental feature)
-                .then(() => {
-                  const profilesPath = path.join(
-                    homePath,
-                    'Library',
-                    'Application Support',
-                    'Firefox',
-                    'Profiles',
-                  );
-                  const profileFullId = fsExtra
-                    .readdirSync(profilesPath)
-                    .find((itemName) => itemName.endsWith(firefoxProfileId));
-                  const profilePath = path.join(profilesPath, profileFullId);
-                  // https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
-                  // http://kb.mozillazine.org/User.js_file
-                  const userJsPath = path.join(profilePath, 'user.js');
-                  return fsExtra.writeFile(userJsPath, 'user_pref("browser.ssb.enabled", true);');
-                })
-            );
+          // move data from v1
+          const legacyProfilePath = path.join(homePath, '.chromeless', 'chromium-data', id);
+          if (fsExtra.existsSync(legacyProfilePath)) {
+            fsExtra.moveSync(legacyProfilePath, profilePath, { overwrite: true });
           }
 
-          // init cloned Chromium app
+          // (redundant as ensureFileSync would ensureDir too
+          fsExtra.ensureDirSync(profilePath);
+
+          // add empty "First Run" file so default browser prompt doesn't show up
+          fsExtra.ensureFileSync(path.join(profilePath, 'First Run'));
+
+          // this file is needed
+          // if not, Chromium will crash on first launch
+          // details: https://github.com/webcatalog/chromeless/issues/4#issuecomment-805901787
+          fsExtra.writeFileSync(
+            path.join(profilePath, 'Local State'),
+            '{"profile":{"info_cache":{}}}',
+          );
+        }
+      })
+      .then(() => {
+        const browserPath = getEngineAppPath(engine, homePath);
+
+        // for Firefox
+        // duplicate the whole app
+        if (browserId === 'firefox') {
           const clonedBrowserPath = path.join(resourcesPath, `${name}.app`);
-          const clonedBrowserContentsPath = path.join(clonedBrowserPath, 'Contents');
-          const browserContentsPath = path.join(browserPath, 'Contents');
+          return (
+            fsExtra
+              .copy(browserPath, clonedBrowserPath)
+              // create Firefox profile for the app
+              .then(() => {
+                // https://developer.mozilla.org/en-US/docs/Mozilla/Command_Line_Options
+                const execPath = path.join(browserPath, 'Contents', 'MacOS', 'firefox');
+                return execAsync(`"${execPath}" -CreateProfile ${firefoxProfileId}`);
+              })
+              // enable flag for ssb (site-specific-browser) (Firefox experimental feature)
+              .then(() => {
+                const profilesPath = path.join(
+                  homePath,
+                  'Library',
+                  'Application Support',
+                  'Firefox',
+                  'Profiles',
+                );
+                const profileFullId = fsExtra
+                  .readdirSync(profilesPath)
+                  .find((itemName) => itemName.endsWith(firefoxProfileId));
+                const profilePath = path.join(profilesPath, profileFullId);
+                // https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
+                // http://kb.mozillazine.org/User.js_file
+                const userJsPath = path.join(profilePath, 'user.js');
+                return fsExtra.writeFile(userJsPath, 'user_pref("browser.ssb.enabled", true);');
+              })
+          );
+        }
 
-          const p = [];
+        // init cloned Chromium app
+        const clonedBrowserPath = path.join(resourcesPath, `${name}.app`);
+        const clonedBrowserContentsPath = path.join(clonedBrowserPath, 'Contents');
+        const browserContentsPath = path.join(browserPath, 'Contents');
 
-          // resources dir
-          // overwrite app name
-          const iconFileName = browserId === 'firefox' ? 'firefox.icns' : 'app.icns';
-          fsExtra.readdirSync(path.join(browserContentsPath, 'Resources')).forEach((itemName) => {
-            if (itemName.endsWith('.lproj')) {
-              const stringsContent = fsExtra.readFileSync(
-                path.join(browserContentsPath, 'Resources', itemName, 'InfoPlist.strings'),
-                'utf8',
-              );
-              const strings = strings2Obj(stringsContent);
+        const p = [];
 
-              // overwrite values
-              strings.CFBundleName = name;
-              strings.CFBundleDisplayName = name;
-              strings.CFBundleGetInfoString =
-                'The app is created with Chromeless. Copyright © Google LLC. All rights reserved.';
+        // resources dir
+        // overwrite app name
+        const iconFileName = browserId === 'firefox' ? 'firefox.icns' : 'app.icns';
+        fsExtra.readdirSync(path.join(browserContentsPath, 'Resources')).forEach((itemName) => {
+          if (itemName.endsWith('.lproj')) {
+            const stringsContent = fsExtra.readFileSync(
+              path.join(browserContentsPath, 'Resources', itemName, 'InfoPlist.strings'),
+              'utf8',
+            );
+            const strings = strings2Obj(stringsContent);
 
-              const clonedStringsPath = path.join(
-                clonedBrowserContentsPath,
-                'Resources',
-                itemName,
-                'InfoPlist.strings',
-              );
-              fsExtra.ensureFileSync(clonedStringsPath);
-              fsExtra.writeFileSync(
-                clonedStringsPath,
-                obj2Strings(strings),
-                { encoding: 'utf16le' }, // Google use UTF-8, but Apple recommends using UTF-16
-              );
-            } else if (itemName !== iconFileName) {
+            // overwrite values
+            strings.CFBundleName = name;
+            strings.CFBundleDisplayName = name;
+            strings.CFBundleGetInfoString =
+              'The app is created with Chromeless. Copyright © Google LLC. All rights reserved.';
+
+            const clonedStringsPath = path.join(
+              clonedBrowserContentsPath,
+              'Resources',
+              itemName,
+              'InfoPlist.strings',
+            );
+            fsExtra.ensureFileSync(clonedStringsPath);
+            fsExtra.writeFileSync(
+              clonedStringsPath,
+              obj2Strings(strings),
+              { encoding: 'utf16le' }, // Google use UTF-8, but Apple recommends using UTF-16
+            );
+          } else if (itemName !== iconFileName) {
+            p.push(
+              fsExtra.ensureSymlink(
+                path.join(browserContentsPath, 'Resources', itemName),
+                path.join(clonedBrowserContentsPath, 'Resources', itemName),
+              ),
+            );
+          }
+        });
+        // overwrite icon
+        p.push(
+          fsExtra.copy(
+            iconIcnsPath,
+            path.join(clonedBrowserContentsPath, 'Resources', iconFileName),
+          ),
+        );
+
+        // symlinks for other files & dirs
+        fsExtra.readdirSync(browserContentsPath, { withFileTypes: true }).forEach((item) => {
+          if (item.name !== 'Resources') {
+            // symlink one more level deeper
+            if (item.isDirectory()) {
+              fsExtra
+                .readdirSync(path.join(browserContentsPath, item.name))
+                .forEach((subItemName) => {
+                  p.push(
+                    fsExtra.ensureSymlink(
+                      path.join(browserContentsPath, item.name, subItemName),
+                      path.join(clonedBrowserContentsPath, item.name, subItemName),
+                    ),
+                  );
+                });
+            } else {
               p.push(
                 fsExtra.ensureSymlink(
-                  path.join(browserContentsPath, 'Resources', itemName),
-                  path.join(clonedBrowserContentsPath, 'Resources', itemName),
+                  path.join(browserContentsPath, item.name),
+                  path.join(clonedBrowserContentsPath, item.name),
                 ),
               );
             }
-          });
-          // overwrite icon
-          p.push(
-            fsExtra.copy(
-              iconIcnsPath,
-              path.join(clonedBrowserContentsPath, 'Resources', iconFileName),
-            ),
-          );
-
-          // symlinks for other files & dirs
-          fsExtra.readdirSync(browserContentsPath, { withFileTypes: true }).forEach((item) => {
-            if (item.name !== 'Resources') {
-              // symlink one more level deeper
-              if (item.isDirectory()) {
-                fsExtra
-                  .readdirSync(path.join(browserContentsPath, item.name))
-                  .forEach((subItemName) => {
-                    p.push(
-                      fsExtra.ensureSymlink(
-                        path.join(browserContentsPath, item.name, subItemName),
-                        path.join(clonedBrowserContentsPath, item.name, subItemName),
-                      ),
-                    );
-                  });
-              } else {
-                p.push(
-                  fsExtra.ensureSymlink(
-                    path.join(browserContentsPath, item.name),
-                    path.join(clonedBrowserContentsPath, item.name),
-                  ),
-                );
-              }
-            }
-          });
-
-          return Promise.all(p);
+          }
         });
-    }
 
-    return Promise.reject(new Error('Unsupported platform'));
+        return Promise.all(p);
+      });
   })
   .then(() => {
     const packageJsonContent = JSON.stringify({

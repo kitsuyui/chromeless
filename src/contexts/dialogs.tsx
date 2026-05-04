@@ -1,8 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
 import PropTypes from 'prop-types';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 const DialogsContext = createContext(null);
 
@@ -34,11 +35,7 @@ export const DialogsProvider = ({ children }) => {
     [aboutOpen, openSourceNoticesOpen],
   );
 
-  return (
-    <DialogsContext.Provider value={value}>
-      {children}
-    </DialogsContext.Provider>
-  );
+  return <DialogsContext.Provider value={value}>{children}</DialogsContext.Provider>;
 };
 
 DialogsProvider.propTypes = {

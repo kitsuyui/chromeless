@@ -1,13 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
 
-import Button from '@mui/material/Button';
 import ErrorIcon from '@mui/icons-material/Error';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { withStyles } from '@mui/styles';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const styles = (theme) => ({
   root: {
@@ -29,33 +29,19 @@ const styles = (theme) => ({
 });
 
 const NoConnection = (props) => {
-  const {
-    classes,
-    onTryAgainButtonClick,
-  } = props;
+  const { classes, onTryAgainButtonClick } = props;
 
   return (
     <div className={classes.root}>
-      <ErrorIcon className={classes.icon} color="textPrimary" />
+      <ErrorIcon className={classes.icon} color="inherit" />
       <br />
-      <Typography
-        color="inherit"
-        variant="h6"
-      >
+      <Typography color="inherit" variant="h6">
         Failed to Connect to Server
       </Typography>
-      <Typography
-        color="inherit"
-        align="center"
-        variant="subtitle1"
-      >
+      <Typography color="inherit" align="center" variant="subtitle1">
         Please check your Internet connection.
       </Typography>
-      <Button
-        className={classes.tryAgainButton}
-        color="primary"
-        onClick={onTryAgainButtonClick}
-      >
+      <Button className={classes.tryAgainButton} color="primary" onClick={onTryAgainButtonClick}>
         Try Again
       </Button>
     </div>
@@ -67,4 +53,6 @@ NoConnection.propTypes = {
   onTryAgainButtonClick: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles, { name: 'NoConnection' })(NoConnection);
+export default withStyles(styles as Parameters<typeof withStyles>[0], { name: 'NoConnection' })(
+  NoConnection,
+);

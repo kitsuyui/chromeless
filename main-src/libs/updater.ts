@@ -23,16 +23,20 @@ autoUpdater.on('checking-for-update', () => {
 
 autoUpdater.on('update-available', (info) => {
   if (!global.updateSilent) {
-    dialog.showMessageBox({
-      title: 'An Update is Available',
-      message: 'There is an available update. It is being downloaded. We will let you know when it is ready.',
-      buttons: ['OK', 'What\'s New'],
-      cancelId: 0,
-      defaultId: 0,
-    })
+    dialog
+      .showMessageBox({
+        title: 'An Update is Available',
+        message:
+          'There is an available update. It is being downloaded. We will let you know when it is ready.',
+        buttons: ['OK', "What's New"],
+        cancelId: 0,
+        defaultId: 0,
+      })
       .then(({ response }) => {
         if (response === 1) {
-          shell.openExternal('https://github.com/kitsuyui/chromeless/releases?utm_source=chromeless_app');
+          shell.openExternal(
+            'https://github.com/kitsuyui/chromeless/releases?utm_source=chromeless_app',
+          );
         }
       })
       .catch(console.log); // eslint-disable-line
@@ -49,13 +53,15 @@ autoUpdater.on('update-available', (info) => {
 
 autoUpdater.on('update-not-available', (info) => {
   if (!global.updateSilent) {
-    dialog.showMessageBox({
-      title: 'No Updates',
-      message: 'There are currently no updates available.',
-      buttons: ['OK'],
-      cancelId: 0,
-      defaultId: 0,
-    }).catch(console.log); // eslint-disable-line
+    dialog
+      .showMessageBox({
+        title: 'No Updates',
+        message: 'There are currently no updates available.',
+        buttons: ['OK'],
+        cancelId: 0,
+        defaultId: 0,
+      })
+      .catch(console.log); // eslint-disable-line
     global.updateSilent = true;
   }
 
@@ -69,13 +75,15 @@ autoUpdater.on('update-not-available', (info) => {
 
 autoUpdater.on('error', (err) => {
   if (!global.updateSilent) {
-    dialog.showMessageBox({
-      title: 'Failed to Check for Updates',
-      message: 'Failed to check for updates. Please check your Internet connection.',
-      buttons: ['OK'],
-      cancelId: 0,
-      defaultId: 0,
-    }).catch(console.log); // eslint-disable-line
+    dialog
+      .showMessageBox({
+        title: 'Failed to Check for Updates',
+        message: 'Failed to check for updates. Please check your Internet connection.',
+        buttons: ['OK'],
+        cancelId: 0,
+        defaultId: 0,
+      })
+      .catch(console.log); // eslint-disable-line
     global.updateSilent = true;
   }
 
@@ -115,16 +123,19 @@ autoUpdater.on('update-downloaded', (info) => {
 
   const dialogOpts = {
     type: 'info',
-    buttons: ['Restart', 'Later', 'What\'s New'],
+    buttons: ['Restart', 'Later', "What's New"],
     title: 'Application Update',
     detail: `A new version (${info.version}) has been downloaded. Restart the application to apply the updates.`,
     cancelId: 1,
   };
 
-  dialog.showMessageBox(dialogOpts)
+  dialog
+    .showMessageBox(dialogOpts)
     .then(({ response }) => {
       if (response === 2) {
-        shell.openExternal('https://github.com/kitsuyui/chromeless/releases?utm_source=chromeless_app');
+        shell.openExternal(
+          'https://github.com/kitsuyui/chromeless/releases?utm_source=chromeless_app',
+        );
       } else if (response === 0) {
         // Fix autoUpdater.quitAndInstall() does not quit immediately
         // https://github.com/electron/electron/issues/3583

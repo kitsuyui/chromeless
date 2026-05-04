@@ -7,11 +7,10 @@ import {
   DIALOG_EDIT_APP_FORM_UPDATE,
   DIALOG_EDIT_APP_OPEN,
 } from '../../constants/actions';
-
+import getStaticGlobal from '../../helpers/get-static-global';
 import hasErrors from '../../helpers/has-errors';
 import isUrl from '../../helpers/is-url';
 import validate from '../../helpers/validate';
-import getStaticGlobal from '../../helpers/get-static-global';
 
 import { updateApp } from '../app-management/actions';
 

@@ -1,26 +1,22 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import InputAdornment from '@mui/material/InputAdornment';
 import Checkbox from '@mui/material/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import connectComponent from '../../helpers/connect-component';
 
-import {
-  close,
-  save,
-  updateForm,
-} from '../../state/dialog-set-installation-path/actions';
+import { close, save, updateForm } from '../../state/dialog-set-installation-path/actions';
 
 import EnhancedDialogTitle from '../shared/enhanced-dialog-title';
 
@@ -36,26 +32,11 @@ const styles = (theme) => ({
 });
 
 const DialogSetInstallationPath = (props) => {
-  const {
-    classes,
-    installationPath,
-    onClose,
-    onSave,
-    onUpdateForm,
-    open,
-    requireAdmin,
-  } = props;
+  const { classes, installationPath, onClose, onSave, onUpdateForm, open, requireAdmin } = props;
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="sm"
-      onClose={onClose}
-      open={open}
-    >
-      <EnhancedDialogTitle onClose={onClose}>
-        Set Custom Installation Path
-      </EnhancedDialogTitle>
+    <Dialog fullWidth maxWidth="sm" onClose={onClose} open={open}>
+      <EnhancedDialogTitle onClose={onClose}>Set Custom Installation Path</EnhancedDialogTitle>
       <DialogContent>
         <Typography align="center" variant="body2" className={classes.top}>
           Use at your own risk.
@@ -73,9 +54,10 @@ const DialogSetInstallationPath = (props) => {
               <InputAdornment position="end">
                 <Button
                   onClick={() => {
-                    window.remote.dialog.showOpenDialog(window.remote.getCurrentWindow(), {
-                      properties: ['openDirectory'],
-                    })
+                    window.remote.dialog
+                      .showOpenDialog(window.remote.getCurrentWindow(), {
+                        properties: ['openDirectory'],
+                      })
                       .then(({ canceled, filePaths }) => {
                         if (!canceled && filePaths && filePaths.length > 0) {
                           onUpdateForm({ installationPath: filePaths[0] });
@@ -91,26 +73,27 @@ const DialogSetInstallationPath = (props) => {
           }}
         />
         <FormControlLabel
-          control={(
+          control={
             <Checkbox
-              disabled={installationPath === '~/Applications/Chromeless Apps' || installationPath === '/Applications/Chromeless Apps'}
-              checked={installationPath === '~/Applications/Chromeless Apps' || installationPath === '/Applications/Chromeless Apps' ? false : requireAdmin}
+              disabled={
+                installationPath === '~/Applications/Chromeless Apps' ||
+                installationPath === '/Applications/Chromeless Apps'
+              }
+              checked={
+                installationPath === '~/Applications/Chromeless Apps' ||
+                installationPath === '/Applications/Chromeless Apps'
+                  ? false
+                  : requireAdmin
+              }
               onChange={(e) => onUpdateForm({ requireAdmin: e.target.checked })}
             />
-          )}
+          }
           label="Require sudo for installation"
         />
       </DialogContent>
       <DialogActions className={classes.dialogActions}>
-        <Button
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-        <Button
-          color="primary"
-          onClick={onSave}
-        >
+        <Button onClick={onClose}>Cancel</Button>
+        <Button color="primary" onClick={onSave}>
           Save
         </Button>
       </DialogActions>
@@ -136,10 +119,7 @@ DialogSetInstallationPath.propTypes = {
 const mapStateToProps = (state) => {
   const {
     open,
-    form: {
-      installationPath,
-      requireAdmin,
-    },
+    form: { installationPath, requireAdmin },
   } = state.dialogSetInstallationPath;
 
   return {
@@ -155,9 +135,4 @@ const actionCreators = {
   updateForm,
 };
 
-export default connectComponent(
-  DialogSetInstallationPath,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(DialogSetInstallationPath, mapStateToProps, actionCreators, styles);

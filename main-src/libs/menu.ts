@@ -7,12 +7,12 @@ const sendToAllWindows = require('./send-to-all-windows');
 
 const formatBytes = require('./format-bytes');
 
-const mainWindow = require('./windows/main');
-
 let menu = null;
 
+type MenuItemConstructorOptions = import('electron').MenuItemConstructorOptions;
+
 const createMenu = () => {
-  const updaterMenuItem = {
+  const updaterMenuItem: MenuItemConstructorOptions = {
     label: 'Check for Updates...',
     click: () => ipcMain.emit('request-check-for-updates'),
   };
@@ -102,7 +102,7 @@ const createMenu = () => {
           },
         },
         // duplicate zooming in menuitem
-        // as it's not posible to set multiple accelerators
+        // as it's not possible to set multiple accelerators
         // https://github.com/webcatalog/webcatalog-app/issues/1015
         {
           label: 'Zoom In',
@@ -145,21 +145,7 @@ const createMenu = () => {
       submenu: [
         { role: 'close' },
         { role: 'minimize' },
-        // role: 'zoom' is only supported on macOS
-        process.platform === 'darwin'
-          ? {
-              role: 'zoom',
-            }
-          : {
-              label: 'Zoom',
-              click: () => {
-                const win = mainWindow.get();
-
-                if (win != null) {
-                  win.maximize();
-                }
-              },
-            },
+        { role: 'zoom' },
         { type: 'separator' },
         { role: 'front' },
       ],

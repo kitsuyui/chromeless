@@ -2,21 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-disable no-constant-condition */
-import React from 'react';
-import PropTypes from 'prop-types';
-
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 
 import MenuIcon from '@mui/icons-material/Menu';
-
-import { requestShowAppMenu } from '../../senders';
-
-import connectComponent from '../../helpers/connect-component';
+import AppBar from '@mui/material/AppBar';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { useAppearance } from '../../contexts/appearance';
 
-const LEFT_RIGHT_WIDTH = window.process.platform !== 'darwin' ? 160 : 100;
+import connectComponent from '../../helpers/connect-component';
+import { requestShowAppMenu } from '../../senders';
+
+const LEFT_RIGHT_WIDTH = 100;
 const TOOLBAR_HEIGHT = 32;
 const BUTTON_WIDTH = 46;
 
@@ -37,7 +35,7 @@ const styles = (theme) => ({
   left: {
     width: LEFT_RIGHT_WIDTH,
     // leave space for traffic light buttons
-    paddingLeft: window.process.platform === 'darwin' && window.mode !== 'menubar' ? 64 : 0,
+    paddingLeft: window.mode !== 'menubar' ? 64 : 0,
     boxSizing: 'border-box',
   },
   center: {
@@ -50,47 +48,6 @@ const styles = (theme) => ({
   },
   noDrag: {
     WebkitAppRegion: 'no-drag',
-  },
-  // https://github.com/AlexTorresSk/custom-electron-titlebar/blob/master/src/themebar.ts#L404
-  windowsControl: {
-    verticalAlign: 'middle',
-    display: 'inline-block',
-    height: TOOLBAR_HEIGHT,
-    marginLeft: theme.spacing(2),
-  },
-  windowsIconBg: {
-    display: 'inline-block',
-    WebkitAppRegion: 'no-drag',
-    height: '100%',
-    width: BUTTON_WIDTH,
-    background: 'none',
-    border: 'none',
-    outline: 'none',
-    padding: 0,
-    margin: 0,
-    '&:hover': {
-      backgroundColor:
-        theme.palette.mode === 'dark' ? theme.palette.common.black : theme.palette.primary.dark,
-    },
-  },
-  windowsIcon: {
-    height: '100%',
-    width: '100%',
-    maskSize: '23.1%',
-    backgroundColor: theme.palette.common.white,
-    cursor: 'pointer',
-  },
-  windowsIconClose: {
-    mask: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg width='11' height='11' viewBox='0 0 11 11' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.279 5.5L11 10.221l-.779.779L5.5 6.279.779 11 0 10.221 4.721 5.5 0 .779.779 0 5.5 4.721 10.221 0 11 .779 6.279 5.5z' fill='%23000'/%3E%3C/svg%3E\") no-repeat 50% 50%",
-  },
-  windowsIconUnmaximize: {
-    mask: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg width='11' height='11' viewBox='0 0 11 11' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 8.798H8.798V11H0V2.202h2.202V0H11v8.798zm-3.298-5.5h-6.6v6.6h6.6v-6.6zM9.9 1.1H3.298v1.101h5.5v5.5h1.1v-6.6z' fill='%23000'/%3E%3C/svg%3E\") no-repeat 50% 50%",
-  },
-  windowsIconMaximize: {
-    mask: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg width='11' height='11' viewBox='0 0 11 11' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 0v11H0V0h11zM9.899 1.101H1.1V9.9h8.8V1.1z' fill='%23000'/%3E%3C/svg%3E\") no-repeat 50% 50%",
-  },
-  windowsIconMinimize: {
-    mask: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg width='11' height='11' viewBox='0 0 11 11' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 4.399V5.5H0V4.399h11z' fill='%23000'/%3E%3C/svg%3E\") no-repeat 50% 50%",
   },
   iconButton: {
     width: BUTTON_WIDTH,
@@ -116,7 +73,6 @@ const EnhancedAppBar = ({ center, classes }) => {
     }
   };
 
-  // // on Mac, only show the button in menu bar mode
   const shouldShowMenuButton = window.mode === 'menubar';
 
   return (
@@ -135,7 +91,7 @@ const EnhancedAppBar = ({ center, classes }) => {
               className={`${classes.iconButton} ${classes.noDrag}`}
               onClick={(e) => {
                 e.stopPropagation();
-                requestShowAppMenu(e.x, e.y);
+                requestShowAppMenu(e.clientX, e.clientY);
               }}
             >
               <MenuIcon fontSize="small" />

@@ -4,9 +4,9 @@
 import { batch } from 'react-redux';
 
 import {
-  setApp,
-  removeApp,
   clean as cleanAppManagement,
+  removeApp,
+  setApp,
   setScanningForInstalled,
 } from '../state/app-management/actions';
 import { setPreference, setPreferences } from '../state/preferences/actions';

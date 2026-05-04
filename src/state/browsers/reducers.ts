@@ -3,14 +3,14 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { combineReducers } from 'redux';
 
-import {
-  BROWSERS_UPDATE_SCROLL_OFFSET,
-} from '../../constants/actions';
+import { BROWSERS_UPDATE_SCROLL_OFFSET } from '../../constants/actions';
 
 const scrollOffset = (state = 0, action) => {
   switch (action.type) {
-    case BROWSERS_UPDATE_SCROLL_OFFSET: return action.scrollOffset;
-    default: return state;
+    case BROWSERS_UPDATE_SCROLL_OFFSET:
+      return action.scrollOffset;
+    default:
+      return state;
   }
 };
 

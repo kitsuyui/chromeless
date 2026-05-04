@@ -11,9 +11,12 @@ import {
 
 const open = (state = false, action) => {
   switch (action.type) {
-    case DIALOG_CHOOSE_ENGINE_CLOSE: return false;
-    case DIALOG_CHOOSE_ENGINE_OPEN: return true;
-    default: return state;
+    case DIALOG_CHOOSE_ENGINE_CLOSE:
+      return false;
+    case DIALOG_CHOOSE_ENGINE_OPEN:
+      return true;
+    default:
+      return state;
   }
 };
 
@@ -27,16 +30,19 @@ const formInitialState = {
 };
 const form = (state = formInitialState, action) => {
   switch (action.type) {
-    case DIALOG_CHOOSE_ENGINE_OPEN: return {
-      ...formInitialState,
-      ...action.form,
-    };
-    case DIALOG_CHOOSE_ENGINE_CLOSE: return formInitialState;
+    case DIALOG_CHOOSE_ENGINE_OPEN:
+      return {
+        ...formInitialState,
+        ...action.form,
+      };
+    case DIALOG_CHOOSE_ENGINE_CLOSE:
+      return formInitialState;
     case DIALOG_CHOOSE_ENGINE_FORM_UPDATE: {
       const { changes } = action;
       return { ...state, ...changes };
     }
-    default: return state;
+    default:
+      return state;
   }
 };
 

@@ -1,27 +1,21 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-import React from 'react';
-import PropTypes from 'prop-types';
-
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
 
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SortIcon from '@mui/icons-material/Sort';
 
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+import React from 'react';
+
 import connectComponent from '../../../helpers/connect-component';
-
-import { fetchLatestTemplateVersionAsync } from '../../../state/general/actions';
-import { getOutdatedAppsAsList } from '../../../state/app-management/utils';
+import { requestGetInstalledApps, requestSetPreference } from '../../../senders';
 import { updateAllApps } from '../../../state/app-management/actions';
-
-import {
-  requestGetInstalledApps,
-  requestSetPreference,
-} from '../../../senders';
+import { getOutdatedAppsAsList } from '../../../state/app-management/utils';
 
 const styles = (theme) => ({
   root: {
@@ -57,8 +51,6 @@ const styles = (theme) => ({
 const Toolbar = ({
   activeQuery,
   classes,
-  fetchingLatestTemplateVersion,
-  onFetchLatestTemplateVersionAsync,
   onUpdateAllApps,
   outdatedAppCount,
   sortInstalledAppBy,
@@ -67,8 +59,7 @@ const Toolbar = ({
     <div className={classes.left}>
       {activeQuery.length > 0 ? (
         <Typography variant="body2" color="textSecondary" className={classes.statusText}>
-          Search results for
-          &quot;
+          Search results for &quot;
           {activeQuery}
           &quot;
         </Typography>
@@ -78,11 +69,7 @@ const Toolbar = ({
             <span>{outdatedAppCount}</span>
             <span>&nbsp;Pending Updates</span>
           </Typography>
-          <Button
-            onClick={onUpdateAllApps}
-            size="small"
-            disabled={outdatedAppCount < 1}
-          >
+          <Button onClick={onUpdateAllApps} size="small" disabled={outdatedAppCount < 1}>
             Update All
           </Button>
         </>
@@ -118,10 +105,8 @@ const Toolbar = ({
           size="small"
           aria-label="Refresh"
           onClick={() => {
-            onFetchLatestTemplateVersionAsync();
             requestGetInstalledApps();
           }}
-          disabled={fetchingLatestTemplateVersion}
         >
           <RefreshIcon fontSize="small" />
         </IconButton>
@@ -137,28 +122,19 @@ Toolbar.defaultProps = {
 Toolbar.propTypes = {
   activeQuery: PropTypes.string,
   classes: PropTypes.object.isRequired,
-  fetchingLatestTemplateVersion: PropTypes.bool.isRequired,
-  onFetchLatestTemplateVersionAsync: PropTypes.func.isRequired,
   onUpdateAllApps: PropTypes.func.isRequired,
   outdatedAppCount: PropTypes.number.isRequired,
   sortInstalledAppBy: PropTypes.string.isRequired,
 };
 
 const actionCreators = {
-  fetchLatestTemplateVersionAsync,
   updateAllApps,
 };
 
 const mapStateToProps = (state) => ({
   activeQuery: state.installed.activeQuery,
-  fetchingLatestTemplateVersion: state.general.fetchingLatestTemplateVersion,
   sortInstalledAppBy: state.preferences.sortInstalledAppBy,
   outdatedAppCount: getOutdatedAppsAsList(state).length,
 });
 
-export default connectComponent(
-  Toolbar,
-  mapStateToProps,
-  actionCreators,
-  styles,
-);
+export default connectComponent(Toolbar, mapStateToProps, actionCreators, styles);

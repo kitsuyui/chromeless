@@ -3,20 +3,21 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 const { exec } = require('child_process');
 
-const execAsync = (cmd, opts = {}) => new Promise((resolve, reject) => {
-  exec(cmd, opts, (e, stdout, stderr) => {
-    if (e instanceof Error) {
-      reject(e);
-      return;
-    }
+const execAsync = (cmd, opts = {}) =>
+  new Promise((resolve, reject) => {
+    exec(cmd, opts, (e, stdout, stderr) => {
+      if (e instanceof Error) {
+        reject(e);
+        return;
+      }
 
-    if (stderr) {
-      reject(new Error(stderr));
-      return;
-    }
+      if (stderr) {
+        reject(new Error(stderr));
+        return;
+      }
 
-    resolve(stdout);
+      resolve(stdout);
+    });
   });
-});
 
 module.exports = execAsync;
