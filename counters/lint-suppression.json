@@ -1,7 +1,7 @@
 {
   "id": "lint-suppression",
   "label": "Lint suppression",
-  "count": 37,
+  "count": 35,
   "matches": [
     {
       "path": "dist.ts",
@@ -19,21 +19,6 @@
       "text": "// eslint-disable-next-line no-console"
     },
     {
-      "path": "main-src/libs/app-management/get-installed-apps-async.ts",
-      "line": 28,
-      "text": "// eslint-disable-next-line no-console"
-    },
-    {
-      "path": "main-src/libs/app-management/get-related-paths.ts",
-      "line": 55,
-      "text": "// eslint-disable-next-line dot-notation"
-    },
-    {
-      "path": "main-src/libs/app-management/get-related-paths.ts",
-      "line": 60,
-      "text": "// eslint-disable-next-line prefer-destructuring"
-    },
-    {
       "path": "main-src/libs/app-management/install-app-async/index.ts",
       "line": 4,
       "text": "/* eslint-disable prefer-destructuring */"
@@ -47,6 +32,11 @@
       "path": "main-src/libs/app-management/install-app-async/install-app-forked-lite-v2.ts",
       "line": 103,
       "text": "/* eslint-disable prefer-template */"
+    },
+    {
+      "path": "main-src/libs/app-management/installed-app-reader.ts",
+      "line": 33,
+      "text": "// eslint-disable-next-line no-console"
     },
     {
       "path": "main-src/libs/app-management/uninstall-app-async/index.ts",
