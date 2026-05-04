@@ -110,7 +110,7 @@ export const save = () => (dispatch, getState) => {
 
   const { form } = state.dialogEditApp;
   const submission = buildEditAppSubmission({
-    defaultIcon: getStaticGlobal('defaultIcon'),
+    defaultIcon: getStaticGlobal('defaultIcon') as string,
     form,
   });
   if (submission.status === 'invalid') {

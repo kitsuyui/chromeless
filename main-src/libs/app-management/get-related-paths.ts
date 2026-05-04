@@ -3,23 +3,31 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 const path = require('path');
-const os = require('os');
 const fsExtra = require('fs-extra');
+const { findFirefoxProfilePath } = require('./firefox-profile.ts');
+const { getInstalledAppBundlePath } = require('./installation-path.ts');
 
-const getRelatedPaths = ({
-  appObj,
-  installationPath,
-  homePath,
-  userDataPath,
-  // installationPath = getPreference('installationPath'),
-  // homePath = app.getPath('home'),
-}) => {
+const getRelatedPaths = (
+  {
+    appObj,
+    installationPath,
+    homePath,
+    userDataPath,
+    // installationPath = getPreference('installationPath'),
+    // homePath = app.getPath('home'),
+  },
+  fsAccess = fsExtra,
+) => {
   const { id, name, engine } = appObj;
 
   const relatedPaths = [];
 
   // App
-  const dotAppPath = path.join(installationPath.replace('~', homePath), `${name}.app`);
+  const dotAppPath = getInstalledAppBundlePath({
+    appName: name,
+    homePath,
+    installationPath,
+  });
 
   relatedPaths.push({ path: dotAppPath, type: 'app' });
 
@@ -32,41 +40,15 @@ const getRelatedPaths = ({
       const firefoxUserDataPath = path.join(homePath, 'Library', 'Application Support', 'Firefox');
       const profilesIniPath = path.join(firefoxUserDataPath, 'profiles.ini');
 
-      const exists = fsExtra.pathExistsSync(profilesIniPath);
+      const exists = fsAccess.pathExistsSync(profilesIniPath);
       // If user has never opened Firefox app
       // profiles.ini doesn't exist
       if (exists) {
-        const profilesIniContent = fsExtra.readFileSync(profilesIniPath, 'utf-8');
+        const profilesIniContent = fsAccess.readFileSync(profilesIniPath, 'utf-8');
 
-        // get profile path and delete it
-        const entries = profilesIniContent.split(`${os.EOL}${os.EOL}`).map((entryText) => {
-          /*
-          [Profile0]
-          Name=facebook
-          IsRelative=1
-          Path=Profiles/8kv8728b.facebook
-          Default=1
-          */
-          const lines = entryText.split(os.EOL);
-
-          const entry: Record<string, string> = {};
-          lines.forEach((line, i) => {
-            if (i === 0) {
-              // eslint-disable-next-line dot-notation
-              entry.Header = line;
-              return;
-            }
-            const parts = line.split(/=(.+)/);
-            // eslint-disable-next-line prefer-destructuring
-            entry[parts[0]] = parts[1];
-          });
-
-          return entry;
-        });
-
-        const profileDetails = entries.find((entry) => entry.Name === profileId);
-        if (profileDetails && profileDetails.Path) {
-          const profileDataPath = path.join(firefoxUserDataPath, profileDetails.Path);
+        const profilePath = findFirefoxProfilePath(profilesIniContent, profileId);
+        if (profilePath) {
+          const profileDataPath = path.join(firefoxUserDataPath, profilePath);
           relatedPaths.push({
             path: profileDataPath,
             type: 'data',

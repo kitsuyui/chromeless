@@ -2,15 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 const { app, shell } = require('electron');
-const path = require('path');
 
 const { getPreference } = require('../preferences');
+const { getInstalledAppBundlePath } = require('./installation-path');
 
 const openApp = (id, name) => {
-  const appPath = path.join(
-    getPreference('installationPath').replace('~', app.getPath('home')),
-    `${name}.app`,
-  );
+  const appPath = getInstalledAppBundlePath({
+    appName: name,
+    homePath: app.getPath('home'),
+    installationPath: getPreference('installationPath'),
+  });
   shell.openPath(appPath);
 };
 

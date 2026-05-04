@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 const cheerio = require('cheerio');
-const url = require('url');
 
-const customizedFetch = require('./customized-fetch');
-const { selectFirstAvailableIconHref } = require('./website-icon-selection');
+const customizedFetch = require('./customized-fetch.ts');
+const { selectLargestManifestIconSrc } = require('./website-icon-selection/manifest-icon.ts');
+const { selectFirstAvailableIconHref } = require('./website-icon-selection/select-icon.ts');
 
 const toIconCandidates = ($, rootElm) =>
   rootElm.toArray().map((elm) => {
@@ -17,7 +17,9 @@ const toIconCandidates = ($, rootElm) =>
     };
   });
 
-const resolveSelectedIcon = (baseUrl, href) => (href ? url.resolve(baseUrl, href) : undefined);
+const resolveUrl = (baseUrl, href) => new URL(href, baseUrl).toString();
+
+const resolveSelectedIcon = (baseUrl, href) => (href ? resolveUrl(baseUrl, href) : undefined);
 
 const getWebsiteIconUrlAsync = (websiteURL) =>
   customizedFetch(websiteURL)
@@ -28,7 +30,7 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
       // https://webmasters.stackexchange.com/questions/23696/whats-the-fluid-icon-meta-tag-for
       const $fluidIcon = $('head > link[rel=fluid-icon]');
       if ($fluidIcon.length > 0) {
-        return url.resolve(redirectedUrl, $fluidIcon.attr('href'));
+        return resolveSelectedIcon(redirectedUrl, $fluidIcon.attr('href'));
       }
 
       const lessPriorityCheck = () => {
@@ -46,7 +48,9 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
       // https://developers.google.com/web/fundamentals/web-app-manifest
       const $manifest = $('head > link[rel=manifest]');
       if ($('head > link[rel=manifest]').length > 0) {
-        const manifestUrl = url.resolve(redirectedUrl, $manifest.attr('href'));
+        const manifestUrl = resolveSelectedIcon(redirectedUrl, $manifest.attr('href'));
+        if (!manifestUrl) return lessPriorityCheck();
+
         return (
           customizedFetch(manifestUrl)
             .then((res) =>
@@ -56,13 +60,8 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
               })),
             )
             .then(({ manifestJson, manifestRedirectedUrl }) => {
-              // return icon with largest size
-              const { icons } = manifestJson;
-              icons.sort(
-                (x, y) =>
-                  Number.parseInt(x.sizes.split('x'), 10) - Number.parseInt(y.sizes.split('x'), 10),
-              );
-              return url.resolve(manifestRedirectedUrl, icons[icons.length - 1].src);
+              const iconSrc = selectLargestManifestIconSrc(manifestJson);
+              return resolveSelectedIcon(manifestRedirectedUrl, iconSrc);
             })
             // youtube.com/manifest.json doesn't specify icons
             // error needs to be caught and the other checks need to be run
@@ -85,7 +84,7 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
 
       // try to get /apple-touch-icon.png
       // https://apple.stackexchange.com/questions/172204/how-apple-com-set-apple-touch-icon
-      const appleTouchIconUrl = url.resolve(websiteURL, '/apple-touch-icon.png');
+      const appleTouchIconUrl = resolveUrl(websiteURL, '/apple-touch-icon.png');
       return customizedFetch(appleTouchIconUrl)
         .then((res) => {
           if (res.status === 200 && res.headers.get('Content-Type') === 'image/png')

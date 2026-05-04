@@ -6,10 +6,10 @@
 // most of global values are static, unchanged
 // so we don't need to keep getting update from remote
 // https://github.com/electron/electron/issues/1258
-const cached = {};
+const cached: Record<string, unknown> = {};
 
 const getStaticGlobal = (key) => {
-  if (!cached[key]) {
+  if (!Object.hasOwn(cached, key)) {
     cached[key] = window.remote.getGlobal(key);
   }
 
