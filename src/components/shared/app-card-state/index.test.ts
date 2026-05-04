@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { describe, expect, it } from 'vitest';
-import packageJson from '../../../package.json';
-import { INSTALLED } from '../../constants/app-statuses';
-import type { RootState } from '../../state';
-import { selectAppCardProps } from './app-card-state';
+import packageJson from '../../../../package.json';
+import { INSTALLED } from '../../../constants/app-statuses';
+import type { RootState } from '../../../state';
+import { selectAppCardProps } from './index';
 
 const closedDialogState = {
   form: {},

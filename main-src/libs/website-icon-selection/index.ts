@@ -11,7 +11,8 @@ export type IconCandidate = {
 const getDeclaredSize = (candidate: IconCandidate): number => {
   if (!candidate.sizes) return 0;
 
-  const parsedSize = Number.parseInt(candidate.sizes.split('x')[0] ?? '', 10);
+  const [width] = candidate.sizes.split('x');
+  const parsedSize = Number.parseInt(width, 10);
   return Number.isNaN(parsedSize) ? 0 : parsedSize;
 };
 

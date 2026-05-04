@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { describe, expect, it } from 'vitest';
 
-import { getUpdaterMenuItemState } from './updater-menu-item';
+import { getUpdaterMenuItemState } from './index';
 
 describe('getUpdaterMenuItemState', () => {
   it('uses the default check label without updater state', () => {
@@ -13,6 +13,19 @@ describe('getUpdaterMenuItemState', () => {
   it('describes downloaded updates as a restart action', () => {
     expect(getUpdaterMenuItemState({ status: 'update-downloaded' })).toEqual({
       label: 'Restart to Apply Updates...',
+    });
+  });
+
+  it('disables available updates while download starts', () => {
+    expect(getUpdaterMenuItemState({ status: 'update-available' })).toEqual({
+      enabled: false,
+      label: 'Downloading Updates...',
+    });
+  });
+
+  it('falls back to manual check copy without progress details', () => {
+    expect(getUpdaterMenuItemState({ status: 'download-progress' })).toEqual({
+      label: 'Check for Updates...',
     });
   });
 

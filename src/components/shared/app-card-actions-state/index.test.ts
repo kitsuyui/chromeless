@@ -3,8 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { describe, expect, it } from 'vitest';
 
-import { INSTALLING, UNINSTALLING } from '../../constants/app-statuses';
-import { getPendingActionState } from './app-card-actions-state';
+import { INSTALLING, UNINSTALLING } from '../../../constants/app-statuses';
+import { getPendingActionState } from './index';
 
 describe('getPendingActionState', () => {
   it('describes an installable app', () => {
@@ -21,6 +21,14 @@ describe('getPendingActionState', () => {
     ).toEqual({
       disabled: true,
       label: 'Updating...',
+      showProgress: true,
+    });
+  });
+
+  it('describes active install progress', () => {
+    expect(getPendingActionState({ cancelable: false, status: INSTALLING })).toEqual({
+      disabled: true,
+      label: 'Installing...',
       showProgress: true,
     });
   });
