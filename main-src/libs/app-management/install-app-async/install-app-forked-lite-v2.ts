@@ -1,6 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+import parseArgs from '../../parse-args';
+
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
   process.send({
@@ -23,7 +25,6 @@ const sudo = require('sudo-prompt');
 
 const execAsync = require('../../exec-async');
 const downloadAsync = require('../../download-async');
-const parseArgs = require('../../parse-args');
 const getEngineInfo = require('./get-engine-info');
 const getEngineAppPath = require('./get-engine-app-path');
 const packageJson = require('../../../../package.json');

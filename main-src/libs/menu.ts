@@ -5,7 +5,7 @@ const { app, Menu, shell, ipcMain } = require('electron');
 
 const sendToAllWindows = require('./send-to-all-windows');
 
-const formatBytes = require('./format-bytes');
+import formatBytes from './format-bytes';
 
 let menu = null;
 

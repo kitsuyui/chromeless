@@ -1,0 +1,6 @@
+gibo dump macOS
+gibo dump Node
+echo build/
+echo bin/
+echo '*.zip'
+echo .vscode/
