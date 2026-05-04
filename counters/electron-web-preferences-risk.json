@@ -15,12 +15,12 @@
     },
     {
       "path": "main-src/libs/windows/main.ts",
-      "line": 180,
+      "line": 168,
       "text": "contextIsolation: false,"
     },
     {
       "path": "main-src/libs/windows/main.ts",
-      "line": 181,
+      "line": 169,
       "text": "nodeIntegration: true,"
     }
   ]

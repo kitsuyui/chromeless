@@ -1,7 +1,7 @@
 {
   "id": "lint-suppression",
   "label": "Lint suppression",
-  "count": 41,
+  "count": 37,
   "matches": [
     {
       "path": "dist.ts",
@@ -20,7 +20,7 @@
     },
     {
       "path": "main-src/libs/app-management/get-installed-apps-async.ts",
-      "line": 57,
+      "line": 28,
       "text": "// eslint-disable-next-line no-console"
     },
     {
@@ -40,7 +40,7 @@
     },
     {
       "path": "main-src/libs/app-management/install-app-async/index.ts",
-      "line": 129,
+      "line": 162,
       "text": "console.log(message); // eslint-disable-line no-console"
     },
     {
@@ -54,38 +54,38 @@
       "text": "console.log(message); // eslint-disable-line no-console"
     },
     {
+      "path": "main-src/libs/listener-handlers.ts",
+      "line": 114,
+      "text": "console.log(error); // eslint-disable-line no-console"
+    },
+    {
+      "path": "main-src/libs/listener-handlers.ts",
+      "line": 147,
+      "text": "console.log(error); // eslint-disable-line no-console"
+    },
+    {
       "path": "main-src/libs/listeners.ts",
-      "line": 48,
+      "line": 50,
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/listeners.ts",
-      "line": 110,
+      "line": 115,
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/listeners.ts",
-      "line": 135,
+      "line": 140,
       "text": "// eslint-disable-next-line no-console"
     },
     {
       "path": "main-src/libs/listeners.ts",
-      "line": 157,
+      "line": 162,
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/listeners.ts",
-      "line": 194,
-      "text": "// eslint-disable-next-line no-console"
-    },
-    {
-      "path": "main-src/libs/listeners.ts",
-      "line": 243,
-      "text": "// eslint-disable-next-line no-console"
-    },
-    {
-      "path": "main-src/libs/listeners.ts",
-      "line": 331,
+      "line": 234,
       "text": "console.log(err); // eslint-disable-line no-console"
     },
     {
@@ -109,29 +109,14 @@
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
-      "path": "scripts/wait-for-url.ts",
-      "line": 32,
-      "text": "console.error(e.message); // eslint-disable-line no-console"
-    },
-    {
       "path": "src/components/dialogs/dialog-create-custom-app.tsx",
       "line": 4,
       "text": "/* eslint-disable jsx-a11y/anchor-is-valid */"
     },
     {
-      "path": "src/components/dialogs/dialog-create-custom-app.tsx",
-      "line": 139,
-      "text": ".catch(console.log); // eslint-disable-line"
-    },
-    {
       "path": "src/components/dialogs/dialog-edit-app.tsx",
       "line": 4,
       "text": "/* eslint-disable jsx-a11y/anchor-is-valid */"
-    },
-    {
-      "path": "src/components/dialogs/dialog-edit-app.tsx",
-      "line": 158,
-      "text": ".catch(console.log); // eslint-disable-line"
     },
     {
       "path": "src/components/dialogs/dialog-open-source-notices.tsx",
@@ -160,13 +145,8 @@
     },
     {
       "path": "src/components/pages/preferences/index.tsx",
-      "line": 395,
-      "text": ".catch(console.log); // eslint-disable-line"
-    },
-    {
-      "path": "src/components/pages/preferences/index.tsx",
-      "line": 542,
-      "text": ".catch(console.log); // eslint-disable-line"
+      "line": 448,
+      "text": "}).catch(console.log); // eslint-disable-line"
     },
     {
       "path": "src/components/shared/enhanced-app-bar.tsx",
@@ -189,13 +169,13 @@
       "text": "// eslint-disable-next-line"
     },
     {
-      "path": "src/state/dialog-create-custom-app/actions.ts",
-      "line": 79,
+      "path": "src/state/dialog-create-custom-app/actions/action-creators.ts",
+      "line": 80,
       "text": ".catch(console.log) // eslint-disable-line no-console"
     },
     {
-      "path": "src/state/dialog-edit-app/actions.ts",
-      "line": 76,
+      "path": "src/state/dialog-edit-app/actions/action-creators.ts",
+      "line": 75,
       "text": ".catch(console.log) // eslint-disable-line no-console"
     },
     {
