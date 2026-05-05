@@ -1,12 +1,15 @@
 {
-  "generated_at": "2026-05-05T02:15:45.670Z",
+  "generated_at": "2026-05-05T03:09:03.638Z",
   "repository": "kitsuyui/chromeless",
   "default_branch": "main",
   "publish_branch": "gh-counter-assets",
   "event_name": "push",
-  "base_reference": "59dab8994b74501eeab9627bcfd95090bcd39594",
-  "head_reference": "85b5e6fe932c99d90395212f1b4177a918a1df77",
+  "base_label": "main",
+  "base_reference": "85b5e6fe932c99d90395212f1b4177a918a1df77",
+  "head_label": "main",
+  "head_reference": "8dd4311a2282e0d13ed808a6bcc23cbd630fdb83",
   "bootstrap_message": null,
+  "base_only_paths": [],
   "counters": [
     {
       "id": "maintenance-comments",
@@ -14,8 +17,13 @@
       "current": 0,
       "base": 0,
       "delta": 0,
+      "dashboard_current": 0,
+      "dashboard_base": 0,
+      "dashboard_delta": 0,
       "commentable": true,
       "touched_files": [],
+      "file_deltas": [],
+      "patch_file_deltas": [],
       "violations": [],
       "badge_path": ".gh-counter/badges/maintenance-comments.svg",
       "counter_path": ".gh-counter/counters/maintenance-comments.json"
@@ -26,8 +34,13 @@
       "current": 0,
       "base": 0,
       "delta": 0,
+      "dashboard_current": 0,
+      "dashboard_base": 0,
+      "dashboard_delta": 0,
       "commentable": true,
       "touched_files": [],
+      "file_deltas": [],
+      "patch_file_deltas": [],
       "violations": [],
       "badge_path": ".gh-counter/badges/type-escape.svg",
       "counter_path": ".gh-counter/counters/type-escape.json"
@@ -38,8 +51,158 @@
       "current": 35,
       "base": 35,
       "delta": 0,
+      "dashboard_current": 35,
+      "dashboard_base": 35,
+      "dashboard_delta": 0,
       "commentable": true,
       "touched_files": [],
+      "file_deltas": [
+        {
+          "path": "main-src/libs/listeners.ts",
+          "current": 5,
+          "base": 0,
+          "delta": 5
+        },
+        {
+          "path": "main-src/libs/updater.ts",
+          "current": 4,
+          "base": 0,
+          "delta": 4
+        },
+        {
+          "path": "dist.ts",
+          "current": 3,
+          "base": 0,
+          "delta": 3
+        },
+        {
+          "path": "main-src/libs/app-management/install-app-async/index.ts",
+          "current": 2,
+          "base": 0,
+          "delta": 2
+        },
+        {
+          "path": "main-src/libs/listener-handlers.ts",
+          "current": 2,
+          "base": 0,
+          "delta": 2
+        },
+        {
+          "path": "main-src/libs/app-management/install-app-async/install-app-forked-lite-v2.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "main-src/libs/app-management/installed-app-reader.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "main-src/libs/app-management/uninstall-app-async/index.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/components/dialogs/dialog-create-custom-app.tsx",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/components/dialogs/dialog-edit-app.tsx",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/components/dialogs/dialog-open-source-notices.tsx",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/components/dialogs/dialog-set-installation-path.tsx",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/components/pages/browsers/defined-app-bar.tsx",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/components/pages/installed/defined-app-bar.tsx",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/components/pages/preferences/defined-app-bar.tsx",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/components/pages/preferences/index.tsx",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/components/shared/enhanced-app-bar.tsx",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/helpers/extract-hostname.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/helpers/is-url.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/listeners/index.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/state/dialog-create-custom-app/actions/action-creators.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/state/dialog-edit-app/actions/action-creators.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/state/dialog-set-installation-path/actions.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        },
+        {
+          "path": "src/state/installed/actions.ts",
+          "current": 1,
+          "base": 0,
+          "delta": 1
+        }
+      ],
+      "patch_file_deltas": [],
       "violations": [],
       "badge_path": ".gh-counter/badges/lint-suppression.svg",
       "counter_path": ".gh-counter/counters/lint-suppression.json"
@@ -50,8 +213,20 @@
       "current": 4,
       "base": 4,
       "delta": 0,
+      "dashboard_current": 4,
+      "dashboard_base": 4,
+      "dashboard_delta": 0,
       "commentable": true,
       "touched_files": [],
+      "file_deltas": [
+        {
+          "path": "main-src/libs/windows/main.ts",
+          "current": 4,
+          "base": 0,
+          "delta": 4
+        }
+      ],
+      "patch_file_deltas": [],
       "violations": [],
       "badge_path": ".gh-counter/badges/electron-web-preferences-risk.svg",
       "counter_path": ".gh-counter/counters/electron-web-preferences-risk.json"
