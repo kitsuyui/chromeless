@@ -492,9 +492,7 @@ Promise.resolve()
     // in v20.5.2 and below, '/Applications/Chromeless Apps' owner is set to `root`
     // need to correct to user to install apps without sudo
     if (installationPath === '/Applications/Chromeless Apps') {
-      if (!fsExtra.existsSync(installationPath)) {
-        fsExtra.mkdirSync(installationPath);
-      }
+      fsExtra.ensureDirSync(installationPath);
       // https://unix.stackexchange.com/a/7732
       const installationPathOwner = await execAsync(
         "ls -ld '/Applications/Chromeless Apps' | awk '{print $3}'",
