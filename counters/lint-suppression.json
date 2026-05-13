@@ -160,7 +160,7 @@
     },
     {
       "path": "src/state/dialog-create-custom-app/actions/action-creators.ts",
-      "line": 80,
+      "line": 81,
       "text": ".catch(console.log) // eslint-disable-line no-console"
     },
     {
