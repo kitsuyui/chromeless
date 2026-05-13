@@ -37,7 +37,7 @@ const uninstallAppAsync = (id, name, engine) =>
         '--requireAdmin',
         requireAdmin.toString(),
         '--username',
-        process.env.USER, // required by sudo-prompt
+        process.env.USER, // required by @vscode/sudo-prompt
       ],
       {
         env: {
