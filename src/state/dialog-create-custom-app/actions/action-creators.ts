@@ -21,11 +21,6 @@ export const close = () => ({
   type: DIALOG_CREATE_CUSTOM_APP_CLOSE,
 });
 
-export const open = (form) => ({
-  type: DIALOG_CREATE_CUSTOM_APP_OPEN,
-  form,
-});
-
 // to be replaced with invoke (electron 7+)
 // https://electronjs.org/docs/api/ipc-renderer#ipcrendererinvokechannel-args
 // attempt to get icon from manifest, favicon, etc of the URL first
@@ -43,6 +38,12 @@ export const getWebsiteIconUrlAsync = (url, _name = null) =>
   });
 
 let requestCount = 0;
+
+export const open = (form) => {
+  requestCount = 0;
+  return { type: DIALOG_CREATE_CUSTOM_APP_OPEN, form };
+};
+
 export const getIconFromInternet = () => (dispatch, getState) => {
   const {
     form: { name, url, urlDisabled, urlError },
