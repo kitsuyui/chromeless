@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import parseArgs from '../../parse-args';
+import { quoteShellArg } from '../../shell-quote';
 
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
@@ -57,8 +58,6 @@ const requireAdmin = isStandardInstallationPath ? false : argv.requireAdmin;
 const unescapeString = (str) => str.replace(/\\"/gim, '"');
 
 const escapeString = (str) => str.replace(/"/gim, '\\"');
-
-const addSlash = (str) => str.replace(/ /g, '\\ ');
 
 const isUrl = (value) => URL.canParse(value);
 
@@ -159,9 +158,21 @@ const firefoxProfileId = `chromeless-${id}`;
 
 const engineInfo = getEngineInfo(engine);
 
+const getAppBundleShellPath = (basePathExpression) =>
+  `${basePathExpression}/${quoteShellArg(getAppFolderName())}`;
+
+const getChromiumProfileShellPath = (profileId) =>
+  `"$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${quoteShellArg(profileId)}`;
+
+const getNativeMessagingHostsShellPath = () =>
+  `~/Library/Application\\ Support/${quoteShellArg(engineInfo.userDataDir)}/NativeMessagingHosts`;
+
+const getEngineExecShellPath = () =>
+  `${getAppBundleShellPath('"$PWD"')}/Contents/MacOS/${quoteShellArg(engineInfo.execFile)}`;
+
 const getFirefoxUrlParam = () => {
   if (!url) return '';
-  return useTabs ? `"${url}"` : `--ssb="${url}"`;
+  return useTabs ? quoteShellArg(url) : `--ssb=${quoteShellArg(url)}`;
 };
 
 const getFirefoxExecFileContent = () => `#!/bin/sh
@@ -170,9 +181,9 @@ cd "$DIR";
 cd ..;
 cd Resources;
 
-cp "$PWD"/icon.icns "$PWD"/${addSlash(name)}.app/Contents/Resources/firefox.icns
+cp "$PWD"/icon.icns ${getAppBundleShellPath('"$PWD"')}/Contents/Resources/firefox.icns
 
-open -n "$PWD"/${addSlash(name)}.app --args ${getFirefoxUrlParam()} -P ${firefoxProfileId}
+open -n ${getAppBundleShellPath('"$PWD"')} --args ${getFirefoxUrlParam()} -P ${quoteShellArg(firefoxProfileId)}
 `;
 
 const getChromiumTabbedExecFileContent = () => `#!/bin/sh
@@ -181,15 +192,15 @@ cd "$DIR";
 cd ..;
 cd Resources;
 
-cp -rf ~/Library/Application\\ Support/${addSlash(engineInfo.userDataDir)}/NativeMessagingHosts ~/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id}/NativeMessagingHosts
+cp -rf ${getNativeMessagingHostsShellPath()} ${getChromiumProfileShellPath(id)}/NativeMessagingHosts
 
-pgrepResult=$(pgrep -f "$DIR/${addSlash(name)}.app")
+pgrepResult=$(pgrep -f ${getAppBundleShellPath('"$DIR"')})
 numProc=$(echo "$pgrepResult" | wc -l)
 if [ $numProc -ge 2 ]
   then
   exit;
 fi
-pgrepResult=$(pgrep -f "$PWD"/${addSlash(name)}.app/Contents/MacOS/${addSlash(engineInfo.execFile)})
+pgrepResult=$(pgrep -f ${getEngineExecShellPath()})
 if [ -n "$pgrepResult" -a $# -eq 0 ]; then
   exit
 fi
@@ -198,10 +209,10 @@ sed -i '' "s/\\"has_seen_welcome_page\\":false/\\"has_seen_welcome_page\\":true/
 if (grep -q "\\"restore_on_startup\\":1" "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/adobe-color/Default/Secure Preferences") && [ -e "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/adobe-color/Default/Current Tabs" ]; then
   Tabs=""
 else
-  Tabs="${url || ''}"
+  Tabs=${quoteShellArg(url || '')}
 fi
 
-open -n "$PWD"/${addSlash(name)}.app --args $Tabs --no-sandbox --test-type --user-data-dir="$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id} --load-extension="$PWD"/chromeless-helper "$@"
+open -n ${getAppBundleShellPath('"$PWD"')} --args $Tabs --no-sandbox --test-type --user-data-dir=${getChromiumProfileShellPath(id)} --load-extension="$PWD"/chromeless-helper "$@"
 `;
 
 const getChromiumAppExecFileContent = () => `#!/bin/sh
@@ -210,20 +221,20 @@ cd "$DIR";
 cd ..;
 cd Resources;
 
-cp -rf ~/Library/Application\\ Support/${addSlash(engineInfo.userDataDir)}/NativeMessagingHosts ~/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id}/NativeMessagingHosts
+cp -rf ${getNativeMessagingHostsShellPath()} ${getChromiumProfileShellPath(id)}/NativeMessagingHosts
 
-pgrepResult=$(pgrep -f "$DIR/${addSlash(name)}.app")
+pgrepResult=$(pgrep -f ${getAppBundleShellPath('"$DIR"')})
 numProc=$(echo "$pgrepResult" | wc -l)
 if [ $numProc -ge 2 -a $# -eq 0 ]
   then
   exit;
 fi
-pgrepResult=$(pgrep -f "$PWD"/${addSlash(name)}.app/Contents/MacOS/${addSlash(engineInfo.execFile)})
+pgrepResult=$(pgrep -f ${getEngineExecShellPath()})
 if [ -n "$pgrepResult" ]; then
   exit
 fi
 
-open -n "$PWD"/${addSlash(name)}.app --args --no-sandbox --test-type --app="${url}" --user-data-dir="$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${id} --load-extension="$PWD"/chromeless-helper "$@"
+open -n ${getAppBundleShellPath('"$PWD"')} --args --no-sandbox --test-type --app=${quoteShellArg(url)} --user-data-dir=${getChromiumProfileShellPath(id)} --load-extension="$PWD"/chromeless-helper "$@"
 `;
 
 const getExecFileContent = () => {
@@ -362,7 +373,9 @@ Promise.resolve()
               .then(() => {
                 // https://developer.mozilla.org/en-US/docs/Mozilla/Command_Line_Options
                 const execPath = path.join(browserPath, 'Contents', 'MacOS', 'firefox');
-                return execAsync(`"${execPath}" -CreateProfile ${firefoxProfileId}`);
+                return execAsync(
+                  `${quoteShellArg(execPath)} -CreateProfile ${quoteShellArg(firefoxProfileId)}`,
+                );
               })
               // enable flag for ssb (site-specific-browser) (Firefox experimental feature)
               .then(() => {
@@ -486,7 +499,7 @@ Promise.resolve()
   .then(async () => {
     if (requireAdmin === 'true') {
       return sudoAsync(
-        `mkdir -p "${allAppsPath}" && rm -rf "${finalPath}" && mv "${appFolderPath}" "${finalPath}"`,
+        `mkdir -p ${quoteShellArg(allAppsPath)} && rm -rf ${quoteShellArg(finalPath)} && mv ${quoteShellArg(appFolderPath)} ${quoteShellArg(finalPath)}`,
       );
     }
     // in v20.5.2 and below, '/Applications/Chromeless Apps' owner is set to `root`
@@ -502,7 +515,9 @@ Promise.resolve()
       if (installationPathOwner.trim() === 'root') {
         // https://askubuntu.com/questions/6723/change-folder-permissions-and-ownership
         // https://stackoverflow.com/questions/23714097/sudo-chown-command-not-found
-        await sudoAsync(`/usr/sbin/chown -R ${username} '/Applications/Chromeless Apps'`);
+        await sudoAsync(
+          `/usr/sbin/chown -R ${quoteShellArg(username)} '/Applications/Chromeless Apps'`,
+        );
       }
     }
     return fsExtra.move(appFolderPath, finalPath, { overwrite: true });
