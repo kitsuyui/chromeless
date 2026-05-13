@@ -39,9 +39,11 @@ const createState = (form: Record<string, unknown>, apps = {}) => ({
   },
 });
 
+const MOCK_UUID = '00000000-0000-0000-0000-000000000001';
+
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.spyOn(Date, 'now').mockReturnValue(123);
+  vi.spyOn(crypto, 'randomUUID').mockReturnValue(MOCK_UUID as ReturnType<typeof crypto.randomUUID>);
 });
 
 describe('dialog-create-custom-app action creators', () => {
@@ -111,7 +113,7 @@ describe('dialog-create-custom-app action creators', () => {
     create()(dispatch, () => createState({ name: 'Team Mail', url: 'mail.example' }));
 
     expect(mocks.openDialogChooseEngine).toHaveBeenCalledWith(
-      'custom-123',
+      `custom-${MOCK_UUID}`,
       'Team Mail',
       'http://mail.example',
       'default-icon.png',
@@ -119,7 +121,7 @@ describe('dialog-create-custom-app action creators', () => {
     );
     expect(dispatch).toHaveBeenNthCalledWith(1, {
       args: [
-        'custom-123',
+        `custom-${MOCK_UUID}`,
         'Team Mail',
         'http://mail.example',
         'default-icon.png',

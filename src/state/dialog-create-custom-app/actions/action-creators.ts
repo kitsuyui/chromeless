@@ -32,7 +32,7 @@ export const open = (form) => ({
 export const getWebsiteIconUrlAsync = (url, _name = null) =>
   new Promise((resolve, reject) => {
     try {
-      const id = Date.now().toString();
+      const id = crypto.randomUUID();
       window.ipcRenderer.once(id, (e, uurl) => {
         resolve(uurl);
       });
@@ -105,7 +105,7 @@ export const create = () => (dispatch, getState) => {
     defaultIcon: getStaticGlobal('defaultIcon') as string,
     form,
     nameExists: isNameExisted(form.name, state),
-    now: Date.now(),
+    id: crypto.randomUUID(),
   });
 
   if (submission.status === 'invalid') {

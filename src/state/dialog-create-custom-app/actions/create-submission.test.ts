@@ -12,7 +12,7 @@ describe('buildCreateCustomAppSubmission', () => {
         defaultIcon: 'default.png',
         form: { name: '', url: 'not a url' },
         nameExists: false,
-        now: 123,
+        id: '123',
       }),
     ).toMatchObject({
       changes: {
@@ -29,7 +29,7 @@ describe('buildCreateCustomAppSubmission', () => {
         defaultIcon: 'default.png',
         form: { name: 'Mail', url: 'mail.example' },
         nameExists: true,
-        now: 123,
+        id: '123',
       }),
     ).toEqual({
       message: 'An app named Mail already exists.',
@@ -43,7 +43,7 @@ describe('buildCreateCustomAppSubmission', () => {
         defaultIcon: 'default.png',
         form: { internetIcon: 'internet.png', name: 'Team Mail', url: 'mail.example' },
         nameExists: false,
-        now: 123,
+        id: '123',
       }),
     ).toEqual({
       payload: {
@@ -63,7 +63,7 @@ describe('buildCreateCustomAppSubmission', () => {
         defaultIcon: 'default.png',
         form: { name: 'Local Tool', url: '', urlDisabled: true },
         nameExists: false,
-        now: 456,
+        id: '456',
       }),
     ).toMatchObject({
       payload: {
@@ -81,7 +81,7 @@ describe('buildCreateCustomAppSubmission', () => {
         defaultIcon: 'default.png',
         form: { icon: 'custom.png', name: '日本', url: 'https://tool.example' },
         nameExists: false,
-        now: 789,
+        id: '789',
       }),
     ).toEqual({
       payload: {
