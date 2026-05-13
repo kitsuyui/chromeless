@@ -19,7 +19,7 @@ type BuildCreateCustomAppSubmissionInput = {
   defaultIcon: string;
   form: CreateCustomAppForm;
   nameExists: boolean;
-  now: number;
+  id: string;
 };
 
 export const getCreateCustomAppValidationRules = (urlDisabled: boolean | undefined) => ({
@@ -48,7 +48,7 @@ export const buildCreateCustomAppSubmission = ({
   defaultIcon,
   form,
   nameExists,
-  now,
+  id,
 }: BuildCreateCustomAppSubmissionInput) => {
   const validatedChanges = validate(form, getCreateCustomAppValidationRules(form.urlDisabled));
   if (hasErrors(validatedChanges)) {
@@ -70,7 +70,7 @@ export const buildCreateCustomAppSubmission = ({
   return {
     payload: {
       icon: form.icon || form.internetIcon || defaultIcon,
-      id: `custom-${now.toString()}`,
+      id: `custom-${id}`,
       name: form.name,
       opts: buildSlugOpts(form.name),
       url: form.urlDisabled ? null : protocolledUrl,
