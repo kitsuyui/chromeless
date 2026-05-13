@@ -164,7 +164,7 @@ const installAppAsync = (engine, id, name, url, icon, _opts = {}) => {
           });
 
           child.on('exit', (code) => {
-            if (code === 1) {
+            if (code !== 0 || err !== null) {
               reject(err || new Error('Forked script failed to run correctly.'));
               return;
             }
