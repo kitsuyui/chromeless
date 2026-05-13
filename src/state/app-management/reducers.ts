@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { orderBy, sortedIndexBy, without } from 'lodash';
+import { sortedIndexBy, without } from 'lodash';
 import { combineReducers } from 'redux';
 import {
   CLEAN_APP_MANAGEMENT,
@@ -12,6 +12,11 @@ import {
   SORT_APPS,
 } from '../../constants/actions';
 import { INSTALLING } from '../../constants/app-statuses';
+import {
+  getInstalledAppSort,
+  getInstalledAppSortValue,
+  orderInstalledAppIds,
+} from '../installed-app-sort';
 
 const apps = (state = {}, action) => {
   switch (action.type) {
@@ -42,13 +47,6 @@ const apps = (state = {}, action) => {
   }
 };
 
-const iterateeFunc = (app, key) => {
-  if (key === 'name') {
-    return app.name;
-  }
-  // action.sortInstalledAppBy === 'last-updated'
-  return -(app.lastUpdated || 0);
-};
 const sortedAppIds = (state = [], action) => {
   switch (action.type) {
     case CLEAN_APP_MANAGEMENT: {
@@ -59,22 +57,24 @@ const sortedAppIds = (state = [], action) => {
     case SET_APP: {
       // if id is not in list, insert at sorted position
       if (state.indexOf(action.id) < 0) {
+        const { key } = getInstalledAppSort(action.sortInstalledAppBy);
         const index = sortedIndexBy(state, action.id, (id) => {
           const app = id === action.id ? { ...action.apps[id], ...action.app } : action.apps[id];
-          return iterateeFunc(app, action.sortInstalledAppBy);
+          return getInstalledAppSortValue(app, key);
         });
         state.splice(index, 0, action.id);
         return [...state];
       }
       // if sorting value is updated, remove and reinsert id at new index
+      const { key } = getInstalledAppSort(action.sortInstalledAppBy);
       if (
-        (action.sortInstalledAppBy === 'name' && action.app.name) ||
-        (action.sortInstalledAppBy === 'last-updated' && action.app.lastUpdated)
+        (key === 'name' && action.app.name) ||
+        (key === 'last-updated' && action.app.lastUpdated)
       ) {
         const newState = without(state, action.id);
         const index = sortedIndexBy(newState, action.id, (id) => {
           const app = id === action.id ? { ...action.apps[id], ...action.app } : action.apps[id];
-          return iterateeFunc(app, action.sortInstalledAppBy);
+          return getInstalledAppSortValue(app, key);
         });
         newState.splice(index, 0, action.id);
         return newState;
@@ -85,18 +85,7 @@ const sortedAppIds = (state = [], action) => {
       return without(state, action.id);
     }
     case SORT_APPS: {
-      // resort
-      const parts = action.sortInstalledAppBy.split('/');
-      const key = parts[0];
-      const order = parts.length > 0 ? parts[1] : 'asc';
-      return orderBy(
-        state,
-        (id) => {
-          const app = action.apps[id];
-          return iterateeFunc(app, key);
-        },
-        [order],
-      );
+      return orderInstalledAppIds(state, action.apps, action.sortInstalledAppBy);
     }
     default:
       return state;

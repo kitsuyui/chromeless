@@ -73,6 +73,19 @@ describe('installed reducers', () => {
     expect(state.filteredSortedAppIds).toEqual(['beta', 'alpha']);
   });
 
+  it('respects explicit descending sort order for installed app results', () => {
+    const state = reducer(
+      { filteredSortedAppIds: ['alpha', 'beta', 'gamma'] },
+      {
+        type: SORT_APPS,
+        apps,
+        sortInstalledAppBy: 'last-updated/desc',
+      },
+    );
+
+    expect(state.filteredSortedAppIds).toEqual(['alpha', 'gamma', 'beta']);
+  });
+
   it('keeps only installing apps when app management is cleaned', () => {
     const state = reducer(
       { filteredSortedAppIds: ['alpha', 'gamma'] },

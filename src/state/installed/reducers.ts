@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { orderBy, sortedIndexBy, without } from 'lodash';
+import { sortedIndexBy, without } from 'lodash';
 import { combineReducers } from 'redux';
 
 import {
@@ -18,6 +18,11 @@ import {
 } from '../../constants/actions';
 
 import { INSTALLING } from '../../constants/app-statuses';
+import {
+  getInstalledAppSort,
+  getInstalledAppSortValue,
+  orderInstalledAppIds,
+} from '../installed-app-sort';
 
 const isSearching = (state = false, action) => {
   switch (action.type) {
@@ -46,14 +51,6 @@ const activeQuery = (state = '', action) => {
   }
 };
 
-const iterateeFunc = (app, sortInstalledAppBy) => {
-  if (sortInstalledAppBy === 'name') {
-    return app.name;
-  }
-  // action.sortInstalledAppBy === 'last-updated'
-  return -(app.lastUpdated || 0);
-};
-
 const appMatchesQuery = (app, query) => {
   const processedQuery = query.trim().toLowerCase();
   const appName = app.name.toLowerCase();
@@ -66,17 +63,19 @@ const buildCurrentApp = (action) => ({ ...action.apps[action.id], ...action.app 
 
 const insertSortedAppId = (state, action) => {
   const newState = [...state];
+  const { key } = getInstalledAppSort(action.sortInstalledAppBy);
   const index = sortedIndexBy(newState, action.id, (id) => {
     const app = id === action.id ? buildCurrentApp(action) : action.apps[id];
-    return iterateeFunc(app, action.sortInstalledAppBy);
+    return getInstalledAppSortValue(app, key);
   });
   newState.splice(index, 0, action.id);
   return newState;
 };
 
-const sortingValueChanged = (action) =>
-  (action.sortInstalledAppBy === 'name' && action.app.name) ||
-  (action.sortInstalledAppBy === 'last-updated' && action.app.lastUpdated);
+const sortingValueChanged = (action) => {
+  const { key } = getInstalledAppSort(action.sortInstalledAppBy);
+  return (key === 'name' && action.app.name) || (key === 'last-updated' && action.app.lastUpdated);
+};
 
 const updateFilteredSortedAppIdsForSetApp = (state, action) => {
   const currentApp = buildCurrentApp(action);
@@ -112,11 +111,7 @@ const filteredSortedAppIds = (state = null, action) => {
     }
     case SORT_APPS: {
       if (!state) return null;
-      // resort
-      return orderBy(state, (id) => {
-        const app = action.apps[id];
-        return iterateeFunc(app, action.sortInstalledAppBy);
-      });
+      return orderInstalledAppIds(state, action.apps, action.sortInstalledAppBy);
     }
     default:
       return state;
