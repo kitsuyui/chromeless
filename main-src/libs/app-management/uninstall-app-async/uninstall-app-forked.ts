@@ -68,17 +68,12 @@ const sudoAsync = (prompt) =>
     });
   });
 
-const checkExistsAndRemove = (dirPath) =>
-  fsExtra.exists(dirPath).then((exists) => {
-    if (exists) return fsExtra.remove(dirPath);
-    return null;
-  });
+// fsExtra.remove() is idempotent: it resolves without error when the path does not exist.
+// Using exists()-then-remove() is a TOCTOU and uses the deprecated fsExtra.exists() API.
+const checkExistsAndRemove = (dirPath) => fsExtra.remove(dirPath);
 
-const checkExistsAndRemoveWithSudo = (dirPath) =>
-  fsExtra.exists(dirPath).then((exists) => {
-    if (exists) return sudoAsync(`rm -rf "${dirPath}"`);
-    return null;
-  });
+// rm -rf is idempotent on macOS (exit 0 when path does not exist).
+const checkExistsAndRemoveWithSudo = (dirPath) => sudoAsync(`rm -rf "${dirPath}"`);
 
 const execAsync = (cmd) =>
   new Promise((resolve, reject) => {
