@@ -46,8 +46,8 @@ export const requestCancelInstallApp = (id) =>
   window.ipcRenderer.send('request-cancel-install-app', id);
 export const requestCancelUpdateApp = (id) =>
   window.ipcRenderer.send('request-cancel-update-app', id);
-export const requestUninstallApp = (id, name, engine) => {
-  window.ipcRenderer.send('request-uninstall-app', id, name, engine);
+export const requestUninstallApp = (engine, id, name) => {
+  window.ipcRenderer.send('request-uninstall-app', engine, id, name);
 };
 export const requestOpenApp = (id, name) => window.ipcRenderer.send('request-open-app', id, name);
 

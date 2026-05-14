@@ -103,8 +103,8 @@ describe('senders', () => {
     [requestCancelUpdateApp, ['mail'], ['request-cancel-update-app', 'mail']],
     [
       requestUninstallApp,
-      ['mail', 'Mail', 'chrome'],
-      ['request-uninstall-app', 'mail', 'Mail', 'chrome'],
+      ['chrome', 'mail', 'Mail'],
+      ['request-uninstall-app', 'chrome', 'mail', 'Mail'],
     ],
     [requestOpenApp, ['mail', 'Mail'], ['request-open-app', 'mail', 'Mail']],
   ])('sends %s through ipcRenderer', (sender, args, expected) => {

@@ -119,7 +119,7 @@ const loadListeners = () => {
 
   ipcMain.on('request-open-app', (e, id, name) => openApp(id, name));
 
-  ipcMain.on('request-uninstall-app', (e, id, name, engine) => {
+  ipcMain.on('request-uninstall-app', (e, engine, id, name) => {
     dialog
       .showMessageBox(mainWindow.get(), {
         type: 'question',
