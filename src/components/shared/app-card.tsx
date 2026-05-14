@@ -196,7 +196,7 @@ const AppCard = (props) => {
           disableElevation
           onClick={(e) => {
             e.stopPropagation();
-            requestUninstallApp(id, name, engine);
+            requestUninstallApp(engine, id, name);
           }}
         >
           Uninstall

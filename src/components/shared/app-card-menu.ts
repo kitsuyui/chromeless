@@ -95,7 +95,7 @@ export const createAppCardMenuTemplate = (
     {
       label: 'Uninstall',
       visible: status === INSTALLED && isOutdated,
-      click: () => dependencies.requestUninstallApp(id, name, engine),
+      click: () => dependencies.requestUninstallApp(engine, id, name),
     },
     {
       label: 'Clone',

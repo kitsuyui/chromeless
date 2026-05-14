@@ -83,7 +83,7 @@ describe('createAppCardMenuTemplate', () => {
     expect(template.map((item) => item.label).filter(Boolean)).not.toContain('Reinstall (Repair)');
 
     template.find((item) => item.label === 'Uninstall')?.click?.();
-    expect(dependencies.requestUninstallApp).toHaveBeenCalledWith('mail', 'Mail', 'chrome');
+    expect(dependencies.requestUninstallApp).toHaveBeenCalledWith('chrome', 'mail', 'Mail');
   });
 
   it('uses cancel-update for installing apps with an existing version', () => {
