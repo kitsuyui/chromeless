@@ -17,7 +17,7 @@ process.on('uncaughtException', (e) => {
 
 const path = require('path');
 const fsExtra = require('fs-extra');
-const sudo = require('sudo-prompt');
+const sudo = require('@vscode/sudo-prompt');
 const { exec } = require('child_process');
 const os = require('os');
 

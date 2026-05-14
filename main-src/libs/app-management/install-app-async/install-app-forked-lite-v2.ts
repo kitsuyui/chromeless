@@ -22,7 +22,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const fsExtra = require('fs-extra');
-const sudo = require('sudo-prompt');
+const sudo = require('@vscode/sudo-prompt');
 
 const execAsync = require('../../exec-async');
 const downloadAsync = require('../../download-async');
