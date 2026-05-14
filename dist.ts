@@ -14,7 +14,7 @@ const { exec } = require('child_process');
 const verifyNotarizationAsync = (filePath) =>
   new Promise((resolve, reject) => {
     // eslint-disable-next-line no-console
-    console.log(`xcrun stapler validate ${filePath.replace(/ /g, '\\ ')}`);
+    console.error(`xcrun stapler validate ${filePath.replace(/ /g, '\\ ')}`);
 
     exec(`xcrun stapler validate ${filePath.replace(/ /g, '\\ ')}`, (e, stdout, stderr) => {
       if (e instanceof Error) {
@@ -85,7 +85,7 @@ const createBuildOptions = (targets) => ({
       const shouldNotarize = Boolean(process.env.CI_BUILD_TAG);
       if (!shouldNotarize) return null;
 
-      console.log('Notarizing app...');
+      console.error('Notarizing app...');
       // https://kilianvalkhof.com/2019/electron/notarizing-your-electron-application/
       const { appOutDir } = context;
 
@@ -101,7 +101,7 @@ const createBuildOptions = (targets) => ({
         .then(() => verifyNotarizationAsync(appPath))
         .then((notarizedInfo) => {
           // eslint-disable-next-line no-console
-          console.log(notarizedInfo);
+          console.error(notarizedInfo);
         });
     },
   },
@@ -112,13 +112,13 @@ Promise.resolve()
   .then(() => {
     if (!isDevelopmentBuild) return null;
 
-    console.log('Building arm64 development app...');
+    console.error('Building arm64 development app...');
     return builder.build(createBuildOptions(arm64DevelopmentTargets));
   })
   .then(() => {
-    console.log('build successful');
+    console.error('build successful');
   })
   .catch((err) => {
-    console.log(err);
+    console.error(err);
     process.exit(1);
   });
