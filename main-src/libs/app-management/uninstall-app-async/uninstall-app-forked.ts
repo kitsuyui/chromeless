@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import parseArgs from '../../parse-args';
+import { quoteShellArg } from '../../shell-quote';
 
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
@@ -73,7 +74,7 @@ const sudoAsync = (prompt) =>
 const checkExistsAndRemove = (dirPath) => fsExtra.remove(dirPath);
 
 // rm -rf is idempotent on macOS (exit 0 when path does not exist).
-const checkExistsAndRemoveWithSudo = (dirPath) => sudoAsync(`rm -rf "${dirPath}"`);
+const checkExistsAndRemoveWithSudo = (dirPath) => sudoAsync(`rm -rf ${quoteShellArg(dirPath)}`);
 
 const execAsync = (cmd) =>
   new Promise((resolve, reject) => {
@@ -125,7 +126,9 @@ Promise.resolve()
       if (String(installationPathOwner).trim() === 'root') {
         // https://askubuntu.com/questions/6723/change-folder-permissions-and-ownership
         // https://stackoverflow.com/questions/23714097/sudo-chown-command-not-found
-        await sudoAsync(`/usr/sbin/chown -R ${username} '/Applications/Chromeless Apps'`);
+        await sudoAsync(
+          `/usr/sbin/chown -R ${quoteShellArg(username)} '/Applications/Chromeless Apps'`,
+        );
       }
     }
   })
