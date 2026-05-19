@@ -10,12 +10,9 @@ const execAsync = (cmd, opts = {}) =>
         reject(e);
         return;
       }
-
       if (stderr) {
-        reject(new Error(stderr));
-        return;
+        process.stderr.write(stderr);
       }
-
       resolve(stdout);
     });
   });
