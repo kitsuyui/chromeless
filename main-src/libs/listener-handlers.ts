@@ -73,6 +73,7 @@ export const createInstallTaskManager = ({
 }: InstallTaskDependencies) => {
   let queue = Promise.resolve<unknown>(null);
   const taskMap: Record<string, (() => Promise<unknown>) | undefined> = {};
+  const cancelledIds = new Set<string>();
 
   const enqueue = (id: string) => {
     queue = queue.then(() => {
@@ -84,6 +85,8 @@ export const createInstallTaskManager = ({
 
   const requestInstallApp = (event: SenderEventLike, details: AppInstallDetails) => {
     const { engine, icon, id, name, opts, url } = details;
+
+    cancelledIds.delete(id);
 
     send(event.sender, 'set-app', id, {
       status: 'INSTALLING',
@@ -104,17 +107,23 @@ export const createInstallTaskManager = ({
 
       return installAppAsync(engine, id, name, url, icon, opts)
         .then((newApp) => {
-          send(event.sender, 'set-app', id, {
-            ...newApp,
-            status: 'INSTALLED',
-          });
+          if (!cancelledIds.has(id)) {
+            send(event.sender, 'set-app', id, {
+              ...newApp,
+              status: 'INSTALLED',
+            });
+          }
           delete taskMap[id];
+          cancelledIds.delete(id);
         })
         .catch((error) => {
-          console.log(error); // eslint-disable-line no-console
-          send(event.sender, 'enqueue-snackbar', getInstallFailureMessage(error, name), 'error');
-          send(event.sender, 'remove-app', id);
+          if (!cancelledIds.has(id)) {
+            console.log(error); // eslint-disable-line no-console
+            send(event.sender, 'enqueue-snackbar', getInstallFailureMessage(error, name), 'error');
+            send(event.sender, 'remove-app', id);
+          }
           delete taskMap[id];
+          cancelledIds.delete(id);
         });
     };
 
@@ -123,6 +132,8 @@ export const createInstallTaskManager = ({
 
   const requestUpdateApp = (event: SenderEventLike, details: AppInstallDetails) => {
     const { engine, icon, id, name, opts, url } = details;
+
+    cancelledIds.delete(id);
 
     send(event.sender, 'set-app', id, {
       status: 'INSTALLING',
@@ -136,20 +147,26 @@ export const createInstallTaskManager = ({
 
       return installAppAsync(engine, id, name, url, icon, opts)
         .then((newApp) => {
-          send(event.sender, 'set-app', id, {
-            ...newApp,
-            status: 'INSTALLED',
-            lastUpdated: now(),
-          });
+          if (!cancelledIds.has(id)) {
+            send(event.sender, 'set-app', id, {
+              ...newApp,
+              status: 'INSTALLED',
+              lastUpdated: now(),
+            });
+          }
           delete taskMap[id];
+          cancelledIds.delete(id);
         })
         .catch((error) => {
-          console.log(error); // eslint-disable-line no-console
-          send(event.sender, 'enqueue-snackbar', getUpdateFailureMessage(error, name), 'error');
-          send(event.sender, 'set-app', id, {
-            status: 'INSTALLED',
-          });
+          if (!cancelledIds.has(id)) {
+            console.log(error); // eslint-disable-line no-console
+            send(event.sender, 'enqueue-snackbar', getUpdateFailureMessage(error, name), 'error');
+            send(event.sender, 'set-app', id, {
+              status: 'INSTALLED',
+            });
+          }
           delete taskMap[id];
+          cancelledIds.delete(id);
         });
     };
 
@@ -160,6 +177,7 @@ export const createInstallTaskManager = ({
     if (taskMap[id]) {
       send(event.sender, 'remove-app', id);
       delete taskMap[id];
+      cancelledIds.add(id);
     }
   };
 
@@ -170,6 +188,7 @@ export const createInstallTaskManager = ({
         cancelable: false,
       });
       delete taskMap[id];
+      cancelledIds.add(id);
     }
   };
 
