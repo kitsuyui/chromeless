@@ -86,4 +86,17 @@ describe('app-management utils', () => {
     expect(isNameExisted('Old App', state)).toBe(true);
     expect(isNameExisted('New App', state)).toBe(false);
   });
+
+  it('handles stale ids in sortedAppIds gracefully', () => {
+    const state = createState();
+    state.appManagement.sortedAppIds.push('ghost');
+
+    expect(getOutdatedAppsAsList(state).map((app) => app.id)).toEqual(['old']);
+    expect(getCancelableAppsAsList(state).map((app) => app.id)).toEqual(['uninstalling']);
+    expect(getInstallingAppsAsList(state).map((app) => app.id)).toEqual([
+      'installing',
+      'uninstalling',
+    ]);
+    expect(getInstalledAppCount(state)).toBe(2);
+  });
 });

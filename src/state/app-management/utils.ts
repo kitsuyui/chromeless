@@ -34,23 +34,33 @@ export const isCancelableApp = (id, state) => {
 
 export const getOutdatedAppsAsList = (state) => {
   const { apps, sortedAppIds } = state.appManagement;
-  return sortedAppIds.map((id) => apps[id]).filter((app) => isOutdatedApp(app.id, state));
+  return sortedAppIds
+    .filter((id) => apps[id] != null)
+    .map((id) => apps[id])
+    .filter((app) => isOutdatedApp(app.id, state));
 };
 
 export const getCancelableAppsAsList = (state) => {
   const { apps, sortedAppIds } = state.appManagement;
-  return sortedAppIds.map((id) => apps[id]).filter((app) => isCancelableApp(app.id, state));
+  return sortedAppIds
+    .filter((id) => apps[id] != null)
+    .map((id) => apps[id])
+    .filter((app) => isCancelableApp(app.id, state));
 };
 
 export const getInstallingAppsAsList = (state) => {
   const { apps, sortedAppIds } = state.appManagement;
-  return sortedAppIds.map((id) => apps[id]).filter((app) => app.status !== INSTALLED);
+  return sortedAppIds
+    .filter((id) => apps[id] != null)
+    .map((id) => apps[id])
+    .filter((app) => app.status !== INSTALLED);
 };
 
 export const getInstalledAppCount = (state) => {
   const { apps, sortedAppIds } = state.appManagement;
   return sortedAppIds.filter((id) => {
     const app = apps[id];
+    if (!app) return false;
     return app.status === INSTALLED || (app.status === INSTALLING && app.version);
   }).length;
 };
