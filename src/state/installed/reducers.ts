@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { sortedIndexBy, without } from 'lodash';
+import { without } from 'lodash';
 import { combineReducers } from 'redux';
 
 import {
@@ -18,11 +18,7 @@ import {
 } from '../../constants/actions';
 
 import { INSTALLING } from '../../constants/app-statuses';
-import {
-  getInstalledAppSort,
-  getInstalledAppSortValue,
-  orderInstalledAppIds,
-} from '../installed-app-sort';
+import { getInstalledAppSort, orderInstalledAppIds } from '../installed-app-sort';
 
 const isSearching = (state = false, action) => {
   switch (action.type) {
@@ -61,15 +57,17 @@ const appMatchesQuery = (app, query) => {
 
 const buildCurrentApp = (action) => ({ ...action.apps[action.id], ...action.app });
 
+const buildCurrentApps = (action) => ({
+  ...action.apps,
+  [action.id]: buildCurrentApp(action),
+});
+
 const insertSortedAppId = (state, action) => {
-  const newState = [...state];
-  const { key } = getInstalledAppSort(action.sortInstalledAppBy);
-  const index = sortedIndexBy(newState, action.id, (id) => {
-    const app = id === action.id ? buildCurrentApp(action) : action.apps[id];
-    return getInstalledAppSortValue(app, key);
-  });
-  newState.splice(index, 0, action.id);
-  return newState;
+  return orderInstalledAppIds(
+    [...state, action.id],
+    buildCurrentApps(action),
+    action.sortInstalledAppBy,
+  );
 };
 
 const sortingValueChanged = (action) => {
@@ -87,7 +85,7 @@ const updateFilteredSortedAppIdsForSetApp = (state, action) => {
 
   if (!sortingValueChanged(action)) return state;
 
-  return insertSortedAppId(without(state, action.id), action);
+  return orderInstalledAppIds(state, buildCurrentApps(action), action.sortInstalledAppBy);
 };
 
 const filteredSortedAppIds = (state = null, action) => {
