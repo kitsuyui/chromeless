@@ -1,9 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-const { exec } = require('child_process');
+import { type ExecOptions, exec } from 'node:child_process';
 
-const execAsync = (cmd, opts = {}) =>
+const execAsync = (cmd: string, opts: ExecOptions = {}): Promise<string> =>
   new Promise((resolve, reject) => {
     exec(cmd, opts, (e, stdout, stderr) => {
       if (e instanceof Error) {
@@ -13,8 +13,8 @@ const execAsync = (cmd, opts = {}) =>
       if (stderr) {
         process.stderr.write(stderr);
       }
-      resolve(stdout);
+      resolve(typeof stdout === 'string' ? stdout : stdout.toString());
     });
   });
 
-module.exports = execAsync;
+export default execAsync;
