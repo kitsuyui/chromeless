@@ -1,6 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+import execAsync from '../../exec-async';
 import parseArgs from '../../parse-args';
 import { quoteShellArg } from '../../shell-quote';
 
@@ -24,7 +25,6 @@ const path = require('path');
 const fsExtra = require('fs-extra');
 const sudo = require('@vscode/sudo-prompt');
 
-const execAsync = require('../../exec-async');
 const downloadAsync = require('../../download-async');
 const getEngineInfo = require('./get-engine-info');
 const getEngineAppPath = require('./get-engine-app-path');
