@@ -240,6 +240,59 @@ describe('listener handlers', () => {
     });
   });
 
+  it('suppresses completion events when an install is cancelled after it starts', async () => {
+    const sender = createSender();
+    let resolveInstall!: (value: Record<string, unknown>) => void;
+    const installPromise = new Promise<Record<string, unknown>>((resolve) => {
+      resolveInstall = resolve;
+    });
+    const manager = createManager(vi.fn(() => installPromise));
+
+    manager.requestInstallApp(
+      { sender },
+      { engine: 'chrome', icon: 'icon.png', id: 'mail', name: 'Mail', opts: {}, url: null },
+    );
+
+    await Promise.resolve();
+
+    manager.cancelInstallApp({ sender }, 'mail');
+    resolveInstall({ icon: 'new-icon.png' });
+    await manager.waitForIdle();
+
+    expect(sender.send).not.toHaveBeenCalledWith(
+      'set-app',
+      'mail',
+      expect.objectContaining({ status: 'INSTALLED' }),
+    );
+    expect(sender.send).toHaveBeenCalledWith('remove-app', 'mail');
+  });
+
+  it('suppresses completion events when an update is cancelled after it starts', async () => {
+    const sender = createSender();
+    let resolveInstall!: (value: Record<string, unknown>) => void;
+    const installPromise = new Promise<Record<string, unknown>>((resolve) => {
+      resolveInstall = resolve;
+    });
+    const manager = createManager(vi.fn(() => installPromise));
+
+    manager.requestUpdateApp(
+      { sender },
+      { engine: 'chrome', icon: 'icon.png', id: 'mail', name: 'Mail', opts: {}, url: null },
+    );
+
+    await Promise.resolve();
+
+    manager.cancelUpdateApp({ sender }, 'mail');
+    resolveInstall({ icon: 'updated-icon.png' });
+    await manager.waitForIdle();
+
+    expect(sender.send).not.toHaveBeenCalledWith(
+      'set-app',
+      'mail',
+      expect.objectContaining({ icon: 'updated-icon.png' }),
+    );
+  });
+
   it('skips update checks when updater is inactive or unavailable', () => {
     const autoUpdater = {
       checkForUpdates: vi.fn(),
