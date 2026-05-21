@@ -45,12 +45,12 @@
     },
     {
       "path": "main-src/libs/listener-handlers.ts",
-      "line": 114,
+      "line": 121,
       "text": "console.log(error); // eslint-disable-line no-console"
     },
     {
       "path": "main-src/libs/listener-handlers.ts",
-      "line": 147,
+      "line": 162,
       "text": "console.log(error); // eslint-disable-line no-console"
     },
     {
