@@ -83,7 +83,7 @@ describe('installed reducers', () => {
       },
     );
 
-    expect(state.filteredSortedAppIds).toEqual(['alpha', 'gamma', 'beta']);
+    expect(state.filteredSortedAppIds).toEqual(['beta', 'gamma', 'alpha']);
   });
 
   it('keeps only installing apps when app management is cleaned', () => {

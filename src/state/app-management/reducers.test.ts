@@ -85,7 +85,7 @@ describe('app-management reducers', () => {
     expect(state.sortedAppIds).toEqual(['alpha', 'beta']);
   });
 
-  it('resorts ids by newest update when requested', () => {
+  it('resorts ids by newest update by default', () => {
     const state = reducer(
       {
         apps,
@@ -95,7 +95,7 @@ describe('app-management reducers', () => {
       {
         type: SORT_APPS,
         apps,
-        sortInstalledAppBy: 'last-updated/asc',
+        sortInstalledAppBy: 'last-updated',
       },
     );
 

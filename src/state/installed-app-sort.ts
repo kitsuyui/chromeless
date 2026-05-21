@@ -4,14 +4,22 @@
 import { orderBy } from 'lodash';
 
 const DEFAULT_SORT_ORDER = 'asc';
+const DEFAULT_SORT_ORDERS = {
+  'last-updated': 'desc',
+};
 
-const normalizeSortOrder = (order) => (order === 'desc' ? 'desc' : DEFAULT_SORT_ORDER);
+const normalizeSortOrder = (key, order) => {
+  if (order === 'asc' || order === 'desc') {
+    return order;
+  }
+  return DEFAULT_SORT_ORDERS[key] || DEFAULT_SORT_ORDER;
+};
 
 export const getInstalledAppSort = (sortInstalledAppBy) => {
   const [key, order] = sortInstalledAppBy.split('/');
   return {
     key,
-    order: normalizeSortOrder(order),
+    order: normalizeSortOrder(key, order),
   };
 };
 
@@ -19,7 +27,7 @@ export const getInstalledAppSortValue = (app, key) => {
   if (key === 'name') {
     return app.name;
   }
-  return -(app.lastUpdated || 0);
+  return app.lastUpdated || 0;
 };
 
 export const orderInstalledAppIds = (ids, apps, sortInstalledAppBy) => {

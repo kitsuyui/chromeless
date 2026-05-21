@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { sortedIndexBy, without } from 'lodash';
+import { without } from 'lodash';
 import { combineReducers } from 'redux';
 import {
   CLEAN_APP_MANAGEMENT,
@@ -12,11 +12,7 @@ import {
   SORT_APPS,
 } from '../../constants/actions';
 import { INSTALLING } from '../../constants/app-statuses';
-import {
-  getInstalledAppSort,
-  getInstalledAppSortValue,
-  orderInstalledAppIds,
-} from '../installed-app-sort';
+import { getInstalledAppSort, orderInstalledAppIds } from '../installed-app-sort';
 
 const apps = (state = {}, action) => {
   switch (action.type) {
@@ -55,15 +51,13 @@ const sortedAppIds = (state = [], action) => {
       return newLst;
     }
     case SET_APP: {
+      const currentApps = {
+        ...action.apps,
+        [action.id]: { ...(action.apps[action.id] || {}), ...action.app },
+      };
       // if id is not in list, insert at sorted position
       if (state.indexOf(action.id) < 0) {
-        const { key } = getInstalledAppSort(action.sortInstalledAppBy);
-        const index = sortedIndexBy(state, action.id, (id) => {
-          const app = id === action.id ? { ...action.apps[id], ...action.app } : action.apps[id];
-          return getInstalledAppSortValue(app, key);
-        });
-        state.splice(index, 0, action.id);
-        return [...state];
+        return orderInstalledAppIds([...state, action.id], currentApps, action.sortInstalledAppBy);
       }
       // if sorting value is updated, remove and reinsert id at new index
       const { key } = getInstalledAppSort(action.sortInstalledAppBy);
@@ -71,13 +65,7 @@ const sortedAppIds = (state = [], action) => {
         (key === 'name' && action.app.name) ||
         (key === 'last-updated' && action.app.lastUpdated)
       ) {
-        const newState = without(state, action.id);
-        const index = sortedIndexBy(newState, action.id, (id) => {
-          const app = id === action.id ? { ...action.apps[id], ...action.app } : action.apps[id];
-          return getInstalledAppSortValue(app, key);
-        });
-        newState.splice(index, 0, action.id);
-        return newState;
+        return orderInstalledAppIds(state, currentApps, action.sortInstalledAppBy);
       }
       return state;
     }
