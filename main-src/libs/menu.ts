@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 const { app, Menu, shell, ipcMain } = require('electron');
 
-const sendToAllWindows = require('./send-to-all-windows');
+const sendToAllWindows = require('./ipc/send-to-all-windows');
 
 import { createMenuTemplate } from './menu-template';
 
