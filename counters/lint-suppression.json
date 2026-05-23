@@ -44,38 +44,38 @@
       "text": "console.log(message); // eslint-disable-line no-console"
     },
     {
-      "path": "main-src/libs/listener-handlers.ts",
+      "path": "main-src/libs/ipc/listener-handlers.ts",
       "line": 121,
       "text": "console.log(error); // eslint-disable-line no-console"
     },
     {
-      "path": "main-src/libs/listener-handlers.ts",
+      "path": "main-src/libs/ipc/listener-handlers.ts",
       "line": 162,
       "text": "console.log(error); // eslint-disable-line no-console"
     },
     {
-      "path": "main-src/libs/listeners.ts",
-      "line": 51,
+      "path": "main-src/libs/ipc/listeners.ts",
+      "line": 56,
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
-      "path": "main-src/libs/listeners.ts",
-      "line": 116,
+      "path": "main-src/libs/ipc/listeners.ts",
+      "line": 121,
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
-      "path": "main-src/libs/listeners.ts",
-      "line": 141,
+      "path": "main-src/libs/ipc/listeners.ts",
+      "line": 146,
       "text": "// eslint-disable-next-line no-console"
     },
     {
-      "path": "main-src/libs/listeners.ts",
-      "line": 163,
+      "path": "main-src/libs/ipc/listeners.ts",
+      "line": 168,
       "text": ".catch(console.log); // eslint-disable-line"
     },
     {
-      "path": "main-src/libs/listeners.ts",
-      "line": 235,
+      "path": "main-src/libs/ipc/listeners.ts",
+      "line": 240,
       "text": "console.log(err); // eslint-disable-line no-console"
     },
     {
