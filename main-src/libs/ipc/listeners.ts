@@ -5,28 +5,33 @@ const { app, dialog, ipcMain, nativeTheme, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
 const sendToAllWindows = require('./send-to-all-windows');
-const getWebsiteIconUrlAsyncModule = require('./get-website-icon-url-async');
+const getWebsiteIconUrlAsyncModule = require('../get-website-icon-url-async');
 const getWebsiteIconUrlAsync = getWebsiteIconUrlAsyncModule.default || getWebsiteIconUrlAsyncModule;
 
-const openApp = require('./app-management/open-app');
-const installAppAsync = require('./app-management/install-app-async');
-const uninstallAppAsync = require('./app-management/uninstall-app-async');
-const getInstalledAppsAsync = require('./app-management/get-installed-apps-async');
+const openApp = require('../app-management/open-app');
+const installAppAsync = require('../app-management/install-app-async');
+const uninstallAppAsync = require('../app-management/uninstall-app-async');
+const getInstalledAppsAsync = require('../app-management/get-installed-apps-async');
 
-const { getPreference, getPreferences, setPreference, resetPreferences } = require('./preferences');
+const {
+  getPreference,
+  getPreferences,
+  setPreference,
+  resetPreferences,
+} = require('../preferences');
 
 const {
   getSystemPreference,
   getSystemPreferences,
   setSystemPreference,
-} = require('./system-preferences');
+} = require('../system-preferences');
 
-const { createMenu, showMenu } = require('./menu');
+const { createMenu, showMenu } = require('../menu');
 
-const mainWindow = require('./windows/main');
-const { canCheckForUpdates } = require('./updater-availability');
-const { getUpdateFailureMessage } = require('./app-update-error');
-const { getInstallFailureMessage } = require('./app-install-error');
+const mainWindow = require('../windows/main');
+const { canCheckForUpdates } = require('../updater-availability');
+const { getUpdateFailureMessage } = require('../app-update-error');
+const { getInstallFailureMessage } = require('../app-install-error');
 const {
   createInstallTaskManager,
   handleUpdateCheckRequest,

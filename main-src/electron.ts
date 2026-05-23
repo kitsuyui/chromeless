@@ -19,9 +19,9 @@ const { autoUpdater } = require('electron-updater');
 const { getPreference, getPreferences } = require('./libs/preferences');
 
 const { createMenu } = require('./libs/menu');
-const sendToAllWindows = require('./libs/send-to-all-windows');
-const loadListeners = require('./libs/listeners').load;
-const loadInvokers = require('./libs/invokers').load;
+const sendToAllWindows = require('./libs/ipc/send-to-all-windows');
+const loadListeners = require('./libs/ipc/listeners').load;
+const loadInvokers = require('./libs/ipc/invokers').load;
 
 const mainWindow = require('./libs/windows/main');
 
