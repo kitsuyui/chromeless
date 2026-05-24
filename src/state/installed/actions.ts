@@ -56,7 +56,7 @@ export const updateActiveQuery = (activeQuery) => (dispatch, getState) =>
     })
     .catch((err) => {
       // eslint-disable-next-line no-console
-      console.log(err);
+      console.error(err);
     });
 
 let timeout = null;

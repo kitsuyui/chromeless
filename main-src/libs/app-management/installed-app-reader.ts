@@ -31,7 +31,7 @@ export const readPackageVersion = (
     return fsAccess.readJSONSync(packageJsonPath).version ?? '0.0.0';
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.log(err);
+    console.error(err);
     return '0.0.0';
   }
 };

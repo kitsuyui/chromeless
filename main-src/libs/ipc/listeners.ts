@@ -53,7 +53,7 @@ const loadListeners = () => {
         cancelId: 0,
         defaultId: 0,
       })
-      .catch(console.log); // eslint-disable-line
+      .catch(console.error); // eslint-disable-line
   });
 
   // Preferences
@@ -118,7 +118,7 @@ const loadListeners = () => {
             cancelId: 0,
             defaultId: 0,
           })
-          .catch(console.log); // eslint-disable-line
+          .catch(console.error); // eslint-disable-line
       });
   });
 
@@ -144,7 +144,7 @@ const loadListeners = () => {
             })
             .catch((error) => {
               // eslint-disable-next-line no-console
-              console.log(error);
+              console.error(error);
               if (
                 error &&
                 error.message &&
@@ -165,7 +165,7 @@ const loadListeners = () => {
             });
         }
       })
-      .catch(console.log); // eslint-disable-line
+      .catch(console.error); // eslint-disable-line
   });
 
   const installTaskManager = createInstallTaskManager({
@@ -237,7 +237,7 @@ const loadListeners = () => {
         sendToAllWindows(id, iconUrl);
       })
       .catch((err) => {
-        console.log(err); // eslint-disable-line no-console
+        console.error(err); // eslint-disable-line no-console
         sendToAllWindows(id, null);
       });
   });
