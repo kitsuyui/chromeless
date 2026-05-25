@@ -3,7 +3,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { describe, expect, it } from 'vitest';
 
-import { buildCreateCustomAppSubmission } from './create-submission';
+import {
+  buildCreateCustomAppSubmission,
+  MAX_CUSTOM_APP_NAME_BYTES,
+  MAX_CUSTOM_APP_URL_LENGTH,
+} from './create-submission';
 
 describe('buildCreateCustomAppSubmission', () => {
   it('returns validation changes before preparing an app install payload', () => {
@@ -92,6 +96,39 @@ describe('buildCreateCustomAppSubmission', () => {
         url: 'https://tool.example',
       },
       status: 'ready',
+    });
+  });
+
+  it('rejects custom apps whose bundle name or URL would exceed configured limits', () => {
+    expect(
+      buildCreateCustomAppSubmission({
+        defaultIcon: 'default.png',
+        form: { name: 'a'.repeat(MAX_CUSTOM_APP_NAME_BYTES + 1), url: 'mail.example' },
+        nameExists: false,
+        id: 'too-long-name',
+      }),
+    ).toMatchObject({
+      changes: {
+        nameError: `Name must be ${MAX_CUSTOM_APP_NAME_BYTES} bytes or fewer.`,
+      },
+      status: 'invalid',
+    });
+
+    expect(
+      buildCreateCustomAppSubmission({
+        defaultIcon: 'default.png',
+        form: {
+          name: 'Mail',
+          url: `https://example.com/${'a'.repeat(MAX_CUSTOM_APP_URL_LENGTH)}`,
+        },
+        nameExists: false,
+        id: 'too-long-url',
+      }),
+    ).toMatchObject({
+      changes: {
+        urlError: `URL must be ${MAX_CUSTOM_APP_URL_LENGTH} characters or fewer.`,
+      },
+      status: 'invalid',
     });
   });
 });

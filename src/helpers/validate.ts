@@ -3,6 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import isUrl from './is-url';
 
+const textEncoder = new TextEncoder();
+
 const kits = {
   required: (val, ruleVal, fieldName) => {
     if (ruleVal && (!val || val === '')) {
@@ -31,6 +33,24 @@ const kits = {
         '{fieldName}',
         fieldName,
       );
+    }
+    return null;
+  },
+  maxBytes: (val, ruleVal, fieldName) => {
+    if (!ruleVal || !val) return null;
+    if (textEncoder.encode(String(val)).length > ruleVal) {
+      return '{fieldName} must be {maxBytes} bytes or fewer.'
+        .replace('{fieldName}', fieldName)
+        .replace('{maxBytes}', String(ruleVal));
+    }
+    return null;
+  },
+  maxLength: (val, ruleVal, fieldName) => {
+    if (!ruleVal || !val) return null;
+    if (String(val).length > ruleVal) {
+      return '{fieldName} must be {maxLength} characters or fewer.'
+        .replace('{fieldName}', fieldName)
+        .replace('{maxLength}', String(ruleVal));
     }
     return null;
   },

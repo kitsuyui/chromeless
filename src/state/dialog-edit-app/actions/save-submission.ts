@@ -1,9 +1,18 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+import {
+  MAX_CUSTOM_APP_NAME_BYTES,
+  MAX_CUSTOM_APP_URL_LENGTH,
+} from '../../../constants/custom-app-validation';
 import hasErrors from '../../../helpers/has-errors';
 import isUrl from '../../../helpers/is-url';
 import validate from '../../../helpers/validate';
+
+export {
+  MAX_CUSTOM_APP_NAME_BYTES,
+  MAX_CUSTOM_APP_URL_LENGTH,
+} from '../../../constants/custom-app-validation';
 
 type EditAppForm = {
   icon?: string | null;
@@ -24,12 +33,14 @@ export const getEditAppValidationRules = (urlDisabled: boolean | undefined) => (
   name: {
     fieldName: 'Name',
     filePath: true,
+    maxBytes: MAX_CUSTOM_APP_NAME_BYTES,
     required: true,
   },
   url: !urlDisabled
     ? {
         fieldName: 'URL',
         lessStrictUrl: true,
+        maxLength: MAX_CUSTOM_APP_URL_LENGTH,
         required: true,
       }
     : undefined,
