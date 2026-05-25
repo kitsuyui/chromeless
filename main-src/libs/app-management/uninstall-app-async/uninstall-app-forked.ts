@@ -148,13 +148,17 @@ Promise.resolve()
         if (!exists) return;
         const profilesIniContent = fsExtra.readFileSync(profilesIniPath, 'utf-8');
 
-        // remove entry from profiles.init
+        // remove entry from profiles.ini
         const modifiedProfilesIniContent = profilesIniContent
           .split(`${os.EOL}${os.EOL}`)
           .filter((x) => !x.includes(`Name=${profileId}`))
           .join(`${os.EOL}${os.EOL}`);
 
-        fsExtra.writeFileSync(profilesIniPath, modifiedProfilesIniContent);
+        // Write to a temp file then rename to avoid partial-write corruption
+        // if the process is killed mid-write.
+        const tmpPath = `${profilesIniPath}.tmp`;
+        fsExtra.writeFileSync(tmpPath, modifiedProfilesIniContent);
+        fsExtra.moveSync(tmpPath, profilesIniPath, { overwrite: true });
       });
     }
     return null;
