@@ -118,7 +118,7 @@ export const createInstallTaskManager = ({
         })
         .catch((error) => {
           if (!cancelledIds.has(id)) {
-            console.log(error); // eslint-disable-line no-console
+            console.error(error); // eslint-disable-line no-console
             send(event.sender, 'enqueue-snackbar', getInstallFailureMessage(error, name), 'error');
             send(event.sender, 'remove-app', id);
           }
@@ -159,7 +159,7 @@ export const createInstallTaskManager = ({
         })
         .catch((error) => {
           if (!cancelledIds.has(id)) {
-            console.log(error); // eslint-disable-line no-console
+            console.error(error); // eslint-disable-line no-console
             send(event.sender, 'enqueue-snackbar', getUpdateFailureMessage(error, name), 'error');
             send(event.sender, 'set-app', id, {
               status: 'INSTALLED',

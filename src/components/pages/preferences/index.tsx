@@ -445,7 +445,7 @@ const Preferences = ({
                           "Are you sure? All preferences will be restored to their original defaults. Browsing data won't be affected. This action cannot be undone.",
                         cancelId: 1,
                       }),
-                  }).catch(console.log); // eslint-disable-line
+                  }).catch(console.error); // eslint-disable-line
                 }}
               >
                 <ListItemText primary="Restore preferences to their original defaults" />

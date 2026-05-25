@@ -39,7 +39,7 @@ autoUpdater.on('update-available', (info) => {
           );
         }
       })
-      .catch(console.log); // eslint-disable-line
+      .catch(console.error); // eslint-disable-line
     global.updateSilent = true;
   }
 
@@ -61,7 +61,7 @@ autoUpdater.on('update-not-available', (info) => {
         cancelId: 0,
         defaultId: 0,
       })
-      .catch(console.log); // eslint-disable-line
+      .catch(console.error); // eslint-disable-line
     global.updateSilent = true;
   }
 
@@ -83,7 +83,7 @@ autoUpdater.on('error', (err) => {
         cancelId: 0,
         defaultId: 0,
       })
-      .catch(console.log); // eslint-disable-line
+      .catch(console.error); // eslint-disable-line
     global.updateSilent = true;
   }
 
@@ -149,5 +149,5 @@ autoUpdater.on('update-downloaded', (info) => {
         });
       }
     })
-    .catch(console.log); // eslint-disable-line
+    .catch(console.error); // eslint-disable-line
 });

@@ -43,7 +43,7 @@ export const getAppIconPath = ({
 };
 
 export const selectLocalImage = ({
-  onError = console.log,
+  onError = console.error,
   onSelect,
   showOpenDialog,
 }: SelectLocalImageInput) =>

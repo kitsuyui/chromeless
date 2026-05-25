@@ -78,7 +78,7 @@ export const getIconFromInternet = () => (dispatch, getState) => {
 
       return null;
     })
-    .catch(console.log) // eslint-disable-line no-console
+    .catch(console.error) // eslint-disable-line no-console
     .then(() => {
       requestCount -= 1;
       dispatch({
