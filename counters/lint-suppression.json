@@ -46,22 +46,22 @@
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
       "line": 121,
-      "text": "console.log(error); // eslint-disable-line no-console"
+      "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
       "line": 162,
-      "text": "console.log(error); // eslint-disable-line no-console"
+      "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
       "path": "main-src/libs/ipc/listeners.ts",
       "line": 56,
-      "text": ".catch(console.log); // eslint-disable-line"
+      "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/ipc/listeners.ts",
       "line": 121,
-      "text": ".catch(console.log); // eslint-disable-line"
+      "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/ipc/listeners.ts",
@@ -71,32 +71,32 @@
     {
       "path": "main-src/libs/ipc/listeners.ts",
       "line": 168,
-      "text": ".catch(console.log); // eslint-disable-line"
+      "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/ipc/listeners.ts",
       "line": 240,
-      "text": "console.log(err); // eslint-disable-line no-console"
+      "text": "console.error(err); // eslint-disable-line no-console"
     },
     {
       "path": "main-src/libs/updater.ts",
       "line": 42,
-      "text": ".catch(console.log); // eslint-disable-line"
+      "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/updater.ts",
       "line": 64,
-      "text": ".catch(console.log); // eslint-disable-line"
+      "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/updater.ts",
       "line": 86,
-      "text": ".catch(console.log); // eslint-disable-line"
+      "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/updater.ts",
       "line": 152,
-      "text": ".catch(console.log); // eslint-disable-line"
+      "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "src/components/dialogs/dialog-create-custom-app.tsx",
@@ -136,7 +136,7 @@
     {
       "path": "src/components/pages/preferences/index.tsx",
       "line": 448,
-      "text": "}).catch(console.log); // eslint-disable-line"
+      "text": "}).catch(console.error); // eslint-disable-line"
     },
     {
       "path": "src/components/shared/enhanced-app-bar.tsx",
@@ -161,17 +161,17 @@
     {
       "path": "src/state/dialog-create-custom-app/actions/action-creators.ts",
       "line": 81,
-      "text": ".catch(console.log) // eslint-disable-line no-console"
+      "text": ".catch(console.error) // eslint-disable-line no-console"
     },
     {
       "path": "src/state/dialog-edit-app/actions/action-creators.ts",
       "line": 75,
-      "text": ".catch(console.log) // eslint-disable-line no-console"
+      "text": ".catch(console.error) // eslint-disable-line no-console"
     },
     {
       "path": "src/state/dialog-set-installation-path/actions.ts",
       "line": 52,
-      "text": ".catch(console.log); // eslint-disable-line"
+      "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "src/state/installed/actions.ts",
