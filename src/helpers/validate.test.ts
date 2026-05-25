@@ -63,4 +63,34 @@ describe('validate', () => {
       appNameError: 'App name cannot contain any of the following characters: / : or NUL.',
     });
   });
+
+  it('rejects values that exceed character and byte limits', () => {
+    expect(
+      validate(
+        { appName: '日本' },
+        {
+          appName: {
+            fieldName: 'App name',
+            maxBytes: 5,
+          },
+        },
+      ),
+    ).toMatchObject({
+      appNameError: 'App name must be 5 bytes or fewer.',
+    });
+
+    expect(
+      validate(
+        { website: 'https://example.com/tools' },
+        {
+          website: {
+            fieldName: 'Website',
+            maxLength: 20,
+          },
+        },
+      ),
+    ).toMatchObject({
+      websiteError: 'Website must be 20 characters or fewer.',
+    });
+  });
 });

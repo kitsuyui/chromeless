@@ -3,7 +3,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { describe, expect, it } from 'vitest';
 
-import { buildEditAppSubmission } from './save-submission';
+import {
+  buildEditAppSubmission,
+  MAX_CUSTOM_APP_NAME_BYTES,
+  MAX_CUSTOM_APP_URL_LENGTH,
+} from './save-submission';
 
 describe('buildEditAppSubmission', () => {
   it('returns validation changes for invalid edits', () => {
@@ -80,6 +84,36 @@ describe('buildEditAppSubmission', () => {
         url: null,
       },
       status: 'ready',
+    });
+  });
+
+  it('rejects edits whose app name or URL would exceed configured limits', () => {
+    expect(
+      buildEditAppSubmission({
+        defaultIcon: 'default.png',
+        form: { id: 'mail', name: 'a'.repeat(MAX_CUSTOM_APP_NAME_BYTES + 1), url: 'mail.example' },
+      }),
+    ).toMatchObject({
+      changes: {
+        nameError: `Name must be ${MAX_CUSTOM_APP_NAME_BYTES} bytes or fewer.`,
+      },
+      status: 'invalid',
+    });
+
+    expect(
+      buildEditAppSubmission({
+        defaultIcon: 'default.png',
+        form: {
+          id: 'mail',
+          name: 'Mail',
+          url: `https://example.com/${'a'.repeat(MAX_CUSTOM_APP_URL_LENGTH)}`,
+        },
+      }),
+    ).toMatchObject({
+      changes: {
+        urlError: `URL must be ${MAX_CUSTOM_APP_URL_LENGTH} characters or fewer.`,
+      },
+      status: 'invalid',
     });
   });
 });

@@ -2,10 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import slugify from 'slugify';
-
+import {
+  MAX_CUSTOM_APP_NAME_BYTES,
+  MAX_CUSTOM_APP_URL_LENGTH,
+} from '../../../constants/custom-app-validation';
 import hasErrors from '../../../helpers/has-errors';
 import isUrl from '../../../helpers/is-url';
 import validate from '../../../helpers/validate';
+
+export {
+  MAX_CUSTOM_APP_NAME_BYTES,
+  MAX_CUSTOM_APP_URL_LENGTH,
+} from '../../../constants/custom-app-validation';
 
 type CreateCustomAppForm = {
   icon?: string | null;
@@ -26,12 +34,14 @@ export const getCreateCustomAppValidationRules = (urlDisabled: boolean | undefin
   name: {
     fieldName: 'Name',
     filePath: true,
+    maxBytes: MAX_CUSTOM_APP_NAME_BYTES,
     required: true,
   },
   url: !urlDisabled
     ? {
         fieldName: 'URL',
         lessStrictUrl: true,
+        maxLength: MAX_CUSTOM_APP_URL_LENGTH,
         required: true,
       }
     : undefined,
