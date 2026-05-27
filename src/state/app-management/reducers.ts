@@ -11,16 +11,16 @@ import {
   SET_SCANNING_FOR_INSTALLED,
   SORT_APPS,
 } from '../../constants/actions';
-import { INSTALLING } from '../../constants/app-statuses';
+import { INSTALLING, UNINSTALLING } from '../../constants/app-statuses';
 import { getInstalledAppSort, orderInstalledAppIds } from '../installed-app-sort';
 
 const apps = (state = {}, action) => {
   switch (action.type) {
     case CLEAN_APP_MANAGEMENT: {
-      // keep apps which are in installing/updating state
+      // keep apps which are in installing or uninstalling state
       const overwritingState = {};
       Object.keys(state).forEach((id) => {
-        if (state[id].status === INSTALLING) {
+        if (state[id].status === INSTALLING || state[id].status === UNINSTALLING) {
           overwritingState[id] = state[id];
         }
       });
@@ -46,8 +46,10 @@ const apps = (state = {}, action) => {
 const sortedAppIds = (state = [], action) => {
   switch (action.type) {
     case CLEAN_APP_MANAGEMENT: {
-      // keep apps which are in installing/updating state
-      const newLst = state.filter((id) => action.apps[id].status === INSTALLING);
+      // keep apps which are in installing or uninstalling state
+      const newLst = state.filter(
+        (id) => action.apps[id].status === INSTALLING || action.apps[id].status === UNINSTALLING,
+      );
       return newLst;
     }
     case SET_APP: {
