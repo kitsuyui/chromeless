@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import type { OpenDialogOptions } from 'electron';
-import isUrl from '../../helpers/is-url';
+import { toFileUrlIfLocalPath } from '../../helpers/local-file-url';
 
 const IMAGE_DIALOG_OPTIONS: OpenDialogOptions = {
   filters: [
@@ -35,8 +35,7 @@ export const getAppIconPath = ({
   internetIcon?: string | null;
 }) => {
   if (icon) {
-    if (isUrl(icon)) return icon;
-    return `file://${icon}`;
+    return toFileUrlIfLocalPath(icon);
   }
 
   return internetIcon || defaultIcon;

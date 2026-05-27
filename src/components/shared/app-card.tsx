@@ -15,7 +15,7 @@ import { INSTALLED, INSTALLING } from '../../constants/app-statuses';
 import connectComponent from '../../helpers/connect-component';
 import getEngineIcon from '../../helpers/get-engine-icon';
 import getEngineName from '../../helpers/get-engine-name';
-import isUrl from '../../helpers/is-url';
+import { toFileUrlIfLocalPath } from '../../helpers/local-file-url';
 import { getRelatedPathsAsync } from '../../invokers';
 import {
   requestCancelInstallApp,
@@ -244,7 +244,7 @@ const AppCard = (props) => {
         <img
           alt={name}
           className={classes.paperIcon}
-          src={iconThumbnail || (isUrl(icon) ? icon : `file://${icon}`)}
+          src={toFileUrlIfLocalPath(iconThumbnail || icon)}
         />
         <Typography className={classes.appName} title={name} variant="subtitle2">
           {name}
