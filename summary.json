@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-05-25T13:37:05.013Z",
+  "generated_at": "2026-05-27T11:58:20.797Z",
   "repository": "kitsuyui/chromeless",
   "default_branch": "main",
   "publish_branch": "gh-counter-assets",
   "event_name": "push",
   "base_label": "main",
-  "base_reference": "d480ee09b26ed9e3432b53ffb03b36fd7c80b229",
+  "base_reference": "430d25bb665abcd4e2546a275f3af782d94d8792",
   "head_label": "main",
-  "head_reference": "430d25bb665abcd4e2546a275f3af782d94d8792",
+  "head_reference": "6d7337162e8eebc9c4f86323ae213adcc3e11a0f",
   "bootstrap_message": null,
   "base_only_paths": [],
   "counters": [
