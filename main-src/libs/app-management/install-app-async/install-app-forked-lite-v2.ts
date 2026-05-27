@@ -147,6 +147,16 @@ const buildResourcesPath = path.join(tmpPath, 'build-resources');
 const iconIcnsPath = path.join(buildResourcesPath, 'e.icns');
 const iconPngPath = path.join(buildResourcesPath, 'e.png');
 
+const getCleanupErrorMessage = (cleanupError) =>
+  cleanupError instanceof Error ? cleanupError.stack || cleanupError.message : String(cleanupError);
+
+const removeTmpPath = () =>
+  fsExtra.remove(tmpPath).catch((cleanupError) => {
+    process.stderr.write(
+      `Failed to remove temporary install directory ${tmpPath}: ${getCleanupErrorMessage(cleanupError)}\n`,
+    );
+  });
+
 const allAppsPath = installationPath.replace('~', homePath);
 const finalPath = path.join(allAppsPath, `${name}.app`);
 
@@ -520,16 +530,19 @@ Promise.resolve()
     }
     return fsExtra.move(appFolderPath, finalPath, { overwrite: true });
   })
+  .then(() => removeTmpPath())
   .then(() => {
     process.exit(0);
   })
-  .catch((e) => {
-    process.send({
-      error: {
-        name: e.name,
-        message: e.message,
-        stack: e.stack,
-      },
-    });
-    process.exit(1);
-  });
+  .catch((e) =>
+    removeTmpPath().then(() => {
+      process.send({
+        error: {
+          name: e.name,
+          message: e.message,
+          stack: e.stack,
+        },
+      });
+      process.exit(1);
+    }),
+  );
