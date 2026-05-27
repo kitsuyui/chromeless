@@ -9,7 +9,7 @@ import {
   SET_SCANNING_FOR_INSTALLED,
   SORT_APPS,
 } from '../../constants/actions';
-import { INSTALLED, INSTALLING } from '../../constants/app-statuses';
+import { INSTALLED, INSTALLING, UNINSTALLING } from '../../constants/app-statuses';
 import reducer from './reducers';
 
 const apps = {
@@ -127,6 +127,37 @@ describe('app-management reducers', () => {
       gamma: apps.gamma,
     });
     expect(state.sortedAppIds).toEqual(['gamma']);
+    expect(state.scanning).toBe(true);
+  });
+
+  it('keeps uninstalling apps during cleanup', () => {
+    const appsWithUninstalling = {
+      ...apps,
+      delta: {
+        id: 'delta',
+        lastUpdated: 50,
+        name: 'Delta',
+        status: UNINSTALLING,
+      },
+    };
+
+    const state = reducer(
+      {
+        apps: appsWithUninstalling,
+        scanning: false,
+        sortedAppIds: ['alpha', 'beta', 'gamma', 'delta'],
+      },
+      {
+        type: CLEAN_APP_MANAGEMENT,
+        apps: appsWithUninstalling,
+      },
+    );
+
+    expect(state.apps).toEqual({
+      gamma: appsWithUninstalling.gamma,
+      delta: appsWithUninstalling.delta,
+    });
+    expect(state.sortedAppIds).toEqual(['gamma', 'delta']);
     expect(state.scanning).toBe(true);
   });
 
