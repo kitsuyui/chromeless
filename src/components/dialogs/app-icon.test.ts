@@ -22,6 +22,18 @@ describe('app icon dialog contracts', () => {
     expect(
       getAppIconPath({
         defaultIcon: 'default.png',
+        icon: '/tmp/a b#c?d%.png',
+      }),
+    ).toBe('file:///tmp/a%20b%23c%3Fd%25.png');
+    expect(
+      getAppIconPath({
+        defaultIcon: 'default.png',
+        icon: 'C:/Users/me/a b#c?d%.png',
+      }),
+    ).toBe('file:///C:/Users/me/a%20b%23c%3Fd%25.png');
+    expect(
+      getAppIconPath({
+        defaultIcon: 'default.png',
         internetIcon: 'https://example.com/favicon.png',
       }),
     ).toBe('https://example.com/favicon.png');
