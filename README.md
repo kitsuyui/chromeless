@@ -40,6 +40,12 @@ Chromeless also lets you create traditional browser instances (also known as tab
 
 ---
 
+## Installation
+
+No pre-built binaries are currently available for this fork. To run Chromeless, build from source using the steps in the [Development](#development) section below.
+
+---
+
 ## Source Code
 On the other hand, **the source code is freely available** for use, modification and distribution under the permissions, limitations and conditions listed in the [Mozilla Public License 2.0](LICENSE).
 
