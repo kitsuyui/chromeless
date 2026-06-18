@@ -16,6 +16,12 @@ export const requestShowAppMenu = (x, y) => window.ipcRenderer.send('request-sho
 export const requestRestart = () => window.ipcRenderer.send('request-restart');
 
 type PreferenceRecord = Record<string, unknown>;
+export type AppIpcEngine = string;
+export type AppIpcId = string;
+export type AppIpcName = string;
+export type AppIpcUrl = string | null;
+export type AppIpcIcon = string;
+export type AppInstallOptions = Record<string, unknown>;
 
 // Preferences
 export const getPreference = <T = unknown>(name): T =>
@@ -38,18 +44,31 @@ export const requestSetSystemPreference = (name, value) =>
 
 // App Management
 export const requestGetInstalledApps = () => window.ipcRenderer.send('request-get-installed-apps');
-export const requestInstallApp = (engine, id, name, url, icon, opts) =>
-  window.ipcRenderer.send('request-install-app', engine, id, name, url, icon, opts);
-export const requestUpdateApp = (engine, id, name, url, icon, opts) =>
-  window.ipcRenderer.send('request-update-app', engine, id, name, url, icon, opts);
-export const requestCancelInstallApp = (id) =>
+export const requestInstallApp = (
+  engine: AppIpcEngine,
+  id: AppIpcId,
+  name: AppIpcName,
+  url: AppIpcUrl,
+  icon: AppIpcIcon,
+  opts: AppInstallOptions,
+) => window.ipcRenderer.send('request-install-app', engine, id, name, url, icon, opts);
+export const requestUpdateApp = (
+  engine: AppIpcEngine,
+  id: AppIpcId,
+  name: AppIpcName,
+  url: AppIpcUrl,
+  icon: AppIpcIcon,
+  opts: AppInstallOptions,
+) => window.ipcRenderer.send('request-update-app', engine, id, name, url, icon, opts);
+export const requestCancelInstallApp = (id: AppIpcId) =>
   window.ipcRenderer.send('request-cancel-install-app', id);
-export const requestCancelUpdateApp = (id) =>
+export const requestCancelUpdateApp = (id: AppIpcId) =>
   window.ipcRenderer.send('request-cancel-update-app', id);
-export const requestUninstallApp = (engine, id, name) => {
+export const requestUninstallApp = (engine: AppIpcEngine, id: AppIpcId, name: AppIpcName) => {
   window.ipcRenderer.send('request-uninstall-app', engine, id, name);
 };
-export const requestOpenApp = (id, name) => window.ipcRenderer.send('request-open-app', id, name);
+export const requestOpenApp = (id: AppIpcId, name: AppIpcName) =>
+  window.ipcRenderer.send('request-open-app', id, name);
 
 // Native Theme
 export const getShouldUseDarkColors = () =>
