@@ -125,17 +125,17 @@ describe('loadListeners', () => {
     const store = { dispatch: vi.fn() };
     loadListeners(store);
 
-    listeners.get('set-preference')?.({}, 'theme', 'dark');
-    listeners.get('set-preferences')?.({}, { theme: 'dark' });
+    listeners.get('set-preference')?.({}, 'themeSource', 'dark');
+    listeners.get('set-preferences')?.({}, { themeSource: 'dark' });
     listeners.get('set-system-preference')?.({}, 'hardwareAcceleration', true);
 
     expect(store.dispatch).toHaveBeenNthCalledWith(1, {
-      name: 'theme',
+      name: 'themeSource',
       type: 'set-preference-action',
       value: 'dark',
     });
     expect(store.dispatch).toHaveBeenNthCalledWith(2, {
-      preferences: { theme: 'dark' },
+      preferences: { themeSource: 'dark' },
       type: 'set-preferences-action',
     });
     expect(store.dispatch).toHaveBeenNthCalledWith(3, {
