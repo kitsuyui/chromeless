@@ -48,9 +48,9 @@ export const readInstalledApp = (
   if (!fsAccess.pathExistsSync(appJsonPath)) return null;
 
   const appJson = fsAccess.readJSONSync(appJsonPath);
+  if (typeof appJson.engine !== 'string') return null;
   return {
     ...appJson,
-    engine: appJson.engine,
     icon: fsAccess.pathExistsSync(iconPath) ? iconPath : null,
     lastUpdated: Math.floor(fsAccess.statSync(appJsonPath).mtimeMs),
     status: 'INSTALLED',
