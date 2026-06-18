@@ -98,6 +98,18 @@ describe('installed reducers', () => {
     expect(state.filteredSortedAppIds).toEqual(['gamma']);
   });
 
+  it('drops stale ids absent from action.apps during cleanup without throwing', () => {
+    const state = reducer(
+      { filteredSortedAppIds: ['gamma', 'orphan'] },
+      {
+        type: CLEAN_APP_MANAGEMENT,
+        apps: { gamma: apps.gamma }, // orphan is absent from action.apps
+      },
+    );
+
+    expect(state.filteredSortedAppIds).toEqual(['gamma']);
+  });
+
   it('inserts matching apps into sorted search results', () => {
     const state = reducer(
       { filteredSortedAppIds: ['beta'] },

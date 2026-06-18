@@ -161,6 +161,25 @@ describe('app-management reducers', () => {
     expect(state.scanning).toBe(true);
   });
 
+  it('drops stale ids absent from action.apps during cleanup without throwing', () => {
+    const state = reducer(
+      {
+        apps: {
+          gamma: apps.gamma,
+          orphan: { id: 'orphan', lastUpdated: 0, name: 'Orphan', status: INSTALLING },
+        },
+        scanning: false,
+        sortedAppIds: ['gamma', 'orphan'],
+      },
+      {
+        type: CLEAN_APP_MANAGEMENT,
+        apps: { gamma: apps.gamma }, // orphan is absent from action.apps
+      },
+    );
+
+    expect(state.sortedAppIds).toEqual(['gamma']);
+  });
+
   it('updates the installed app scan flag', () => {
     const state = reducer(undefined, {
       type: SET_SCANNING_FOR_INSTALLED,

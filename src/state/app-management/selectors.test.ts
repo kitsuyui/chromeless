@@ -19,4 +19,17 @@ describe('app-management selectors', () => {
       }),
     ).toEqual(['private', 'browser']);
   });
+
+  it('skips ids absent from apps without throwing', () => {
+    expect(
+      getBrowserInstanceAppIds({
+        appManagement: {
+          apps: {
+            browser: { id: 'browser', name: 'Browser' },
+          },
+          sortedAppIds: ['orphan', 'browser'],
+        },
+      }),
+    ).toEqual(['browser']);
+  });
 });
