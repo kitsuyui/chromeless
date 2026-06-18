@@ -61,9 +61,6 @@ export const send = (webContents: WebContentsLike | null | undefined, ...args: u
   }
 };
 
-export const resolveInstallationPath = (installationPath: string, homePath: string) =>
-  installationPath.replace('~', homePath);
-
 export const createInstallTaskManager = ({
   getInstallFailureMessage,
   getUpdateFailureMessage,
