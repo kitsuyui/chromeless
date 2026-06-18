@@ -47,7 +47,14 @@ export const readInstalledApp = (
   );
   if (!fsAccess.pathExistsSync(appJsonPath)) return null;
 
-  const appJson = fsAccess.readJSONSync(appJsonPath);
+  let appJson: Record<string, unknown>;
+  try {
+    appJson = fsAccess.readJSONSync(appJsonPath);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    return null;
+  }
   if (typeof appJson.engine !== 'string') return null;
   return {
     ...appJson,
