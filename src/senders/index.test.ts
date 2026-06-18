@@ -3,6 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { PreferenceKey } from './index';
 import {
   enqueueRequestRestartSnackbar,
   getPreference,
@@ -28,6 +29,10 @@ import {
   requestUninstallApp,
   requestUpdateApp,
 } from './index';
+
+// @ts-expect-error invalid preference keys should be rejected by the sender surface.
+const invalidPreferenceKey: PreferenceKey = 'theme';
+void invalidPreferenceKey;
 
 const ipcRenderer = {
   emit: vi.fn(),
