@@ -569,6 +569,7 @@
 - [strip-ansi@7.2.0](https://github.com/chalk/strip-ansi) - MIT
 - [strtok3@10.3.5](https://github.com/Borewit/strtok3) - MIT
 - [stylis@4.2.0](https://github.com/thysultan/stylis.js) - MIT
+- [sudo-prompt@9.2.1](https://github.com/jorangreef/sudo-prompt) - MIT
 - [sumchecker@3.0.1](https://github.com/malept/sumchecker) - Apache-2.0
 - [supports-color@7.2.0](https://github.com/chalk/supports-color) - MIT
 - [supports-preserve-symlinks-flag@1.0.0](https://github.com/inspect-js/node-supports-preserve-symlinks-flag) - MIT
@@ -634,3 +635,4 @@
 - [yargs@17.7.2](https://github.com/yargs/yargs) - MIT
 - [yauzl@2.10.0](https://github.com/thejoshwolfe/yauzl) - MIT
 - [zod@3.25.76](https://github.com/colinhacks/zod) - MIT
+
