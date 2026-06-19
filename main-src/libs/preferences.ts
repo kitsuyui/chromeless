@@ -55,9 +55,7 @@ const setPreference = (name, value) => {
     notify: (preferenceName, preferenceValue) =>
       sendToAllWindows('set-preference', preferenceName, preferenceValue),
     persist: (preferenceName, preferenceValue) =>
-      Promise.resolve().then(() =>
-        settings.setSync(`preferences.${v}.${preferenceName}`, preferenceValue),
-      ),
+      settings.setSync(`preferences.${v}.${preferenceName}`, preferenceValue),
     setThemeSource: (themeSource) => {
       nativeTheme.themeSource = themeSource;
     },
