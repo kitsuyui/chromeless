@@ -363,10 +363,12 @@ Promise.resolve()
           // this file is needed
           // if not, Chromium will crash on first launch
           // details: https://github.com/webcatalog/chromeless/issues/4#issuecomment-805901787
-          fsExtra.writeFileSync(
-            path.join(profilePath, 'Local State'),
-            '{"profile":{"info_cache":{}}}',
-          );
+          // Write to a temp file then rename to avoid partial-write corruption
+          // if the process is killed mid-write.
+          const localStatePath = path.join(profilePath, 'Local State');
+          const localStateTmpPath = `${localStatePath}.tmp`;
+          fsExtra.writeFileSync(localStateTmpPath, '{"profile":{"info_cache":{}}}');
+          fsExtra.moveSync(localStateTmpPath, localStatePath, { overwrite: true });
         }
       })
       .then(() => {
