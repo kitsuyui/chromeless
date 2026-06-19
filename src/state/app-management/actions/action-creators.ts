@@ -56,14 +56,14 @@ export const installApp = (engine, id, name, url, icon, opts) => (dispatch, getS
 };
 
 export const updateApp =
-  (id, _name = null, _url = undefined, _icon = null, _opts = {}) =>
+  (id, nameOverride = null, urlOverride = undefined, iconOverride = null, optsOverride = {}) =>
   async (dispatch, getState) => {
     const appObj = getState().appManagement.apps[id];
     const { engine } = appObj;
-    const name = _name || appObj.name;
-    const url = _url !== undefined ? _url : appObj.url; // url can be null
-    const icon = _icon || appObj.icon;
-    const opts = { ...appObj.opts, ..._opts };
+    const name = nameOverride || appObj.name;
+    const url = urlOverride !== undefined ? urlOverride : appObj.url; // url can be null
+    const icon = iconOverride || appObj.icon;
+    const opts = { ...appObj.opts, ...optsOverride };
 
     requestUpdateApp(engine, id, name, url, icon, opts);
   };
