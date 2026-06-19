@@ -34,10 +34,7 @@ export const orderInstalledAppIds = (ids, apps, sortInstalledAppBy) => {
   const { key, order } = getInstalledAppSort(sortInstalledAppBy);
   return orderBy(
     ids,
-    (id) => {
-      const app = apps[id];
-      return getInstalledAppSortValue(app, key);
-    },
-    [order],
+    [(id) => getInstalledAppSortValue(apps[id], key), (id) => id],
+    [order, 'asc'],
   );
 };
