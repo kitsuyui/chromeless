@@ -8,7 +8,7 @@ const { menubar } = require('menubar');
 const contextMenuModule = require('electron-context-menu');
 const electronRemote = require('@electron/remote/main');
 
-const sendToAllWindows = require('../send-to-all-windows');
+const sendToAllWindows = require('../ipc/send-to-all-windows');
 const { getPreference } = require('../preferences');
 const { REACT_PATH } = require('../constants/paths');
 

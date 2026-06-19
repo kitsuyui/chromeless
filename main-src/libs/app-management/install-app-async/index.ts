@@ -8,7 +8,7 @@ const { app } = require('electron');
 const envPaths = require('env-paths');
 
 const { getPreferences } = require('../../preferences');
-const sendToAllWindows = require('../../send-to-all-windows');
+const sendToAllWindows = require('../../ipc/send-to-all-windows');
 const getEngineInfo = require('./get-engine-info');
 const getEngineAppPath = require('./get-engine-app-path');
 const packageJson = require('../../../../package.json');
