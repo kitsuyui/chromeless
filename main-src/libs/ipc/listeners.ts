@@ -113,7 +113,7 @@ const loadListeners = () => {
         dialog
           .showMessageBox(mainWindow.get(), {
             type: 'error',
-            message: `Failed to scan for installed apps. (${error.stack})`,
+            message: `Failed to scan for installed apps. (${error.message})`,
             buttons: ['OK'],
             cancelId: 0,
             defaultId: 0,
