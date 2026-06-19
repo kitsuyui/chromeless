@@ -7,7 +7,8 @@ Maintenance changes should follow these patterns:
 
 - remove unsupported or unreachable behavior instead of preserving it as untested compatibility;
 - treat README content, issue templates, CI secrets, package metadata, and app links as public
-  surface;
+  surface; GitHub Issues is enabled intentionally to provide a public bug-report channel for this
+  maintained fork;
 - introduce quality gates in stages: observe first, make the current tree pass, then prevent new
   regressions;
 - keep checks scoped to the risk of the change so feedback stays useful.
