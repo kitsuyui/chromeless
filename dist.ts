@@ -45,9 +45,15 @@ const isDevelopmentBuild = process.env.CSC_IDENTITY_AUTO_DISCOVERY === 'false';
 
 const createBuildOptions = (targets) => ({
   targets,
+  // Publish to GitHub Releases when building from a tag on CI.
+  // electron-builder reads CI_BUILD_TAG (set by the workflow) to decide
+  // whether 'onTag' triggers. Dev builds (CSC_IDENTITY_AUTO_DISCOVERY=false)
+  // are never published.
+  publish: isDevelopmentBuild ? 'never' : 'onTag',
   config: {
     appId: 'com.kitsuyui.chromeless',
     productName: 'Chromeless',
+    publish: [{ provider: 'github', releaseType: 'release' }],
     asar: true,
     asarUnpack: [
       '**/build/chromeless-helper/**/*',
