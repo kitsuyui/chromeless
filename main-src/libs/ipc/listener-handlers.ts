@@ -74,6 +74,7 @@ export const createInstallTaskManager = ({
   let queue = Promise.resolve<unknown>(null);
   const taskMap: Record<string, (() => Promise<unknown>) | undefined> = {};
   const cancelledIds = new Set<string>();
+  const cancelableIds = new Set<string>();
 
   const enqueue = (id: string) => {
     queue = queue.then(() => {
@@ -87,6 +88,7 @@ export const createInstallTaskManager = ({
     const { engine, icon, id, name, opts, url } = details;
 
     cancelledIds.delete(id);
+    cancelableIds.add(id);
 
     send(event.sender, 'set-app', id, {
       status: 'INSTALLING',
@@ -101,6 +103,7 @@ export const createInstallTaskManager = ({
     });
 
     taskMap[id] = () => {
+      cancelableIds.delete(id);
       send(event.sender, 'set-app', id, {
         cancelable: false,
       });
@@ -134,6 +137,7 @@ export const createInstallTaskManager = ({
     const { engine, icon, id, name, opts, url } = details;
 
     cancelledIds.delete(id);
+    cancelableIds.add(id);
 
     send(event.sender, 'set-app', id, {
       status: 'INSTALLING',
@@ -141,6 +145,7 @@ export const createInstallTaskManager = ({
     });
 
     taskMap[id] = () => {
+      cancelableIds.delete(id);
       send(event.sender, 'set-app', id, {
         cancelable: false,
       });
@@ -174,7 +179,8 @@ export const createInstallTaskManager = ({
   };
 
   const cancelInstallApp = (event: SenderEventLike, id: string) => {
-    if (taskMap[id]) {
+    if (taskMap[id] && cancelableIds.has(id)) {
+      cancelableIds.delete(id);
       send(event.sender, 'remove-app', id);
       delete taskMap[id];
       cancelledIds.add(id);
@@ -182,7 +188,8 @@ export const createInstallTaskManager = ({
   };
 
   const cancelUpdateApp = (event: SenderEventLike, id: string) => {
-    if (taskMap[id]) {
+    if (taskMap[id] && cancelableIds.has(id)) {
+      cancelableIds.delete(id);
       send(event.sender, 'set-app', id, {
         status: 'INSTALLED',
         cancelable: false,
