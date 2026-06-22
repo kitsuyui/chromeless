@@ -399,6 +399,11 @@ Promise.resolve()
                 const profileFullId = fsExtra
                   .readdirSync(profilesPath)
                   .find((itemName) => itemName.endsWith(firefoxProfileId));
+                if (profileFullId === undefined) {
+                  throw new Error(
+                    `Firefox profile directory not found for profile ID: ${firefoxProfileId}`,
+                  );
+                }
                 const profilePath = path.join(profilesPath, profileFullId);
                 // https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
                 // http://kb.mozillazine.org/User.js_file
