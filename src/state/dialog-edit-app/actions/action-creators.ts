@@ -27,7 +27,7 @@ export const open = (form) => ({
 export const getWebsiteIconUrlAsync = (url) =>
   new Promise((resolve, reject) => {
     try {
-      const id = Date.now().toString();
+      const id = crypto.randomUUID();
       window.ipcRenderer.once(id, (e, uurl) => {
         resolve(uurl);
       });
