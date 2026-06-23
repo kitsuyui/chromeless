@@ -8,6 +8,14 @@ import {
   SET_SCANNING_FOR_INSTALLED,
   SORT_APPS,
 } from '../../../constants/actions';
+import type {
+  AppInstallOptions,
+  AppIpcEngine,
+  AppIpcIcon,
+  AppIpcId,
+  AppIpcName,
+  AppIpcUrl,
+} from '../../../senders';
 import { requestInstallApp, requestShowMessageBox, requestUpdateApp } from '../../../senders';
 import { getOutdatedAppsAsList, isNameExisted } from '../utils';
 
@@ -42,21 +50,36 @@ export const removeApp = (id) => ({
   id,
 });
 
-export const installApp = (engine, id, name, url, icon, opts) => (dispatch, getState) => {
-  const state = getState();
+export const installApp =
+  (
+    engine: AppIpcEngine,
+    id: AppIpcId,
+    name: AppIpcName,
+    url: AppIpcUrl,
+    icon: AppIpcIcon,
+    opts: AppInstallOptions,
+  ) =>
+  (dispatch, getState) => {
+    const state = getState();
 
-  const sanitizedName = name.trim();
-  if (isNameExisted(sanitizedName, state)) {
-    requestShowMessageBox(`An app named ${sanitizedName} already exists.`, 'error');
+    const sanitizedName = name.trim();
+    if (isNameExisted(sanitizedName, state)) {
+      requestShowMessageBox(`An app named ${sanitizedName} already exists.`, 'error');
+      return null;
+    }
+
+    requestInstallApp(engine, id, sanitizedName, url, icon, opts);
     return null;
-  }
-
-  requestInstallApp(engine, id, sanitizedName, url, icon, opts);
-  return null;
-};
+  };
 
 export const updateApp =
-  (id, nameOverride = null, urlOverride = undefined, iconOverride = null, optsOverride = {}) =>
+  (
+    id: AppIpcId,
+    nameOverride: AppIpcName | null = null,
+    urlOverride: AppIpcUrl | undefined = undefined,
+    iconOverride: AppIpcIcon | null = null,
+    optsOverride: AppInstallOptions = {},
+  ) =>
   async (dispatch, getState) => {
     const appObj = getState().appManagement.apps[id];
     const { engine } = appObj;

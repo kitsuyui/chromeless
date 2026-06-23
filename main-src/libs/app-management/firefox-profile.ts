@@ -20,6 +20,7 @@ export const parseFirefoxProfiles = (
       }
 
       const parts = line.split(/=(.+)/);
+      if (parts[1] === undefined) return;
       entry[parts[0]] = parts[1];
     });
 

@@ -38,4 +38,21 @@ describe('firefox profile metadata', () => {
     expect(findFirefoxProfilePath(profilesIni, 'chromeless-mail', '\n')).toBe('Profiles/mail');
     expect(findFirefoxProfilePath(profilesIni, 'missing-profile', '\n')).toBeUndefined();
   });
+
+  it('ignores lines without = when parsing entries', () => {
+    const iniWithComment = [
+      '[Profile0]',
+      '; this is a comment',
+      'Name=default',
+      'Path=Profiles/default',
+    ].join('\n');
+
+    expect(parseFirefoxProfiles(iniWithComment, '\n')).toEqual([
+      {
+        Header: '[Profile0]',
+        Name: 'default',
+        Path: 'Profiles/default',
+      },
+    ]);
+  });
 });
