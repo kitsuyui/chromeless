@@ -43,8 +43,9 @@ jobs:
         with:
           bun-version: 1.3.13
       - run: bun install --frozen-lockfile
-      - run: bun run lint
-      - run: bun run typecheck
+      - parallel:
+          - run: bun run lint
+          - run: bun run typecheck
       - run: brew install p7zip
       - name: Get tag name
         run: echo "CI_BUILD_TAG=${GITHUB_REF/refs\/tags\//}" >> "$GITHUB_ENV"
