@@ -3,9 +3,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import * as cheerio from 'cheerio';
 
-import customizedFetch from './customized-fetch';
 import { selectLargestManifestIconSrc } from '../website-icon-selection/manifest-icon';
 import { selectFirstAvailableIconHref } from '../website-icon-selection/select-icon';
+import customizedFetch from './customized-fetch';
 
 const toIconCandidates = ($, rootElm) =>
   rootElm.toArray().map((elm) => {

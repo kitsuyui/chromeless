@@ -6,9 +6,9 @@ const { autoUpdater } = require('electron-updater');
 
 const sendToAllWindows = require('../ipc/send-to-all-windows');
 const { restartDownloadedUpdate } = require('../ipc/listener-handlers');
-const { createMenu } = require('./menu');
+const { createMenu } = require('../menu');
 
-const mainWindow = require('./windows/main');
+const mainWindow = require('../windows/main');
 
 global.updateSilent = true;
 global.updateInstallSilent = false;
