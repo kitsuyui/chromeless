@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import type { MenuItemConstructorOptions } from 'electron';
-import { getUpdaterMenuItemState } from './updater-menu-item';
+import { getUpdaterMenuItemState } from '../updater-menu-item';
 
 type MenuTemplateInput = {
   appName: string;

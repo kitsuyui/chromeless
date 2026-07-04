@@ -4,8 +4,8 @@
 import * as cheerio from 'cheerio';
 
 import customizedFetch from './customized-fetch';
-import { selectLargestManifestIconSrc } from './website-icon-selection/manifest-icon';
-import { selectFirstAvailableIconHref } from './website-icon-selection/select-icon';
+import { selectLargestManifestIconSrc } from '../website-icon-selection/manifest-icon';
+import { selectFirstAvailableIconHref } from '../website-icon-selection/select-icon';
 
 const toIconCandidates = ($, rootElm) =>
   rootElm.toArray().map((elm) => {

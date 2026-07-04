@@ -5,7 +5,7 @@ const semver = require('semver');
 const settings = require('electron-settings');
 const { app, nativeTheme } = require('electron');
 
-const sendToAllWindows = require('./ipc/send-to-all-windows');
+const sendToAllWindows = require('../ipc/send-to-all-windows');
 const {
   PREFERENCES_SCOPE,
   applyPreferenceCacheUpdate,

@@ -6,7 +6,7 @@
 
 const { app } = require('electron');
 
-const sendToAllWindows = require('./ipc/send-to-all-windows');
+const sendToAllWindows = require('../ipc/send-to-all-windows');
 
 const getSystemPreference = (name) => {
   switch (name) {
