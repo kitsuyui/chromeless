@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 const path = require('path');
+const { pathToFileURL } = require('url');
 
-const REACT_PATH = `file://${path.resolve(__dirname, 'index.html')}`;
+const REACT_PATH = pathToFileURL(path.resolve(__dirname, 'index.html')).href;
 
 module.exports = {
   REACT_PATH,
