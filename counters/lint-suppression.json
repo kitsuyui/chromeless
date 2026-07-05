@@ -45,37 +45,37 @@
     },
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
-      "line": 121,
+      "line": 118,
       "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
-      "line": 162,
+      "line": 159,
       "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
       "path": "main-src/libs/ipc/listeners.ts",
-      "line": 56,
+      "line": 52,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/ipc/listeners.ts",
-      "line": 121,
+      "line": 117,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/ipc/listeners.ts",
-      "line": 146,
+      "line": 142,
       "text": "// eslint-disable-next-line no-console"
     },
     {
       "path": "main-src/libs/ipc/listeners.ts",
-      "line": 168,
+      "line": 164,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/ipc/listeners.ts",
-      "line": 240,
+      "line": 236,
       "text": "console.error(err); // eslint-disable-line no-console"
     },
     {
