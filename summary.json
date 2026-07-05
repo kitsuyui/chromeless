@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-05T09:31:08.725Z",
+  "generated_at": "2026-07-05T11:23:47.752Z",
   "repository": "kitsuyui/chromeless",
   "default_branch": "main",
   "publish_branch": "gh-counter-assets",
   "event_name": "push",
   "base_label": "main",
-  "base_reference": "c471e9211d85412a84ab9a3ac3a719baf2881d32",
+  "base_reference": "994348bcbf8bdfd0a46c3ece8042a3c5e2b14b4f",
   "head_label": "main",
-  "head_reference": "994348bcbf8bdfd0a46c3ece8042a3c5e2b14b4f",
+  "head_reference": "ae04d14cdfe985575457e3b6f84c75814ee17738",
   "bootstrap_message": null,
   "base_only_paths": [],
   "counters": [
@@ -95,7 +95,7 @@
           "delta": 2
         },
         {
-          "path": "main-src/libs/app-management/install-app-async/install-app-forked-lite-v2.ts",
+          "path": "main-src/libs/app-management/install-app-async/install-app-forked-lite.ts",
           "current": 1,
           "base": 0,
           "delta": 1
