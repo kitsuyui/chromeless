@@ -75,18 +75,18 @@ export const installApp =
 export const updateApp =
   (
     id: AppIpcId,
-    _name: AppIpcName | null = null,
-    _url: AppIpcUrl | undefined = undefined,
-    _icon: AppIpcIcon | null = null,
-    _opts: AppInstallOptions = {},
+    nameOverride: AppIpcName | null = null,
+    urlOverride: AppIpcUrl | undefined = undefined,
+    iconOverride: AppIpcIcon | null = null,
+    optsOverride: AppInstallOptions = {},
   ) =>
   async (dispatch, getState) => {
     const appObj = getState().appManagement.apps[id];
     const { engine } = appObj;
-    const name = _name || appObj.name;
-    const url = _url !== undefined ? _url : appObj.url; // url can be null
-    const icon = _icon || appObj.icon;
-    const opts = { ...appObj.opts, ..._opts };
+    const name = nameOverride || appObj.name;
+    const url = urlOverride !== undefined ? urlOverride : appObj.url; // url can be null
+    const icon = iconOverride || appObj.icon;
+    const opts = { ...appObj.opts, ...optsOverride };
 
     requestUpdateApp(engine, id, name, url, icon, opts);
   };
