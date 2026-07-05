@@ -45,12 +45,12 @@
     },
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
-      "line": 118,
+      "line": 121,
       "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
-      "line": 159,
+      "line": 164,
       "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
