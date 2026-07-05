@@ -52,6 +52,12 @@ On the other hand, **the source code is freely available** for use, modification
 ---
 
 ## Development
+Requirements:
+
+- macOS
+- Node.js 24.11.1 or newer
+- Bun 1.3.13
+
 Run:
 ```bash
 # clone the project:
