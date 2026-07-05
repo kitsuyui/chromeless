@@ -353,7 +353,7 @@ describe('listener handlers', () => {
 
     expect(app.removeAllListeners).toHaveBeenCalledWith('window-all-closed');
     expect(win.close).toHaveBeenCalled();
-    expect(autoUpdater.quitAndInstall).toHaveBeenCalledWith(false);
+    expect(autoUpdater.quitAndInstall).toHaveBeenCalledWith(true);
     expect(globalObj.updateSilent).toBe(true);
     expect(autoUpdater.checkForUpdates).toHaveBeenCalled();
   });

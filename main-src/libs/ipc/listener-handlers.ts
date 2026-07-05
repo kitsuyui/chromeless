@@ -221,7 +221,7 @@ export const handleUpdateCheckRequest = (
       if (win != null) {
         win.close();
       }
-      autoUpdater.quitAndInstall(false);
+      autoUpdater.quitAndInstall(isSilent);
     });
   }
 
