@@ -53,8 +53,9 @@ const uninstallAppAsync = (id, name, engine) =>
         err = new Error(message.error.message);
         err.stack = message.error.stack;
         err.name = message.error.name;
+      } else {
+        console.log(message); // eslint-disable-line no-console
       }
-      console.log(message); // eslint-disable-line no-console
     });
 
     child.on('exit', (code) => {
