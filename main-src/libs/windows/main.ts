@@ -67,7 +67,7 @@ const createAsync = () =>
             enableRemoteModule: true,
             contextIsolation: false,
             nodeIntegration: true,
-            webSecurity: process.env.NODE_ENV === 'production',
+            webSecurity: true,
             preload: path.join(__dirname, 'preload-menubar.js'),
           },
         },
