@@ -410,7 +410,10 @@ Promise.resolve()
                 // https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences
                 // http://kb.mozillazine.org/User.js_file
                 const userJsPath = path.join(profilePath, 'user.js');
-                return fsExtra.writeFile(userJsPath, 'user_pref("browser.ssb.enabled", true);');
+                const userJsTmpPath = `${userJsPath}.tmp`;
+                return fsExtra
+                  .writeFile(userJsTmpPath, 'user_pref("browser.ssb.enabled", true);')
+                  .then(() => fsExtra.move(userJsTmpPath, userJsPath, { overwrite: true }));
               })
           );
         }
