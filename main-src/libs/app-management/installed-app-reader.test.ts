@@ -108,4 +108,14 @@ describe('installed app reader', () => {
   it('returns null when app metadata is missing', () => {
     expect(readInstalledApp('/Applications/Chromeless Apps', 'Mail.app', createFs())).toBeNull();
   });
+
+  it('returns null when app.json is missing the engine field', () => {
+    const paths = getInstalledAppPaths('/Applications/Chromeless Apps', 'Mail.app');
+    const fsAccess = createFs({
+      existingPaths: new Set([paths.appJsonPath]),
+      jsonByPath: new Map([[paths.appJsonPath, { id: 'mail', name: 'Mail' }]]),
+    });
+
+    expect(readInstalledApp('/Applications/Chromeless Apps', 'Mail.app', fsAccess)).toBeNull();
+  });
 });
