@@ -113,8 +113,8 @@ const installAppAsync = (engine, id, name, url, icon, _opts = {}) => {
         desc: null,
       });
 
-      // use v2 script on macOS
-      scriptFileName = 'install-app-forked-lite-v2.js';
+      // use forked script on macOS
+      scriptFileName = 'install-app-forked-lite.js';
       v = packageJson.scriptVersion;
 
       return null;
