@@ -15,7 +15,20 @@ export const requestCheckForUpdates = (isSilent) =>
 export const requestShowAppMenu = (x, y) => window.ipcRenderer.send('request-show-app-menu', x, y);
 export const requestRestart = () => window.ipcRenderer.send('request-restart');
 
-type PreferenceRecord = Record<string, unknown>;
+export type PreferenceValues = {
+  allowPrerelease: boolean;
+  alwaysOnTop: boolean;
+  attachToMenubar: boolean;
+  defaultHome: string;
+  installationPath: string;
+  preferredEngine: string;
+  requireAdmin: boolean;
+  sortInstalledAppBy: string;
+  themeSource: string;
+  useHardwareAcceleration: boolean;
+};
+export type PreferenceKey = keyof PreferenceValues;
+type PreferenceRecord = Partial<PreferenceValues> & Record<string, unknown>;
 export type AppIpcEngine = string;
 export type AppIpcId = string;
 export type AppIpcName = string;
@@ -24,11 +37,11 @@ export type AppIpcIcon = string;
 export type AppInstallOptions = Record<string, unknown>;
 
 // Preferences
-export const getPreference = <T = unknown>(name): T =>
-  window.ipcRenderer.sendSync<T>('get-preference', name);
+export const getPreference = <K extends PreferenceKey>(name: K): PreferenceValues[K] =>
+  window.ipcRenderer.sendSync<PreferenceValues[K]>('get-preference', name);
 export const getPreferences = (): PreferenceRecord =>
   window.ipcRenderer.sendSync<PreferenceRecord>('get-preferences');
-export const requestSetPreference = (name, value) =>
+export const requestSetPreference = <K extends PreferenceKey>(name: K, value: unknown) =>
   window.ipcRenderer.send('request-set-preference', name, value);
 export const requestResetPreferences = () => window.ipcRenderer.send('request-reset-preferences');
 export const requestOpenInstallLocation = () =>
