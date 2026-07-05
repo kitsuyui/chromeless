@@ -96,4 +96,28 @@ describe('preference store contracts', () => {
 
     expect(setThemeSource).not.toHaveBeenCalled();
   });
+
+  it('does not update cache or notify when persist throws', () => {
+    const cachedPreferences = { themeSource: 'system' };
+    const notify = vi.fn();
+    const persist = vi.fn(() => {
+      throw new Error('disk write failed');
+    });
+    const setThemeSource = vi.fn();
+
+    expect(() =>
+      applyPreferenceCacheUpdate({
+        cachedPreferences,
+        name: 'themeSource',
+        notify,
+        persist,
+        setThemeSource,
+        value: 'dark',
+      }),
+    ).toThrow('disk write failed');
+
+    expect(cachedPreferences.themeSource).toBe('system');
+    expect(notify).not.toHaveBeenCalled();
+    expect(setThemeSource).not.toHaveBeenCalled();
+  });
 });

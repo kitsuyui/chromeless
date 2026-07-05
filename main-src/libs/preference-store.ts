@@ -63,9 +63,9 @@ export const applyPreferenceCacheUpdate = ({
   setThemeSource: (value: unknown) => void;
   value: unknown;
 }) => {
-  notify(name, value);
-  cachedPreferences[name] = value;
   persist(name, value);
+  cachedPreferences[name] = value;
+  notify(name, value);
 
   if (name === 'themeSource') {
     setThemeSource(value);
