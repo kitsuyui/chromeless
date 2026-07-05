@@ -17,7 +17,7 @@ import {
   SORT_APPS,
 } from '../../constants/actions';
 
-import { INSTALLING } from '../../constants/app-statuses';
+import { INSTALLING, UNINSTALLING } from '../../constants/app-statuses';
 import { getInstalledAppSort, orderInstalledAppIds } from '../installed-app-sort';
 
 const isSearching = (state = false, action) => {
@@ -94,9 +94,11 @@ const filteredSortedAppIds = (state = null, action) => {
       return action.sortedAppIds;
     }
     case CLEAN_APP_MANAGEMENT: {
-      // keep apps which are in installing/updating state
+      // keep apps which are in installing or uninstalling state
       if (!state) return null;
-      const newLst = state.filter((id) => action.apps[id].status === INSTALLING);
+      const newLst = state.filter(
+        (id) => action.apps[id].status === INSTALLING || action.apps[id].status === UNINSTALLING,
+      );
       return newLst;
     }
     case SET_APP: {
