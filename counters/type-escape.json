@@ -1,6 +1,12 @@
 {
   "id": "type-escape",
   "label": "Type escape",
-  "count": 0,
-  "matches": []
+  "count": 1,
+  "matches": [
+    {
+      "path": "src/senders/index.test.ts",
+      "line": 33,
+      "text": "// @ts-expect-error invalid preference keys should be rejected by the sender surface."
+    }
+  ]
 }
