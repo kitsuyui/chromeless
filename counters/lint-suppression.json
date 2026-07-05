@@ -15,7 +15,7 @@
     },
     {
       "path": "dist.ts",
-      "line": 103,
+      "line": 109,
       "text": "// eslint-disable-next-line no-console"
     },
     {
