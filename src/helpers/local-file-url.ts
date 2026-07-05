@@ -5,10 +5,22 @@ import isUrl from './is-url';
 
 const WINDOWS_DRIVE_PATH = /^([A-Za-z]):(\/.*)$/;
 
+const encodeFilePathSegment = (segment: string) => {
+  if (segment === '.') {
+    return '%2E';
+  }
+
+  if (segment === '..') {
+    return '%2E%2E';
+  }
+
+  return encodeURIComponent(segment);
+};
+
 const encodeFilePath = (filePath: string) =>
   filePath
     .split('/')
-    .map((segment) => encodeURIComponent(segment))
+    .map((segment) => encodeFilePathSegment(segment))
     .join('/');
 
 export const isWindowsDrivePath = (filePath: string) =>

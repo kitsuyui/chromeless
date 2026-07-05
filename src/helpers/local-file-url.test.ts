@@ -14,6 +14,19 @@ describe('toLocalFileUrl', () => {
     expect(toLocalFileUrl('C:\\Users\\me\\a b#c.png')).toBe('file:///C:/Users/me/a%20b%23c.png');
   });
 
+  it('escapes POSIX dot segments before constructing file URLs', () => {
+    expect(toLocalFileUrl('/tmp/icons/../../../etc/passwd')).toBe(
+      'file:///tmp/icons/%2E%2E/%2E%2E/%2E%2E/etc/passwd',
+    );
+    expect(toLocalFileUrl('/tmp/icons/./avatar.png')).toBe('file:///tmp/icons/%2E/avatar.png');
+  });
+
+  it('escapes Windows dot segments before constructing file URLs', () => {
+    expect(toLocalFileUrl('C:\\Users\\me\\..\\secret.png')).toBe(
+      'file:///C:/Users/me/%2E%2E/secret.png',
+    );
+  });
+
   it('detects Windows drive paths before URL parsing', () => {
     expect(isWindowsDrivePath('C:/Users/me/icon.png')).toBe(true);
     expect(isWindowsDrivePath('C:\\Users\\me\\icon.png')).toBe(true);
