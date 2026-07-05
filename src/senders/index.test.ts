@@ -75,7 +75,11 @@ describe('senders', () => {
     [requestCheckForUpdates, [true], ['request-check-for-updates', true]],
     [requestShowAppMenu, [10, 20], ['request-show-app-menu', 10, 20]],
     [requestRestart, [], ['request-restart']],
-    [requestSetPreference, ['theme', 'dark'], ['request-set-preference', 'theme', 'dark']],
+    [
+      requestSetPreference,
+      ['themeSource', 'dark'],
+      ['request-set-preference', 'themeSource', 'dark'],
+    ],
     [requestResetPreferences, [], ['request-reset-preferences']],
     [requestOpenInstallLocation, [], ['request-open-install-location']],
     [
@@ -119,8 +123,8 @@ describe('senders', () => {
   });
 
   it.each<ReaderCase>([
-    [getPreference, ['theme'], ['get-preference', 'theme'], 'dark'],
-    [getPreferences, [], ['get-preferences'], { theme: 'dark' }],
+    [getPreference, ['themeSource'], ['get-preference', 'themeSource'], 'dark'],
+    [getPreferences, [], ['get-preferences'], { themeSource: 'dark' }],
     [
       getSystemPreference,
       ['hardwareAcceleration'],
