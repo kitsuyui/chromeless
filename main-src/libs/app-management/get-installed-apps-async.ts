@@ -4,7 +4,7 @@
 const { app } = require('electron');
 
 const { getPreference } = require('../preferences');
-const sendToAllWindows = require('../send-to-all-windows');
+const sendToAllWindows = require('../ipc/send-to-all-windows');
 const { resolveInstallationPath } = require('./installation-path');
 const { getInstalledAppsFromDirectory } = require('./installed-app-scanner');
 
