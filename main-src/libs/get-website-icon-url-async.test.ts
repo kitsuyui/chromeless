@@ -68,9 +68,21 @@ describe('getWebsiteIconUrlAsync', () => {
     await expect(getWebsiteIconUrlAsync('https://example.com')).resolves.toBe(
       'https://example.com/icon-512.png',
     );
-    expect(fetch).toHaveBeenNthCalledWith(1, 'https://example.com', undefined);
-    expect(fetch).toHaveBeenNthCalledWith(2, 'https://example.com/manifest.json', undefined);
-    expect(fetch).toHaveBeenNthCalledWith(3, 'https://example.com/icon-512.png', undefined);
+    expect(fetch).toHaveBeenNthCalledWith(
+      1,
+      'https://example.com',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+    expect(fetch).toHaveBeenNthCalledWith(
+      2,
+      'https://example.com/manifest.json',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+    expect(fetch).toHaveBeenNthCalledWith(
+      3,
+      'https://example.com/icon-512.png',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
   });
 
   it('falls back to apple-touch-icon.png when no declared icon is available', async () => {
