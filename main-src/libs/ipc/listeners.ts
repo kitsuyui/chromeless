@@ -32,12 +32,8 @@ const mainWindow = require('../windows/main');
 const { canCheckForUpdates } = require('../updater-availability');
 const { getUpdateFailureMessage } = require('../app-update-error');
 const { getInstallFailureMessage } = require('../app-install-error');
-const {
-  createInstallTaskManager,
-  handleUpdateCheckRequest,
-  resolveInstallationPath,
-  send,
-} = require('./listener-handlers');
+const { resolveInstallationPath } = require('../app-management/installation-path');
+const { createInstallTaskManager, handleUpdateCheckRequest, send } = require('./listener-handlers');
 
 const loadListeners = () => {
   ipcMain.on('request-open-in-browser', (e, browserUrl) => {

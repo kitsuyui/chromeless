@@ -12,6 +12,10 @@ describe('installation path helpers', () => {
     );
   });
 
+  it('resolves a bare tilde to the home directory', () => {
+    expect(resolveInstallationPath('~', '/Users/alice')).toBe('/Users/alice');
+  });
+
   it('keeps absolute installation paths unchanged', () => {
     expect(resolveInstallationPath('/Applications/Chromeless Apps', '/Users/alice')).toBe(
       '/Applications/Chromeless Apps',
