@@ -35,10 +35,16 @@ type RemoteLike = {
   };
   dialog: {
     showMessageBox: (
-      ...args: [BrowserWindow, MessageBoxOptions] | [WindowControlsLike, MessageBoxOptions] | [MessageBoxOptions]
+      ...args:
+        | [BrowserWindow, MessageBoxOptions]
+        | [WindowControlsLike, MessageBoxOptions]
+        | [MessageBoxOptions]
     ) => Promise<MessageBoxReturnValue>;
     showOpenDialog: (
-      ...args: [BrowserWindow, OpenDialogOptions] | [WindowControlsLike, OpenDialogOptions] | [OpenDialogOptions]
+      ...args:
+        | [BrowserWindow, OpenDialogOptions]
+        | [WindowControlsLike, OpenDialogOptions]
+        | [OpenDialogOptions]
     ) => Promise<OpenDialogReturnValue>;
   };
   getCurrentWindow: () => WindowControlsLike;
