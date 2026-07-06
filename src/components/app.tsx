@@ -43,7 +43,7 @@ const styles = (theme) => ({
   },
   notistackContainerRoot: {
     // subtract 22px of FakeTitleBar
-    marginTop: window.mode !== 'menubar' ? 64 : 42,
+    marginTop: window.remote?.mode !== 'menubar' ? 64 : 42,
   },
 });
 

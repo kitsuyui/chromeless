@@ -26,19 +26,22 @@ type IpcRendererLike = {
   removeListener?: (...args: unknown[]) => unknown;
 };
 
+type WindowControlsLike = Pick<BrowserWindow, 'isMaximized' | 'maximize' | 'unmaximize'>;
+
 type RemoteLike = {
+  mode: string;
   app: {
     getVersion: () => string;
   };
   dialog: {
     showMessageBox: (
-      ...args: [BrowserWindow, MessageBoxOptions] | [MessageBoxOptions]
+      ...args: [BrowserWindow, MessageBoxOptions] | [WindowControlsLike, MessageBoxOptions] | [MessageBoxOptions]
     ) => Promise<MessageBoxReturnValue>;
     showOpenDialog: (
-      ...args: [BrowserWindow, OpenDialogOptions] | [OpenDialogOptions]
+      ...args: [BrowserWindow, OpenDialogOptions] | [WindowControlsLike, OpenDialogOptions] | [OpenDialogOptions]
     ) => Promise<OpenDialogReturnValue>;
   };
-  getCurrentWindow: () => BrowserWindow;
+  getCurrentWindow: () => WindowControlsLike;
   getGlobal: <T = unknown>(key: string) => T;
   Menu: {
     buildFromTemplate: (...args: unknown[]) => {
@@ -60,7 +63,6 @@ declare global {
 
   interface Window {
     ipcRenderer: IpcRendererLike;
-    mode?: string;
     remote: RemoteLike;
   }
 }

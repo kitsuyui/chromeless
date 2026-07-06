@@ -35,7 +35,7 @@ const styles = (theme) => ({
   left: {
     width: LEFT_RIGHT_WIDTH,
     // leave space for traffic light buttons
-    paddingLeft: window.mode !== 'menubar' ? 64 : 0,
+    paddingLeft: window.remote?.mode !== 'menubar' ? 64 : 0,
     boxSizing: 'border-box',
   },
   center: {
@@ -73,7 +73,7 @@ const EnhancedAppBar = ({ center, classes }) => {
     }
   };
 
-  const shouldShowMenuButton = window.mode === 'menubar';
+  const shouldShowMenuButton = window.remote?.mode === 'menubar';
 
   return (
     <AppBar
