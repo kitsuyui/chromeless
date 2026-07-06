@@ -10,6 +10,7 @@ import {
   getDefaultInstallationPath,
   getMigratedRootInstallLocationValue,
   mergePreferences,
+  migrateRootInstallLocation,
   PREFERENCES_SCOPE,
   shouldMigrateRootInstallLocation,
 } from './preference-store';
@@ -57,6 +58,52 @@ describe('preference store contracts', () => {
     );
     expect(getMigratedRootInstallLocationValue('requireAdmin')).toBe(true);
     expect(getMigratedRootInstallLocationValue('themeSource')).toBeUndefined();
+  });
+
+  it('writes migrated install location values before clearing the legacy key', () => {
+    const setPreference = vi.fn();
+    const unsetLegacyInstallLocation = vi.fn();
+
+    expect(
+      migrateRootInstallLocation({
+        name: 'installationPath',
+        setPreference,
+        unsetLegacyInstallLocation,
+      }),
+    ).toBe(DEFAULT_ADMIN_INSTALLATION_PATH);
+
+    expect(setPreference).toHaveBeenNthCalledWith(
+      1,
+      'installationPath',
+      DEFAULT_ADMIN_INSTALLATION_PATH,
+    );
+    expect(setPreference).toHaveBeenNthCalledWith(2, 'requireAdmin', true);
+    expect(unsetLegacyInstallLocation).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the legacy install location when the migration write fails', () => {
+    const setPreference = vi.fn((name) => {
+      if (name === 'requireAdmin') {
+        throw new Error('disk write failed');
+      }
+    });
+    const unsetLegacyInstallLocation = vi.fn();
+
+    expect(() =>
+      migrateRootInstallLocation({
+        name: 'installationPath',
+        setPreference,
+        unsetLegacyInstallLocation,
+      }),
+    ).toThrow('disk write failed');
+
+    expect(setPreference).toHaveBeenNthCalledWith(
+      1,
+      'installationPath',
+      DEFAULT_ADMIN_INSTALLATION_PATH,
+    );
+    expect(setPreference).toHaveBeenNthCalledWith(2, 'requireAdmin', true);
+    expect(unsetLegacyInstallLocation).not.toHaveBeenCalled();
   });
 
   it('updates cache, persists settings, notifies renderer, and updates native theme source', () => {
