@@ -68,7 +68,12 @@ export const stringifyInstallationPathPreference = (preference: InstallationPath
 export const parseInstallationPathPreference = (value: unknown) => {
   if (typeof value !== 'string' || value.length === 0) return null;
 
-  const preference = JSON.parse(value) as Partial<InstallationPathPreference>;
+  let preference: Partial<InstallationPathPreference>;
+  try {
+    preference = JSON.parse(value) as Partial<InstallationPathPreference>;
+  } catch {
+    return null;
+  }
   if (
     typeof preference.installationPath !== 'string' ||
     typeof preference.requireAdmin !== 'boolean'
