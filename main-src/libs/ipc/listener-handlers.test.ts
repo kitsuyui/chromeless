@@ -4,7 +4,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resolveInstallationPath } from '../app-management/installation-path';
-import { createInstallTaskManager, handleUpdateCheckRequest, send } from './listener-handlers';
+import {
+  createInstallTaskManager,
+  handleUpdateCheckRequest,
+  restartDownloadedUpdate,
+  send,
+} from './listener-handlers';
 
 const createSender = () => ({
   isDestroyed: vi.fn(() => false),
@@ -335,6 +340,7 @@ describe('listener handlers', () => {
       quitAndInstall: vi.fn(),
     };
     const globalObj: {
+      updateInstallSilent?: boolean;
       updateSilent?: boolean;
       updaterObj: { status: string };
     } = {
@@ -356,7 +362,50 @@ describe('listener handlers', () => {
     expect(app.removeAllListeners).toHaveBeenCalledWith('window-all-closed');
     expect(win.close).toHaveBeenCalled();
     expect(autoUpdater.quitAndInstall).toHaveBeenCalledWith(true);
+    expect(globalObj.updateInstallSilent).toBe(true);
     expect(globalObj.updateSilent).toBe(true);
     expect(autoUpdater.checkForUpdates).toHaveBeenCalled();
+  });
+
+  it('restarts downloaded updates with the stored silent intent', () => {
+    const win = { close: vi.fn() };
+    const app = { removeAllListeners: vi.fn() };
+    const autoUpdater = {
+      quitAndInstall: vi.fn(),
+    };
+
+    restartDownloadedUpdate(
+      {
+        app,
+        autoUpdater,
+        getMainWindow: vi.fn(() => win),
+        setImmediateFn: vi.fn((callback) => callback()),
+      },
+      true,
+    );
+
+    expect(app.removeAllListeners).toHaveBeenCalledWith('window-all-closed');
+    expect(win.close).toHaveBeenCalled();
+    expect(autoUpdater.quitAndInstall).toHaveBeenCalledWith(true);
+  });
+
+  it('restarts downloaded updates in non-silent mode when requested', () => {
+    const app = { removeAllListeners: vi.fn() };
+    const autoUpdater = {
+      quitAndInstall: vi.fn(),
+    };
+
+    restartDownloadedUpdate(
+      {
+        app,
+        autoUpdater,
+        getMainWindow: vi.fn(() => null),
+        setImmediateFn: vi.fn((callback) => callback()),
+      },
+      false,
+    );
+
+    expect(app.removeAllListeners).toHaveBeenCalledWith('window-all-closed');
+    expect(autoUpdater.quitAndInstall).toHaveBeenCalledWith(false);
   });
 });
