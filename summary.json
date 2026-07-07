@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-07T11:46:56.209Z",
+  "generated_at": "2026-07-07T11:47:17.177Z",
   "repository": "kitsuyui/chromeless",
   "default_branch": "main",
   "publish_branch": "gh-counter-assets",
   "event_name": "push",
   "base_label": "main",
-  "base_reference": "02d779d3d3d4c5873389abd0a80d578a1ab43567",
+  "base_reference": "8706d6a03a50d3a3055244446073888b271f1ac6",
   "head_label": "main",
-  "head_reference": "8706d6a03a50d3a3055244446073888b271f1ac6",
+  "head_reference": "ea1ad8e1bf417cf13db61da61da45839f7645557",
   "bootstrap_message": null,
   "base_only_paths": [],
   "counters": [
@@ -217,22 +217,15 @@
     {
       "id": "electron-web-preferences-risk",
       "label": "Electron webPreferences risk",
-      "current": 4,
+      "current": 0,
       "base": 4,
-      "delta": 0,
-      "dashboard_current": 4,
+      "delta": -4,
+      "dashboard_current": 0,
       "dashboard_base": 4,
-      "dashboard_delta": 0,
+      "dashboard_delta": -4,
       "commentable": true,
       "touched_files": [],
-      "file_deltas": [
-        {
-          "path": "main-src/libs/windows/main.ts",
-          "current": 4,
-          "base": 0,
-          "delta": 4
-        }
-      ],
+      "file_deltas": [],
       "patch_file_deltas": [],
       "violations": [],
       "badge_path": ".gh-counter/badges/electron-web-preferences-risk.svg",
