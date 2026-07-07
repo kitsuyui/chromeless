@@ -14,7 +14,7 @@ import Inner from './inner';
 const styles = () => ({
   notistackContainerRoot: {
     // subtract 22px of FakeTitleBar
-    marginTop: window.mode !== 'menubar' ? 64 : 42,
+    marginTop: window.remote?.mode !== 'menubar' ? 64 : 42,
   },
 });
 

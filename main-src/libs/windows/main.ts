@@ -64,9 +64,9 @@ const createAsync = () =>
           minWidth: 600,
           minHeight: 500,
           webPreferences: {
-            enableRemoteModule: true,
-            contextIsolation: false,
-            nodeIntegration: true,
+            enableRemoteModule: false,
+            contextIsolation: true,
+            nodeIntegration: false,
             webSecurity: true,
             preload: path.join(__dirname, 'preload-menubar.js'),
           },
@@ -76,6 +76,7 @@ const createAsync = () =>
       mb.on('after-create-window', () => {
         if (mb?.window == null) return;
 
+        electronRemote.enable(mb.window.webContents);
         menubarWindowState.manage(mb.window);
 
         contextMenu({
@@ -164,9 +165,9 @@ const createAsync = () =>
       frame: true,
       alwaysOnTop: getPreference('alwaysOnTop'),
       webPreferences: {
-        enableRemoteModule: true,
-        contextIsolation: false,
-        nodeIntegration: true,
+        enableRemoteModule: false,
+        contextIsolation: true,
+        nodeIntegration: false,
         webSecurity: process.env.NODE_ENV === 'production',
         preload: path.join(__dirname, 'preload-main.js'),
       },
