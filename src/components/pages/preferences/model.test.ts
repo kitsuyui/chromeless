@@ -89,6 +89,7 @@ describe('preferences model', () => {
     expect(
       parseInstallationPathPreference(JSON.stringify({ installationPath: '/Applications' })),
     ).toBeNull();
+    expect(parseInstallationPathPreference('{"installationPath"')).toBeNull();
   });
 
   it('adds the sudo label only for custom admin paths', () => {
