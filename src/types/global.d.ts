@@ -53,6 +53,14 @@ type RemoteLike = {
 
 declare global {
   namespace NodeJS {
+    interface Global {
+      updateInstallSilent?: boolean;
+      updateSilent?: boolean;
+      updaterObj?: {
+        status?: string;
+      };
+    }
+
     interface Process {
       mas?: boolean;
     }

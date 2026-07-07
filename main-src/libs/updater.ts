@@ -5,11 +5,13 @@ const { app, dialog, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
 const sendToAllWindows = require('./ipc/send-to-all-windows');
+const { restartDownloadedUpdate } = require('./ipc/listener-handlers');
 const { createMenu } = require('./menu');
 
 const mainWindow = require('./windows/main');
 
 global.updateSilent = true;
+global.updateInstallSilent = false;
 
 global.updaterObj = {};
 
@@ -140,13 +142,15 @@ autoUpdater.on('update-downloaded', (info) => {
         // Fix autoUpdater.quitAndInstall() does not quit immediately
         // https://github.com/electron/electron/issues/3583
         // https://github.com/electron-userland/electron-builder/issues/1604
-        setImmediate(() => {
-          app.removeAllListeners('window-all-closed');
-          if (mainWindow.get() != null) {
-            mainWindow.get().close();
-          }
-          autoUpdater.quitAndInstall(false);
-        });
+        restartDownloadedUpdate(
+          {
+            app,
+            autoUpdater,
+            getMainWindow: mainWindow.get,
+            setImmediateFn: setImmediate,
+          },
+          Boolean(global.updateInstallSilent),
+        );
       }
     })
     .catch(console.error); // eslint-disable-line

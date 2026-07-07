@@ -47,11 +47,23 @@ type UpdateCheckDependencies = {
   canCheckForUpdates: () => boolean;
   getMainWindow: () => { close: () => void } | null;
   globalObj: {
+    updateInstallSilent?: boolean;
     updateSilent?: boolean;
     updaterObj?: {
       status?: string;
     };
   };
+  setImmediateFn: (callback: () => void) => void;
+};
+
+type RestartDownloadedUpdateDependencies = {
+  app: {
+    removeAllListeners: (eventName: string) => void;
+  };
+  autoUpdater: {
+    quitAndInstall: (isSilent: boolean) => void;
+  };
+  getMainWindow: () => { close: () => void } | null;
   setImmediateFn: (callback: () => void) => void;
 };
 
@@ -222,16 +234,32 @@ export const handleUpdateCheckRequest = (
   if (!canCheckForUpdates()) return;
 
   if (globalObj.updaterObj && globalObj.updaterObj.status === 'update-downloaded') {
-    setImmediateFn(() => {
-      app.removeAllListeners('window-all-closed');
-      const win = getMainWindow();
-      if (win != null) {
-        win.close();
-      }
-      autoUpdater.quitAndInstall(isSilent);
-    });
+    restartDownloadedUpdate(
+      {
+        app,
+        autoUpdater,
+        getMainWindow,
+        setImmediateFn,
+      },
+      isSilent,
+    );
   }
 
+  globalObj.updateInstallSilent = Boolean(isSilent);
   globalObj.updateSilent = Boolean(isSilent);
   autoUpdater.checkForUpdates();
+};
+
+export const restartDownloadedUpdate = (
+  { app, autoUpdater, getMainWindow, setImmediateFn }: RestartDownloadedUpdateDependencies,
+  isSilent: boolean,
+) => {
+  setImmediateFn(() => {
+    app.removeAllListeners('window-all-closed');
+    const win = getMainWindow();
+    if (win != null) {
+      win.close();
+    }
+    autoUpdater.quitAndInstall(isSilent);
+  });
 };
