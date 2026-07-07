@@ -7,12 +7,11 @@ const { app, nativeTheme } = require('electron');
 
 const sendToAllWindows = require('./ipc/send-to-all-windows');
 const {
-  DEFAULT_ADMIN_INSTALLATION_PATH,
   PREFERENCES_SCOPE,
   applyPreferenceCacheUpdate,
   createDefaultPreferences,
-  getMigratedRootInstallLocationValue,
   mergePreferences,
+  migrateRootInstallLocation,
   shouldMigrateRootInstallLocation,
 } = require('./preference-store');
 
@@ -72,12 +71,11 @@ const getPreference = (name) => {
     if (name === 'installationPath' || name === 'requireAdmin') {
       // old pref, home or root
       if (shouldMigrateRootInstallLocation(name, settings.getSync)) {
-        settings.unsetSync('preferences.2018.installLocation');
-
-        setPreference('installationPath', DEFAULT_ADMIN_INSTALLATION_PATH);
-        setPreference('requireAdmin', true);
-
-        return getMigratedRootInstallLocationValue(name);
+        return migrateRootInstallLocation({
+          name,
+          setPreference,
+          unsetLegacyInstallLocation: () => settings.unsetSync('preferences.2018.installLocation'),
+        });
       }
     }
 

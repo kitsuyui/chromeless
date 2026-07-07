@@ -48,6 +48,28 @@ export const getMigratedRootInstallLocationValue = (name: string) => {
   return undefined;
 };
 
+export const migrateRootInstallLocation = ({
+  name,
+  setPreference,
+  unsetLegacyInstallLocation,
+}: {
+  name: string;
+  setPreference: (name: string, value: unknown) => void;
+  unsetLegacyInstallLocation: () => void;
+}) => {
+  const migratedValue = getMigratedRootInstallLocationValue(name);
+
+  if (migratedValue === undefined) {
+    return undefined;
+  }
+
+  setPreference('installationPath', DEFAULT_ADMIN_INSTALLATION_PATH);
+  setPreference('requireAdmin', true);
+  unsetLegacyInstallLocation();
+
+  return migratedValue;
+};
+
 export const applyPreferenceCacheUpdate = ({
   cachedPreferences,
   name,
