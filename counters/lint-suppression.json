@@ -45,12 +45,12 @@
     },
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
-      "line": 121,
+      "line": 133,
       "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
-      "line": 164,
+      "line": 176,
       "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
@@ -80,22 +80,22 @@
     },
     {
       "path": "main-src/libs/updater.ts",
-      "line": 42,
+      "line": 44,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/updater.ts",
-      "line": 64,
+      "line": 66,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/updater.ts",
-      "line": 86,
+      "line": 88,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
       "path": "main-src/libs/updater.ts",
-      "line": 152,
+      "line": 156,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
