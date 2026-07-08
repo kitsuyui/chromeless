@@ -1,7 +1,7 @@
 {
   "id": "lint-suppression",
   "label": "Lint suppression",
-  "count": 35,
+  "count": 36,
   "matches": [
     {
       "path": "dist.ts",
@@ -36,6 +36,11 @@
     {
       "path": "main-src/libs/app-management/installed-app-reader.ts",
       "line": 33,
+      "text": "// eslint-disable-next-line no-console"
+    },
+    {
+      "path": "main-src/libs/app-management/installed-app-reader.ts",
+      "line": 54,
       "text": "// eslint-disable-next-line no-console"
     },
     {

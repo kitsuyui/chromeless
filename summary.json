@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-08T23:50:21.120Z",
+  "generated_at": "2026-07-08T23:50:36.721Z",
   "repository": "kitsuyui/chromeless",
   "default_branch": "main",
   "publish_branch": "gh-counter-assets",
   "event_name": "push",
   "base_label": "main",
-  "base_reference": "063054b8238e6312be5b4734a55efd84081f9632",
+  "base_reference": "1994664f9b16598ae94ae7984cef1a3362174cfd",
   "head_label": "main",
-  "head_reference": "1994664f9b16598ae94ae7984cef1a3362174cfd",
+  "head_reference": "7af9b55dd4c3140fa4b18e9a46ce284fd96c4565",
   "bootstrap_message": null,
   "base_only_paths": [],
   "counters": [
@@ -55,12 +55,12 @@
     {
       "id": "lint-suppression",
       "label": "Lint suppression",
-      "current": 35,
+      "current": 36,
       "base": 35,
-      "delta": 0,
-      "dashboard_current": 35,
+      "delta": 1,
+      "dashboard_current": 36,
       "dashboard_base": 35,
-      "dashboard_delta": 0,
+      "dashboard_delta": 1,
       "commentable": true,
       "touched_files": [],
       "file_deltas": [
@@ -89,6 +89,12 @@
           "delta": 2
         },
         {
+          "path": "main-src/libs/app-management/installed-app-reader.ts",
+          "current": 2,
+          "base": 0,
+          "delta": 2
+        },
+        {
           "path": "main-src/libs/ipc/listener-handlers.ts",
           "current": 2,
           "base": 0,
@@ -96,12 +102,6 @@
         },
         {
           "path": "main-src/libs/app-management/install-app-async/install-app-forked-lite.ts",
-          "current": 1,
-          "base": 0,
-          "delta": 1
-        },
-        {
-          "path": "main-src/libs/app-management/installed-app-reader.ts",
           "current": 1,
           "base": 0,
           "delta": 1
