@@ -23,6 +23,7 @@ type Menubar = import('menubar').Menubar;
 let win: BrowserWindowType | null = null;
 let mb: Menubar | null = null;
 let attachToMenubar = false;
+let mbReady = false;
 
 const get = () => {
   if (attachToMenubar) return mb?.window ?? null;
@@ -93,6 +94,7 @@ const createAsync = () =>
 
       mb.on('ready', () => {
         if (mb?.tray == null) return;
+        mbReady = true;
 
         mb.tray.on('right-click', () => {
           const updaterEnabled = !process.mas;
@@ -221,8 +223,10 @@ const show = () => {
   if (attachToMenubar) {
     if (mb == null) {
       createAsync();
-    } else {
+    } else if (mbReady) {
       mb.showWindow();
+    } else {
+      mb.once('ready', () => mb.showWindow());
     }
   } else if (win == null) {
     createAsync();
