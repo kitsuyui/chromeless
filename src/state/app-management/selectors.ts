@@ -6,5 +6,5 @@ import { createSelector } from 'reselect';
 export const getBrowserInstanceAppIds = createSelector(
   (state) => state.appManagement.sortedAppIds,
   (state) => state.appManagement.apps,
-  (_sortedAppIds, _apps) => _sortedAppIds.filter((id) => !_apps[id].url),
+  (_sortedAppIds, _apps) => _sortedAppIds.filter((id) => _apps[id] != null && !_apps[id].url),
 );

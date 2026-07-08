@@ -97,7 +97,9 @@ const filteredSortedAppIds = (state = null, action) => {
       // keep apps which are in installing or uninstalling state
       if (!state) return null;
       const newLst = state.filter(
-        (id) => action.apps[id].status === INSTALLING || action.apps[id].status === UNINSTALLING,
+        (id) =>
+          action.apps[id] != null &&
+          (action.apps[id].status === INSTALLING || action.apps[id].status === UNINSTALLING),
       );
       return newLst;
     }
