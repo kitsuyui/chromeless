@@ -118,4 +118,14 @@ describe('installed app reader', () => {
 
     expect(readInstalledApp('/Applications/Chromeless Apps', 'Mail.app', fsAccess)).toBeNull();
   });
+
+  it('returns null when app metadata cannot be parsed', () => {
+    const paths = getInstalledAppPaths('/Applications/Chromeless Apps', 'Mail.app');
+    const fsAccess = createFs({
+      existingPaths: new Set([paths.appJsonPath]),
+      jsonByPath: new Map([[paths.appJsonPath, new Error('invalid json')]]),
+    });
+
+    expect(readInstalledApp('/Applications/Chromeless Apps', 'Mail.app', fsAccess)).toBeNull();
+  });
 });
