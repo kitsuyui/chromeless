@@ -200,7 +200,7 @@ export const createInstallTaskManager = ({
   };
 
   const cancelInstallApp = (event: SenderEventLike, id: string) => {
-    if (taskMap[id] && cancelableIds.has(id)) {
+    if (taskMap[id]) {
       cancelableIds.delete(id);
       send(event.sender, 'remove-app', id);
       controllerMap[id]?.abort();
@@ -211,7 +211,7 @@ export const createInstallTaskManager = ({
   };
 
   const cancelUpdateApp = (event: SenderEventLike, id: string) => {
-    if (taskMap[id] && cancelableIds.has(id)) {
+    if (taskMap[id]) {
       cancelableIds.delete(id);
       send(event.sender, 'set-app', id, {
         status: 'INSTALLED',

@@ -242,7 +242,7 @@ describe('listener handlers', () => {
     });
   });
 
-  it('ignores install cancel requests once the task has started', async () => {
+  it('cancels install requests after the task has started', async () => {
     const sender = createSender();
     let resolveInstall!: (value: Record<string, unknown>) => void;
     const installPromise = new Promise<Record<string, unknown>>((resolve) => {
@@ -257,20 +257,19 @@ describe('listener handlers', () => {
 
     await Promise.resolve();
 
-    // cancelable: false has been sent; cancel attempt is now a no-op
     manager.cancelInstallApp({ sender }, 'mail');
     resolveInstall({ icon: 'new-icon.png' });
     await manager.waitForIdle();
 
-    expect(sender.send).not.toHaveBeenCalledWith('remove-app', 'mail');
-    expect(sender.send).toHaveBeenCalledWith(
+    expect(sender.send).toHaveBeenCalledWith('remove-app', 'mail');
+    expect(sender.send).not.toHaveBeenCalledWith(
       'set-app',
       'mail',
       expect.objectContaining({ status: 'INSTALLED' }),
     );
   });
 
-  it('ignores update cancel requests once the task has started', async () => {
+  it('cancels update requests after the task has started', async () => {
     const sender = createSender();
     let resolveInstall!: (value: Record<string, unknown>) => void;
     const installPromise = new Promise<Record<string, unknown>>((resolve) => {
@@ -285,12 +284,15 @@ describe('listener handlers', () => {
 
     await Promise.resolve();
 
-    // cancelable: false has been sent; cancel attempt is now a no-op
     manager.cancelUpdateApp({ sender }, 'mail');
     resolveInstall({ icon: 'updated-icon.png' });
     await manager.waitForIdle();
 
-    expect(sender.send).toHaveBeenCalledWith(
+    expect(sender.send).toHaveBeenCalledWith('set-app', 'mail', {
+      cancelable: false,
+      status: 'INSTALLED',
+    });
+    expect(sender.send).not.toHaveBeenCalledWith(
       'set-app',
       'mail',
       expect.objectContaining({ icon: 'updated-icon.png', status: 'INSTALLED' }),
