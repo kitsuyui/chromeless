@@ -25,7 +25,7 @@
     },
     {
       "path": "main-src/libs/app-management/install-app-async/index.ts",
-      "line": 162,
+      "line": 172,
       "text": "console.log(message); // eslint-disable-line no-console"
     },
     {
@@ -50,12 +50,12 @@
     },
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
-      "line": 133,
+      "line": 139,
       "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
       "path": "main-src/libs/ipc/listener-handlers.ts",
-      "line": 176,
+      "line": 187,
       "text": "console.error(error); // eslint-disable-line no-console"
     },
     {
