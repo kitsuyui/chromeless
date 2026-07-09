@@ -94,7 +94,7 @@ const toForkError = (message) => {
   return err;
 };
 
-const installAppAsync = (engine, id, name, url, icon, _opts = {}) => {
+const installAppAsync = (engine, id, name, url, icon, _opts = {}, signal?) => {
   let v = '0.0.0'; // app version
   let scriptFileName = null;
 
@@ -151,6 +151,16 @@ const installAppAsync = (engine, id, name, url, icon, _opts = {}) => {
               APPDATA: app.getPath('appData'),
             },
           });
+
+          if (signal) {
+            if (signal.aborted) {
+              child.kill();
+            } else {
+              const handleAbort = () => child.kill();
+              signal.addEventListener('abort', handleAbort, { once: true });
+              child.on('exit', () => signal.removeEventListener('abort', handleAbort));
+            }
+          }
 
           let err = null;
           child.on('message', (message) => {

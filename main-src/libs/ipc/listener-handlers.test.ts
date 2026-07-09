@@ -24,6 +24,7 @@ const createManager = (
     url: string | null,
     icon: string,
     opts: Record<string, unknown>,
+    signal?: AbortSignal,
   ) => Promise<Record<string, unknown>> = vi.fn(async () => ({
     engine: 'chrome',
     id: 'mail',
@@ -241,7 +242,7 @@ describe('listener handlers', () => {
     });
   });
 
-  it('ignores install cancel requests once the task has started', async () => {
+  it('cancels install requests after the task has started', async () => {
     const sender = createSender();
     let resolveInstall!: (value: Record<string, unknown>) => void;
     const installPromise = new Promise<Record<string, unknown>>((resolve) => {
@@ -256,20 +257,19 @@ describe('listener handlers', () => {
 
     await Promise.resolve();
 
-    // cancelable: false has been sent; cancel attempt is now a no-op
     manager.cancelInstallApp({ sender }, 'mail');
     resolveInstall({ icon: 'new-icon.png' });
     await manager.waitForIdle();
 
-    expect(sender.send).not.toHaveBeenCalledWith('remove-app', 'mail');
-    expect(sender.send).toHaveBeenCalledWith(
+    expect(sender.send).toHaveBeenCalledWith('remove-app', 'mail');
+    expect(sender.send).not.toHaveBeenCalledWith(
       'set-app',
       'mail',
       expect.objectContaining({ status: 'INSTALLED' }),
     );
   });
 
-  it('ignores update cancel requests once the task has started', async () => {
+  it('cancels update requests after the task has started', async () => {
     const sender = createSender();
     let resolveInstall!: (value: Record<string, unknown>) => void;
     const installPromise = new Promise<Record<string, unknown>>((resolve) => {
@@ -284,16 +284,75 @@ describe('listener handlers', () => {
 
     await Promise.resolve();
 
-    // cancelable: false has been sent; cancel attempt is now a no-op
     manager.cancelUpdateApp({ sender }, 'mail');
     resolveInstall({ icon: 'updated-icon.png' });
     await manager.waitForIdle();
 
-    expect(sender.send).toHaveBeenCalledWith(
+    expect(sender.send).toHaveBeenCalledWith('set-app', 'mail', {
+      cancelable: false,
+      status: 'INSTALLED',
+    });
+    expect(sender.send).not.toHaveBeenCalledWith(
       'set-app',
       'mail',
       expect.objectContaining({ icon: 'updated-icon.png', status: 'INSTALLED' }),
     );
+  });
+
+  it('aborts the signal when a running install is cancelled', async () => {
+    const sender = createSender();
+    let capturedSignal: AbortSignal | undefined;
+    let resolveInstall!: (value: Record<string, unknown>) => void;
+    const installPromise = new Promise<Record<string, unknown>>((resolve) => {
+      resolveInstall = resolve;
+    });
+    const installAppAsync = vi.fn((_e, _i, _n, _u, _ic, _o, signal?: AbortSignal) => {
+      capturedSignal = signal;
+      return installPromise;
+    });
+    const manager = createManager(installAppAsync);
+
+    manager.requestInstallApp(
+      { sender },
+      { engine: 'chrome', icon: 'icon.png', id: 'mail', name: 'Mail', opts: {}, url: null },
+    );
+
+    await Promise.resolve();
+
+    expect(capturedSignal?.aborted).toBe(false);
+    manager.cancelInstallApp({ sender }, 'mail');
+    expect(capturedSignal?.aborted).toBe(true);
+
+    resolveInstall({});
+    await manager.waitForIdle();
+  });
+
+  it('aborts the signal when a running update is cancelled', async () => {
+    const sender = createSender();
+    let capturedSignal: AbortSignal | undefined;
+    let resolveInstall!: (value: Record<string, unknown>) => void;
+    const installPromise = new Promise<Record<string, unknown>>((resolve) => {
+      resolveInstall = resolve;
+    });
+    const installAppAsync = vi.fn((_e, _i, _n, _u, _ic, _o, signal?: AbortSignal) => {
+      capturedSignal = signal;
+      return installPromise;
+    });
+    const manager = createManager(installAppAsync);
+
+    manager.requestUpdateApp(
+      { sender },
+      { engine: 'chrome', icon: 'icon.png', id: 'mail', name: 'Mail', opts: {}, url: null },
+    );
+
+    await Promise.resolve();
+
+    expect(capturedSignal?.aborted).toBe(false);
+    manager.cancelUpdateApp({ sender }, 'mail');
+    expect(capturedSignal?.aborted).toBe(true);
+
+    resolveInstall({});
+    await manager.waitForIdle();
   });
 
   it('skips update checks when updater is inactive or unavailable', () => {

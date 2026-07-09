@@ -30,6 +30,7 @@ type InstallTaskDependencies = {
     url: string | null,
     icon: string,
     opts: Record<string, unknown>,
+    signal?: AbortSignal,
   ) => Promise<Record<string, unknown>>;
   now: () => number;
   send: (webContents: WebContentsLike, ...args: unknown[]) => void;
@@ -84,6 +85,7 @@ export const createInstallTaskManager = ({
   const taskMap: Record<string, (() => Promise<unknown>) | undefined> = {};
   const cancelledIds = new Set<string>();
   const cancelableIds = new Set<string>();
+  const controllerMap: Record<string, AbortController | undefined> = {};
 
   const enqueue = (id: string) => {
     queue = queue.then(() => {
@@ -117,7 +119,10 @@ export const createInstallTaskManager = ({
         cancelable: false,
       });
 
-      return installAppAsync(engine, id, name, url, icon, opts)
+      const controller = new AbortController();
+      controllerMap[id] = controller;
+
+      return installAppAsync(engine, id, name, url, icon, opts, controller.signal)
         .then((newApp) => {
           if (!cancelledIds.has(id)) {
             send(event.sender, 'set-app', id, {
@@ -126,6 +131,7 @@ export const createInstallTaskManager = ({
             });
           }
           delete taskMap[id];
+          delete controllerMap[id];
           cancelledIds.delete(id);
         })
         .catch((error) => {
@@ -135,6 +141,7 @@ export const createInstallTaskManager = ({
             send(event.sender, 'remove-app', id);
           }
           delete taskMap[id];
+          delete controllerMap[id];
           cancelledIds.delete(id);
         });
     };
@@ -159,7 +166,10 @@ export const createInstallTaskManager = ({
         cancelable: false,
       });
 
-      return installAppAsync(engine, id, name, url, icon, opts)
+      const controller = new AbortController();
+      controllerMap[id] = controller;
+
+      return installAppAsync(engine, id, name, url, icon, opts, controller.signal)
         .then((newApp) => {
           if (!cancelledIds.has(id)) {
             send(event.sender, 'set-app', id, {
@@ -169,6 +179,7 @@ export const createInstallTaskManager = ({
             });
           }
           delete taskMap[id];
+          delete controllerMap[id];
           cancelledIds.delete(id);
         })
         .catch((error) => {
@@ -180,6 +191,7 @@ export const createInstallTaskManager = ({
             });
           }
           delete taskMap[id];
+          delete controllerMap[id];
           cancelledIds.delete(id);
         });
     };
@@ -188,21 +200,25 @@ export const createInstallTaskManager = ({
   };
 
   const cancelInstallApp = (event: SenderEventLike, id: string) => {
-    if (taskMap[id] && cancelableIds.has(id)) {
+    if (taskMap[id]) {
       cancelableIds.delete(id);
       send(event.sender, 'remove-app', id);
+      controllerMap[id]?.abort();
+      delete controllerMap[id];
       delete taskMap[id];
       cancelledIds.add(id);
     }
   };
 
   const cancelUpdateApp = (event: SenderEventLike, id: string) => {
-    if (taskMap[id] && cancelableIds.has(id)) {
+    if (taskMap[id]) {
       cancelableIds.delete(id);
       send(event.sender, 'set-app', id, {
         status: 'INSTALLED',
         cancelable: false,
       });
+      controllerMap[id]?.abort();
+      delete controllerMap[id];
       delete taskMap[id];
       cancelledIds.add(id);
     }
