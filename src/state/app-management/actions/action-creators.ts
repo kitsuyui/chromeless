@@ -75,16 +75,18 @@ export const installApp =
 export const updateApp =
   (
     id: AppIpcId,
-    nameOverride: AppIpcName | null = null,
+    nameOverride: AppIpcName | undefined = undefined,
     urlOverride: AppIpcUrl | undefined = undefined,
-    iconOverride: AppIpcIcon | null = null,
+    iconOverride: AppIpcIcon | undefined = undefined,
     optsOverride: AppInstallOptions = {},
   ) =>
   async (dispatch, getState) => {
     const appObj = getState().appManagement.apps[id];
     const { engine } = appObj;
+    // null/undefined/'' for name and icon all fall back to the existing value
     const name = nameOverride || appObj.name;
-    const url = urlOverride !== undefined ? urlOverride : appObj.url; // url can be null
+    // url uses strict undefined check: null is a valid value that clears the url
+    const url = urlOverride !== undefined ? urlOverride : appObj.url;
     const icon = iconOverride || appObj.icon;
     const opts = { ...appObj.opts, ...optsOverride };
 
