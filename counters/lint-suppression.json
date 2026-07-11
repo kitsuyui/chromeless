@@ -84,22 +84,22 @@
       "text": "console.error(err); // eslint-disable-line no-console"
     },
     {
-      "path": "main-src/libs/updater.ts",
+      "path": "main-src/libs/updater/index.ts",
       "line": 44,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
-      "path": "main-src/libs/updater.ts",
+      "path": "main-src/libs/updater/index.ts",
       "line": 66,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
-      "path": "main-src/libs/updater.ts",
+      "path": "main-src/libs/updater/index.ts",
       "line": 88,
       "text": ".catch(console.error); // eslint-disable-line"
     },
     {
-      "path": "main-src/libs/updater.ts",
+      "path": "main-src/libs/updater/index.ts",
       "line": 156,
       "text": ".catch(console.error); // eslint-disable-line"
     },

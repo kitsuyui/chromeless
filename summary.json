@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-10T13:06:33.948Z",
+  "generated_at": "2026-07-11T09:13:51.956Z",
   "repository": "kitsuyui/chromeless",
   "default_branch": "main",
   "publish_branch": "gh-counter-assets",
   "event_name": "push",
   "base_label": "main",
-  "base_reference": "65ee873ca1041de7d388e27daa2eeebb70af6a90",
+  "base_reference": "f26c7d4a3838a0aae969e461702f5877474f6dbc",
   "head_label": "main",
-  "head_reference": "f26c7d4a3838a0aae969e461702f5877474f6dbc",
+  "head_reference": "29cd52bab4c0a86fcca778214dbbf35c1d350515",
   "bootstrap_message": null,
   "base_only_paths": [],
   "counters": [
@@ -71,7 +71,7 @@
           "delta": 5
         },
         {
-          "path": "main-src/libs/updater.ts",
+          "path": "main-src/libs/updater/index.ts",
           "current": 4,
           "base": 0,
           "delta": 4
