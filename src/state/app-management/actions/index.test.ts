@@ -137,7 +137,10 @@ describe('app-management actions', () => {
   });
 
   it('merges existing app details into update requests', async () => {
-    await updateApp('mail', 'Team Mail', undefined, null, { pinned: true })(vi.fn(), createState);
+    await updateApp('mail', 'Team Mail', undefined, undefined, { pinned: true })(
+      vi.fn(),
+      createState,
+    );
 
     expect(requestUpdateApp).toHaveBeenCalledWith(
       'chrome',
@@ -153,7 +156,7 @@ describe('app-management actions', () => {
   });
 
   it('keeps explicit null URLs when updating apps', async () => {
-    await updateApp('mail', null, null, 'custom.png')(vi.fn(), createState);
+    await updateApp('mail', undefined, null, 'custom.png')(vi.fn(), createState);
 
     expect(requestUpdateApp).toHaveBeenCalledWith('chrome', 'mail', 'Mail', null, 'custom.png', {
       category: 'Productivity',
