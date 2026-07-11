@@ -25,7 +25,7 @@ const path = require('path');
 const fsExtra = require('fs-extra');
 const sudo = require('@vscode/sudo-prompt');
 
-const downloadAsync = require('../../download-async');
+const downloadAsync = require('../../network/download-async');
 const getEngineInfo = require('./get-engine-info');
 const getEngineAppPath = require('./get-engine-app-path');
 const packageJson = require('../../../../package.json');
