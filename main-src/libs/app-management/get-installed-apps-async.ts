@@ -5,24 +5,15 @@ const { app } = require('electron');
 
 const { getPreference } = require('../preferences');
 const sendToAllWindows = require('../ipc/send-to-all-windows');
-const { resolveInstallationPath } = require('./installation-path');
 const { getInstalledAppsFromDirectory } = require('./installed-app-scanner');
+const { runInstalledAppScan } = require('./installed-app-scan');
 
-const getInstalledAppsAsync = () => {
-  sendToAllWindows('clean-app-management');
-
-  const installationPath = resolveInstallationPath(
-    getPreference('installationPath'),
-    app.getPath('home'),
-  );
-
-  return Promise.resolve()
-    .then(() => getInstalledAppsFromDirectory(installationPath))
-    .then((apps) => {
-      sendToAllWindows('set-app-batch', apps);
-      sendToAllWindows('set-scanning-for-installed', false);
-      return apps;
-    });
-};
+const getInstalledAppsAsync = () =>
+  runInstalledAppScan({
+    getHomePath: () => app.getPath('home'),
+    getInstallationPreference: () => getPreference('installationPath'),
+    getInstalledApps: getInstalledAppsFromDirectory,
+    send: sendToAllWindows,
+  });
 
 module.exports = getInstalledAppsAsync;
