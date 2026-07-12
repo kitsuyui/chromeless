@@ -4,6 +4,7 @@
 import execAsync from '../../exec-async';
 import parseArgs from '../../parse-args';
 import { quoteShellArg } from '../../shell-quote';
+import { getExecFileContent, obj2Strings, strings2Obj } from './install-app-forked-lite-helpers';
 
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
@@ -55,66 +56,7 @@ const isStandardInstallationPath =
   installationPath === '/Applications/Chromeless Apps';
 const requireAdmin = isStandardInstallationPath ? false : argv.requireAdmin;
 
-const unescapeString = (str) => str.replace(/\\"/gim, '"');
-
-const escapeString = (str) => str.replace(/"/gim, '\\"');
-
 const isUrl = (value) => URL.canParse(value);
-
-type StringsFileValue =
-  | string
-  | {
-      comment: string;
-      value: string;
-    };
-
-// https://github.com/iteufel/node-strings-file/blob/master/index.js
-const strings2Obj = (data, wantComments = false): Record<string, StringsFileValue> => {
-  let normalizedData = data;
-  if (normalizedData.indexOf('\n') === -1) {
-    normalizedData += '\n';
-  }
-  const re = /(?:\/\*(.+)\*\/\n)?(.+)\s*=\s*"(.+)";\n/gim;
-  const res: Record<string, StringsFileValue> = {};
-  let m = re.exec(normalizedData);
-  while (m !== null) {
-    if (m.index === re.lastIndex) {
-      re.lastIndex += 1;
-    }
-    if (m[2].substring(0, 1) === '"') {
-      m[2] = m[2].trim().slice(1, -1);
-    }
-    m[2] = m[2].trim();
-    if (wantComments) {
-      res[m[2]] = {
-        value: unescapeString(m[3]),
-        comment: m[1] || '',
-      };
-    } else {
-      res[m[2]] = unescapeString(m[3]);
-    }
-    m = re.exec(normalizedData);
-  }
-  return res;
-};
-
-// https://github.com/iteufel/node-strings-file/blob/master/index.js
-/* eslint-disable prefer-template */
-const obj2Strings = (obj) => {
-  let data = '';
-  Object.keys(obj).forEach((i) => {
-    if (typeof obj[i] === 'object') {
-      if (obj[i].comment && obj[i].comment.length > 0) {
-        data += '/*' + obj[i].comment + '*/\n';
-      }
-      data += i + ' = "' + escapeString(obj[i].value) + '";\n';
-    } else if (typeof obj[i] === 'string') {
-      data += i + ' = "' + escapeString(obj[i]) + '";\n';
-    }
-  });
-  return data;
-};
-/* eslint-enable prefer-template */
 
 const sudoAsync = (prompt) =>
   new Promise((resolve, reject) => {
@@ -165,93 +107,9 @@ const helperDestPath = path.join(resourcesPath, 'chromeless-helper');
 const browserId = engine.split('/')[0];
 const useTabs = !url || engine.endsWith('/tabs'); // if no url is defined (multisite) then always use tabs option
 const firefoxProfileId = `chromeless-${id}`;
+const appFolderName = `${name}.app`;
 
 const engineInfo = getEngineInfo(engine);
-
-const getAppBundleShellPath = (basePathExpression) =>
-  `${basePathExpression}/${quoteShellArg(getAppFolderName())}`;
-
-const getChromiumProfileShellPath = (profileId) =>
-  `"$HOME"/Library/Application\\ Support/Chromeless/ChromiumProfiles/${quoteShellArg(profileId)}`;
-
-const getNativeMessagingHostsShellPath = () =>
-  `~/Library/Application\\ Support/${quoteShellArg(engineInfo.userDataDir)}/NativeMessagingHosts`;
-
-const getEngineExecShellPath = () =>
-  `${getAppBundleShellPath('"$PWD"')}/Contents/MacOS/${quoteShellArg(engineInfo.execFile)}`;
-
-const getFirefoxUrlParam = () => {
-  if (!url) return '';
-  return useTabs ? quoteShellArg(url) : `--ssb=${quoteShellArg(url)}`;
-};
-
-const getFirefoxExecFileContent = () => `#!/bin/sh
-DIR=$(dirname "$0");
-cd "$DIR";
-cd ..;
-cd Resources;
-
-cp "$PWD"/icon.icns ${getAppBundleShellPath('"$PWD"')}/Contents/Resources/firefox.icns
-
-open -n ${getAppBundleShellPath('"$PWD"')} --args ${getFirefoxUrlParam()} -P ${quoteShellArg(firefoxProfileId)}
-`;
-
-const getChromiumTabbedExecFileContent = () => `#!/bin/sh
-DIR=$(dirname "$0");
-cd "$DIR";
-cd ..;
-cd Resources;
-
-cp -rf ${getNativeMessagingHostsShellPath()} ${getChromiumProfileShellPath(id)}/NativeMessagingHosts
-
-pgrepResult=$(pgrep -f ${getAppBundleShellPath('"$DIR"')})
-numProc=$(echo "$pgrepResult" | wc -l)
-if [ $numProc -ge 2 ]
-  then
-  exit;
-fi
-pgrepResult=$(pgrep -f ${getEngineExecShellPath()})
-if [ -n "$pgrepResult" -a $# -eq 0 ]; then
-  exit
-fi
-
-sed -i '' "s/\\"has_seen_welcome_page\\":false/\\"has_seen_welcome_page\\":true/g" "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/${id}/Default/Preferences"
-if (grep -q "\\"restore_on_startup\\":1" "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/${id}/Default/Secure Preferences") && [ -e "$HOME/Library/Application Support/Chromeless/ChromiumProfiles/${id}/Default/Current Tabs" ]; then
-  Tabs=""
-else
-  Tabs=${quoteShellArg(url || '')}
-fi
-
-open -n ${getAppBundleShellPath('"$PWD"')} --args $Tabs --no-sandbox --test-type --user-data-dir=${getChromiumProfileShellPath(id)} --load-extension="$PWD"/chromeless-helper "$@"
-`;
-
-const getChromiumAppExecFileContent = () => `#!/bin/sh
-DIR=$(dirname "$0");
-cd "$DIR";
-cd ..;
-cd Resources;
-
-cp -rf ${getNativeMessagingHostsShellPath()} ${getChromiumProfileShellPath(id)}/NativeMessagingHosts
-
-pgrepResult=$(pgrep -f ${getAppBundleShellPath('"$DIR"')})
-numProc=$(echo "$pgrepResult" | wc -l)
-if [ $numProc -ge 2 -a $# -eq 0 ]
-  then
-  exit;
-fi
-pgrepResult=$(pgrep -f ${getEngineExecShellPath()})
-if [ -n "$pgrepResult" ]; then
-  exit
-fi
-
-open -n ${getAppBundleShellPath('"$PWD"')} --args --no-sandbox --test-type --app=${quoteShellArg(url)} --user-data-dir=${getChromiumProfileShellPath(id)} --load-extension="$PWD"/chromeless-helper "$@"
-`;
-
-const getExecFileContent = () => {
-  if (browserId === 'firefox') return getFirefoxExecFileContent();
-  if (useTabs) return getChromiumTabbedExecFileContent();
-  return getChromiumAppExecFileContent();
-};
 
 Promise.resolve()
   .then(() => {
@@ -312,7 +170,19 @@ Promise.resolve()
       .then(() => {
         const execFilePath = path.join(contentsPath, 'MacOS', 'chromeless_root_app');
         return fsExtra
-          .outputFile(execFilePath, getExecFileContent())
+          .outputFile(
+            execFilePath,
+            getExecFileContent({
+              appFolderName,
+              browserId,
+              engineExecFile: engineInfo.execFile,
+              engineUserDataDir: engineInfo.userDataDir,
+              firefoxProfileId,
+              id,
+              url,
+              useTabs,
+            }),
+          )
           .then(() => fsExtra.chmod(execFilePath, '755'));
       })
       .then(() => {
