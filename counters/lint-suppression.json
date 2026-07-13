@@ -29,8 +29,8 @@
       "text": "console.log(message); // eslint-disable-line no-console"
     },
     {
-      "path": "main-src/libs/app-management/install-app-async/install-app-forked-lite.ts",
-      "line": 102,
+      "path": "main-src/libs/app-management/install-app-async/install-app-forked-lite-helpers.ts",
+      "line": 49,
       "text": "/* eslint-disable prefer-template */"
     },
     {
