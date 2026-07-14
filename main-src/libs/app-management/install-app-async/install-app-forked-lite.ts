@@ -5,6 +5,7 @@ import execAsync from '../../exec-async';
 import parseArgs from '../../parse-args';
 import { quoteShellArg } from '../../shell-quote';
 import { getExecFileContent, obj2Strings, strings2Obj } from './install-app-forked-lite-helpers';
+import { buildInstallRuntime } from './install-app-forked-lite-runtime';
 
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
@@ -49,12 +50,25 @@ const argv = parseArgs([
 ]);
 const { engine, id, name, url, icon, helperPath, homePath, installationPath, username } = argv;
 const opts = JSON.parse(argv.opts);
-
-// ignore requireAdmin if installationPath is not custom
-const isStandardInstallationPath =
-  installationPath === '~/Applications/Chromeless Apps' ||
-  installationPath === '/Applications/Chromeless Apps';
-const requireAdmin = isStandardInstallationPath ? false : argv.requireAdmin;
+const runtime = buildInstallRuntime({
+  engine,
+  homePath,
+  id,
+  installationPath,
+  name,
+  requireAdmin: argv.requireAdmin,
+  url,
+});
+const {
+  allAppsPath,
+  appFolderName,
+  browserId,
+  finalPath,
+  firefoxProfileId,
+  iconFileName,
+  requireAdmin,
+  useTabs,
+} = runtime;
 
 const isUrl = (value) => URL.canParse(value);
 
@@ -99,15 +113,7 @@ const removeTmpPath = () =>
     );
   });
 
-const allAppsPath = installationPath.replace('~', homePath);
-const finalPath = path.join(allAppsPath, `${name}.app`);
-
 const helperDestPath = path.join(resourcesPath, 'chromeless-helper');
-
-const browserId = engine.split('/')[0];
-const useTabs = !url || engine.endsWith('/tabs'); // if no url is defined (multisite) then always use tabs option
-const firefoxProfileId = `chromeless-${id}`;
-const appFolderName = `${name}.app`;
 
 const engineInfo = getEngineInfo(engine);
 
@@ -297,7 +303,6 @@ Promise.resolve()
 
         // resources dir
         // overwrite app name
-        const iconFileName = browserId === 'firefox' ? 'firefox.icns' : 'app.icns';
         fsExtra.readdirSync(path.join(browserContentsPath, 'Resources')).forEach((itemName) => {
           if (itemName.endsWith('.lproj')) {
             const stringsContent = fsExtra.readFileSync(
