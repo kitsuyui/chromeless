@@ -1,7 +1,7 @@
 {
   "id": "lint-suppression",
   "label": "Lint suppression",
-  "count": 36,
+  "count": 35,
   "matches": [
     {
       "path": "dist.ts",
@@ -19,13 +19,8 @@
       "text": "// eslint-disable-next-line no-console"
     },
     {
-      "path": "main-src/libs/app-management/install-app-async/index.ts",
-      "line": 4,
-      "text": "/* eslint-disable prefer-destructuring */"
-    },
-    {
-      "path": "main-src/libs/app-management/install-app-async/index.ts",
-      "line": 172,
+      "path": "main-src/libs/app-management/install-app-async/install-app-async-core.ts",
+      "line": 223,
       "text": "console.log(message); // eslint-disable-line no-console"
     },
     {
