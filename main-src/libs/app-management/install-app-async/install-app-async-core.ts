@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import { writeObservabilityEvent } from '../../../../src/helpers/observability';
+
 type ForkMessage = {
   error?: {
     message: string;
@@ -220,7 +222,16 @@ export const createInstallAppAsync = ({
         } else if (message?.error) {
           err = toForkError(message);
         } else {
-          console.log(message); // eslint-disable-line no-console
+          writeObservabilityEvent({
+            correlationKey: `install:${id}`,
+            details: { message },
+            level: 'warn',
+            message: 'Install worker sent an unexpected message payload.',
+            operation: 'install-app',
+            stage: 'child-message',
+            subsystem: 'app-management',
+            target: { id, name },
+          });
         }
       });
 

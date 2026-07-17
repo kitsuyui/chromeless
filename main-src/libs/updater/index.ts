@@ -7,6 +7,7 @@ const { autoUpdater } = require('electron-updater');
 const sendToAllWindows = require('../ipc/send-to-all-windows');
 const { restartDownloadedUpdate } = require('../ipc/listener-handlers');
 const { createMenu } = require('../menu');
+const { serializeError, writeObservabilityEvent } = require('../../../src/helpers/observability');
 
 const mainWindow = require('../windows/main');
 
@@ -89,10 +90,20 @@ autoUpdater.on('error', (err) => {
     global.updateSilent = true;
   }
 
-  sendToAllWindows('log', err);
+  const event = writeObservabilityEvent({
+    correlationKey: 'update-check',
+    error: serializeError(err),
+    level: 'error',
+    message: 'Failed to check for updates.',
+    operation: 'check-for-updates',
+    stage: 'complete',
+    subsystem: 'updater',
+  });
+
+  sendToAllWindows('log', event);
   global.updaterObj = {
     status: 'error',
-    info: err,
+    info: event,
   };
   sendToAllWindows('update-updater', global.updaterObj);
   createMenu();

@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import { serializeError } from '../../../src/helpers/observability';
+
 type WebContentsLike = {
   isDestroyed: () => boolean;
   send: (...args: unknown[]) => void;
@@ -33,6 +35,24 @@ type InstallTaskDependencies = {
     signal?: AbortSignal,
   ) => Promise<Record<string, unknown>>;
   now: () => number;
+  reportObservation: (event: {
+    correlationKey?: string;
+    details?: Record<string, unknown>;
+    error?: {
+      message: string;
+      name: string;
+      stack?: string;
+    };
+    level?: 'error' | 'info' | 'warn';
+    message: string;
+    operation: string;
+    stage?: string;
+    subsystem: string;
+    target?: {
+      id?: string;
+      name?: string;
+    };
+  }) => void;
   send: (webContents: WebContentsLike, ...args: unknown[]) => void;
 };
 
@@ -79,6 +99,7 @@ export const createInstallTaskManager = ({
   getUpdateFailureMessage,
   installAppAsync,
   now,
+  reportObservation,
   send,
 }: InstallTaskDependencies) => {
   let queue = Promise.resolve<unknown>(null);
@@ -136,7 +157,16 @@ export const createInstallTaskManager = ({
         })
         .catch((error) => {
           if (!cancelledIds.has(id)) {
-            console.error(error); // eslint-disable-line no-console
+            reportObservation({
+              correlationKey: `install:${id}`,
+              error: serializeError(error),
+              level: 'error',
+              message: 'Install request failed.',
+              operation: 'install-app',
+              stage: 'complete',
+              subsystem: 'ipc',
+              target: { id, name },
+            });
             send(event.sender, 'enqueue-snackbar', getInstallFailureMessage(error, name), 'error');
             send(event.sender, 'remove-app', id);
           }
@@ -184,7 +214,16 @@ export const createInstallTaskManager = ({
         })
         .catch((error) => {
           if (!cancelledIds.has(id)) {
-            console.error(error); // eslint-disable-line no-console
+            reportObservation({
+              correlationKey: `update:${id}`,
+              error: serializeError(error),
+              level: 'error',
+              message: 'Update request failed.',
+              operation: 'update-app',
+              stage: 'complete',
+              subsystem: 'ipc',
+              target: { id, name },
+            });
             send(event.sender, 'enqueue-snackbar', getUpdateFailureMessage(error, name), 'error');
             send(event.sender, 'set-app', id, {
               status: 'INSTALLED',

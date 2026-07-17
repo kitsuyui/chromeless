@@ -66,6 +66,7 @@ declare global {
       updateInstallSilent?: boolean;
       updateSilent?: boolean;
       updaterObj?: {
+        info?: unknown;
         status?: string;
       };
     }

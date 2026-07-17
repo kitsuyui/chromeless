@@ -36,10 +36,12 @@ const createManager = (
     getUpdateFailureMessage: vi.fn(() => 'update failed'),
     installAppAsync,
     now: vi.fn(() => 123),
+    reportObservation: vi.fn(),
     send,
   });
 
 beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => undefined);
   vi.spyOn(console, 'log').mockImplementation(() => undefined);
 });
 
@@ -107,6 +109,7 @@ describe('listener handlers', () => {
   it('removes failed install attempts after showing a failure message', async () => {
     const sender = createSender();
     const error = new Error('boom');
+    const reportObservation = vi.fn();
     const manager = createInstallTaskManager({
       getInstallFailureMessage: vi.fn(() => 'Install failed for Mail.'),
       getUpdateFailureMessage: vi.fn(() => 'Update failed for Mail.'),
@@ -114,6 +117,7 @@ describe('listener handlers', () => {
         throw error;
       }),
       now: vi.fn(() => 123),
+      reportObservation,
       send,
     });
 
@@ -136,10 +140,24 @@ describe('listener handlers', () => {
       'error',
     );
     expect(sender.send).toHaveBeenCalledWith('remove-app', 'mail');
+    expect(reportObservation).toHaveBeenCalledWith({
+      correlationKey: 'install:mail',
+      error: expect.objectContaining({
+        message: 'boom',
+        name: 'Error',
+      }),
+      level: 'error',
+      message: 'Install request failed.',
+      operation: 'install-app',
+      stage: 'complete',
+      subsystem: 'ipc',
+      target: { id: 'mail', name: 'Mail' },
+    });
   });
 
   it('restores installed status when an update fails', async () => {
     const sender = createSender();
+    const reportObservation = vi.fn();
     const manager = createInstallTaskManager({
       getInstallFailureMessage: vi.fn(() => 'Install failed for Mail.'),
       getUpdateFailureMessage: vi.fn(() => 'Update failed for Mail.'),
@@ -147,6 +165,7 @@ describe('listener handlers', () => {
         throw new Error('boom');
       }),
       now: vi.fn(() => 123),
+      reportObservation,
       send,
     });
 
@@ -171,6 +190,19 @@ describe('listener handlers', () => {
     expect(sender.send).toHaveBeenCalledWith('set-app', 'mail', {
       status: 'INSTALLED',
     });
+    expect(reportObservation).toHaveBeenCalledWith({
+      correlationKey: 'update:mail',
+      error: expect.objectContaining({
+        message: 'boom',
+        name: 'Error',
+      }),
+      level: 'error',
+      message: 'Update request failed.',
+      operation: 'update-app',
+      stage: 'complete',
+      subsystem: 'ipc',
+      target: { id: 'mail', name: 'Mail' },
+    });
   });
 
   it('updates app details and timestamps after successful updates', async () => {
@@ -180,6 +212,7 @@ describe('listener handlers', () => {
       getUpdateFailureMessage: vi.fn(() => 'Update failed for Mail.'),
       installAppAsync: vi.fn(async () => ({ icon: 'new-icon.png', version: '2.0.0' })),
       now: vi.fn(() => 456),
+      reportObservation: vi.fn(),
       send,
     });
 

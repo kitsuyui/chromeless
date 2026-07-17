@@ -168,6 +168,32 @@ describe('installAppAsync', () => {
     });
   });
 
+  it('logs unexpected child messages with install context', async () => {
+    const { fork, installAppAsync } = createInstallHarness();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const pending = installAppAsync('chrome', 'mail', 'Mail', null, '/tmp/icon.png', {});
+
+    await waitForFork();
+
+    const child = fork.mock.results[0]?.value as FakeChildProcess;
+    child.emit('message', { hello: 'world' });
+    child.emit('exit', 0);
+
+    await expect(pending).resolves.toMatchObject({
+      id: 'mail',
+      name: 'Mail',
+    });
+    expect(warn).toHaveBeenCalledWith(
+      '[chromeless][app-management][install-app][child-message][install:mail] Install worker sent an unexpected message payload. target=Mail (mail)',
+      {
+        details: { message: { hello: 'world' } },
+        targetId: 'mail',
+        targetName: 'Mail',
+      },
+    );
+  });
+
   it('kills the child process when the install is aborted', async () => {
     const { fork, installAppAsync } = createInstallHarness();
     const controller = new AbortController();
