@@ -53,6 +53,10 @@ const ipcRenderer = {
 beforeEach(() => {
   vi.stubGlobal('window', { ipcRenderer });
   listeners.clear();
+  vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  vi.spyOn(console, 'info').mockImplementation(() => undefined);
+  vi.spyOn(console, 'log').mockImplementation(() => undefined);
+  vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 });
 
 afterEach(() => {
@@ -143,5 +147,30 @@ describe('loadListeners', () => {
       type: 'set-system-preference-action',
       value: true,
     });
+  });
+
+  it('writes structured log payloads with the matching console method', () => {
+    loadListeners({ dispatch: vi.fn() });
+
+    listeners.get('log')?.(
+      {},
+      {
+        level: 'error',
+        message: 'Install request failed.',
+        operation: 'install-app',
+        subsystem: 'ipc',
+        correlationKey: 'install:mail',
+        target: { id: 'mail', name: 'Mail' },
+      },
+    );
+
+    expect(console.error).toHaveBeenCalledWith(
+      '[chromeless][ipc][install-app][install:mail] Install request failed. target=Mail (mail)',
+      {
+        targetId: 'mail',
+        targetName: 'Mail',
+      },
+    );
+    expect(console.log).not.toHaveBeenCalled();
   });
 });

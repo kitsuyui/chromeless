@@ -4,6 +4,11 @@
 import { batch } from 'react-redux';
 
 import {
+  formatObservabilityEvent,
+  isObservabilityEvent,
+  type ObservabilityEvent,
+} from '../helpers/observability';
+import {
   clean as cleanAppManagement,
   removeApp,
   setApp,
@@ -12,10 +17,33 @@ import {
 import { setPreference, setPreferences } from '../state/preferences/actions';
 import { setSystemPreference } from '../state/system-preferences/actions';
 
+const writeRendererLog = (message: unknown) => {
+  if (!message) return;
+
+  if (isObservabilityEvent(message)) {
+    const { metadata, summary } = formatObservabilityEvent(message as ObservabilityEvent);
+    const writer =
+      message.level === 'error'
+        ? console.error
+        : message.level === 'warn'
+          ? console.warn
+          : console.info;
+
+    if (metadata != null) {
+      writer(summary, metadata);
+    } else {
+      writer(summary);
+    }
+    return;
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(message);
+};
+
 const loadListeners = (store) => {
   window.ipcRenderer.on('log', (e, message) => {
-    // eslint-disable-next-line
-    if (message) console.log(message);
+    writeRendererLog(message);
   });
 
   window.ipcRenderer.on('clean-app-management', () => {

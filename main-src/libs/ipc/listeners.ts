@@ -33,6 +33,7 @@ const { canCheckForUpdates } = require('../updater/updater-availability');
 const { getUpdateFailureMessage } = require('../app-update-error');
 const { getInstallFailureMessage } = require('../app-install-error');
 const { resolveInstallationPath } = require('../app-management/installation-path');
+const { serializeError, writeObservabilityEvent } = require('../../../src/helpers/observability');
 const { createInstallTaskManager, handleUpdateCheckRequest, send } = require('./listener-handlers');
 
 const loadListeners = () => {
@@ -139,8 +140,16 @@ const loadListeners = () => {
               send(e.sender, 'remove-app', id);
             })
             .catch((error) => {
-              // eslint-disable-next-line no-console
-              console.error(error);
+              writeObservabilityEvent({
+                correlationKey: `uninstall:${id}`,
+                error: serializeError(error),
+                level: 'error',
+                message: 'Uninstall request failed.',
+                operation: 'uninstall-app',
+                stage: 'complete',
+                subsystem: 'ipc',
+                target: { id, name },
+              });
               if (
                 error &&
                 error.message &&
@@ -169,6 +178,7 @@ const loadListeners = () => {
     getUpdateFailureMessage,
     installAppAsync,
     now: () => new Date().getTime(),
+    reportObservation: writeObservabilityEvent,
     send,
   });
 
