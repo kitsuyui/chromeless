@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-07-15T12:18:55.042Z",
+  "generated_at": "2026-07-17T11:12:07.802Z",
   "repository": "kitsuyui/chromeless",
   "default_branch": "main",
   "publish_branch": "gh-counter-assets",
   "event_name": "push",
   "base_label": "main",
-  "base_reference": "7e82d7e14d636ed7f29d7562c9b4624948f116cf",
+  "base_reference": "34346920353fe62da1c2f70ddb87028ba3de226d",
   "head_label": "main",
-  "head_reference": "34346920353fe62da1c2f70ddb87028ba3de226d",
+  "head_reference": "ff10fcdaafe19ce4559c35991740724b288f0e19",
   "bootstrap_message": null,
   "base_only_paths": [],
   "counters": [
@@ -55,20 +55,20 @@
     {
       "id": "lint-suppression",
       "label": "Lint suppression",
-      "current": 35,
-      "base": 36,
-      "delta": -1,
-      "dashboard_current": 35,
-      "dashboard_base": 36,
-      "dashboard_delta": -1,
+      "current": 30,
+      "base": 35,
+      "delta": -5,
+      "dashboard_current": 30,
+      "dashboard_base": 35,
+      "dashboard_delta": -5,
       "commentable": true,
       "touched_files": [],
       "file_deltas": [
         {
           "path": "main-src/libs/ipc/listeners.ts",
-          "current": 5,
+          "current": 4,
           "base": 0,
-          "delta": 5
+          "delta": 4
         },
         {
           "path": "main-src/libs/updater/index.ts",
@@ -89,25 +89,7 @@
           "delta": 2
         },
         {
-          "path": "main-src/libs/ipc/listener-handlers.ts",
-          "current": 2,
-          "base": 0,
-          "delta": 2
-        },
-        {
-          "path": "main-src/libs/app-management/install-app-async/install-app-async-core.ts",
-          "current": 1,
-          "base": 0,
-          "delta": 1
-        },
-        {
           "path": "main-src/libs/app-management/install-app-async/install-app-forked-lite-helpers.ts",
-          "current": 1,
-          "base": 0,
-          "delta": 1
-        },
-        {
-          "path": "main-src/libs/app-management/uninstall-app-async/index.ts",
           "current": 1,
           "base": 0,
           "delta": 1
