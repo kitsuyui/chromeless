@@ -7,6 +7,8 @@ import { selectLargestManifestIconSrc } from '../website-icon-selection/manifest
 import { selectFirstAvailableIconHref } from '../website-icon-selection/select-icon';
 import customizedFetch from './customized-fetch';
 
+const MAX_TEXT_RESPONSE_BYTES = 1024 * 1024;
+
 const toIconCandidates = ($, rootElm) =>
   rootElm.toArray().map((elm) => {
     const $elm = $(elm);
@@ -21,9 +23,57 @@ const resolveUrl = (baseUrl, href) => new URL(href, baseUrl).toString();
 
 const resolveSelectedIcon = (baseUrl, href) => (href ? resolveUrl(baseUrl, href) : undefined);
 
+const concatChunks = (chunks: Uint8Array[], totalLength: number): Uint8Array => {
+  const bytes = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+};
+
+const readTextResponseWithinLimit = async (
+  res: Response,
+  maxBytes = MAX_TEXT_RESPONSE_BYTES,
+): Promise<string> => {
+  const contentLengthHeader = res.headers.get('content-length');
+  if (contentLengthHeader) {
+    const declaredLength = Number.parseInt(contentLengthHeader, 10);
+    if (!Number.isNaN(declaredLength) && declaredLength > maxBytes) {
+      throw new Error(`Response body exceeds ${maxBytes} bytes.`);
+    }
+  }
+
+  const reader = res.body?.getReader();
+  if (!reader) {
+    return res.text();
+  }
+
+  const chunks: Uint8Array[] = [];
+  let totalLength = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (!value) continue;
+
+    totalLength += value.byteLength;
+    if (totalLength > maxBytes) {
+      await reader.cancel(`Response body exceeds ${maxBytes} bytes.`);
+      throw new Error(`Response body exceeds ${maxBytes} bytes.`);
+    }
+    chunks.push(value);
+  }
+
+  return new TextDecoder().decode(concatChunks(chunks, totalLength));
+};
+
 const getWebsiteIconUrlAsync = (websiteURL) =>
   customizedFetch(websiteURL)
-    .then((res) => res.text().then((html) => ({ html, redirectedUrl: res.url })))
+    .then((res) =>
+      readTextResponseWithinLimit(res).then((html) => ({ html, redirectedUrl: res.url })),
+    )
     .then(({ html, redirectedUrl }) => {
       const $ = cheerio.load(html);
       // rel=fluid-icon
@@ -54,7 +104,7 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
         return (
           customizedFetch(manifestUrl)
             .then((res) =>
-              res.text().then((manifestJson) => ({
+              readTextResponseWithinLimit(res).then((manifestJson) => ({
                 manifestJson,
                 manifestRedirectedUrl: res.url,
               })),
