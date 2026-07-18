@@ -16,7 +16,9 @@ process.on('uncaughtException', (e) => {
       stack: e.stack,
     },
   });
-  process.exit(1);
+  void removeTmpPath().then(() => {
+    process.exit(1);
+  });
 });
 
 const icongen = require('icon-gen');
@@ -106,12 +108,44 @@ const iconPngPath = path.join(buildResourcesPath, 'e.png');
 const getCleanupErrorMessage = (cleanupError) =>
   cleanupError instanceof Error ? cleanupError.stack || cleanupError.message : String(cleanupError);
 
-const removeTmpPath = () =>
-  fsExtra.remove(tmpPath).catch((cleanupError) => {
+let tmpPathCleaned = false;
+const removeTmpPath = () => {
+  if (tmpPathCleaned) {
+    return Promise.resolve();
+  }
+  tmpPathCleaned = true;
+  return fsExtra.remove(tmpPath).catch((cleanupError) => {
     process.stderr.write(
       `Failed to remove temporary install directory ${tmpPath}: ${getCleanupErrorMessage(cleanupError)}\n`,
     );
   });
+};
+
+const cleanupAndExit = (code) => {
+  void removeTmpPath().then(() => {
+    process.exit(code);
+  });
+};
+
+process.on('SIGTERM', () => {
+  cleanupAndExit(1);
+});
+
+process.on('SIGINT', () => {
+  cleanupAndExit(1);
+});
+
+process.on('exit', () => {
+  if (tmpPathCleaned) return;
+  try {
+    fs.rmSync(tmpPath, { force: true, recursive: true });
+    tmpPathCleaned = true;
+  } catch (cleanupError) {
+    process.stderr.write(
+      `Failed to synchronously remove temporary install directory ${tmpPath}: ${getCleanupErrorMessage(cleanupError)}\n`,
+    );
+  }
+});
 
 const helperDestPath = path.join(resourcesPath, 'chromeless-helper');
 
