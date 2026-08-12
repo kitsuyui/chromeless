@@ -237,6 +237,131 @@ describe('listener handlers', () => {
     });
   });
 
+  it('rejects duplicate install requests while the first request is still queued', async () => {
+    const sender = createSender();
+    let resolveInstall!: (value: Record<string, unknown>) => void;
+    const installPromise = new Promise<Record<string, unknown>>((resolve) => {
+      resolveInstall = resolve;
+    });
+    const installAppAsync = vi.fn(() => installPromise);
+    const reportObservation = vi.fn();
+    const manager = createInstallTaskManager({
+      getInstallFailureMessage: vi.fn(() => 'Install failed for Mail.'),
+      getUpdateFailureMessage: vi.fn(() => 'Update failed for Mail.'),
+      installAppAsync,
+      now: vi.fn(() => 123),
+      reportObservation,
+      send,
+    });
+
+    manager.requestInstallApp(
+      { sender },
+      {
+        engine: 'chrome',
+        icon: 'icon.png',
+        id: 'mail',
+        name: 'Mail',
+        opts: {},
+        url: null,
+      },
+    );
+    manager.requestInstallApp(
+      { sender },
+      {
+        engine: 'chrome',
+        icon: 'icon-2.png',
+        id: 'mail',
+        name: 'Mail',
+        opts: {},
+        url: null,
+      },
+    );
+
+    resolveInstall({ icon: 'new-icon.png' });
+    await manager.waitForIdle();
+
+    expect(installAppAsync).toHaveBeenCalledTimes(1);
+    expect(sender.send).toHaveBeenCalledWith(
+      'enqueue-snackbar',
+      'Mail is already queued for installation.',
+      'warning',
+    );
+    expect(reportObservation).toHaveBeenCalledWith({
+      correlationKey: 'install:mail',
+      details: { duplicateRequest: true, queueState: 'queued' },
+      level: 'warn',
+      message: 'Ignored duplicate app request.',
+      operation: 'install-app',
+      stage: 'reject',
+      subsystem: 'ipc',
+      target: { id: 'mail', name: 'Mail' },
+    });
+  });
+
+  it('rejects duplicate update requests while the first request is running', async () => {
+    const sender = createSender();
+    let resolveInstall!: (value: Record<string, unknown>) => void;
+    const installPromise = new Promise<Record<string, unknown>>((resolve) => {
+      resolveInstall = resolve;
+    });
+    const installAppAsync = vi.fn(() => installPromise);
+    const reportObservation = vi.fn();
+    const manager = createInstallTaskManager({
+      getInstallFailureMessage: vi.fn(() => 'Install failed for Mail.'),
+      getUpdateFailureMessage: vi.fn(() => 'Update failed for Mail.'),
+      installAppAsync,
+      now: vi.fn(() => 123),
+      reportObservation,
+      send,
+    });
+
+    manager.requestUpdateApp(
+      { sender },
+      {
+        engine: 'chrome',
+        icon: 'icon.png',
+        id: 'mail',
+        name: 'Mail',
+        opts: {},
+        url: null,
+      },
+    );
+
+    await Promise.resolve();
+
+    manager.requestUpdateApp(
+      { sender },
+      {
+        engine: 'chrome',
+        icon: 'icon-2.png',
+        id: 'mail',
+        name: 'Mail',
+        opts: {},
+        url: null,
+      },
+    );
+
+    resolveInstall({ icon: 'new-icon.png' });
+    await manager.waitForIdle();
+
+    expect(installAppAsync).toHaveBeenCalledTimes(1);
+    expect(sender.send).toHaveBeenCalledWith(
+      'enqueue-snackbar',
+      'Mail is already being updated.',
+      'warning',
+    );
+    expect(reportObservation).toHaveBeenCalledWith({
+      correlationKey: 'update:mail',
+      details: { duplicateRequest: true, queueState: 'running' },
+      level: 'warn',
+      message: 'Ignored duplicate app request.',
+      operation: 'update-app',
+      stage: 'reject',
+      subsystem: 'ipc',
+      target: { id: 'mail', name: 'Mail' },
+    });
+  });
+
   it('cancels pending install and update tasks before they start', async () => {
     const sender = createSender();
     const manager = createManager();

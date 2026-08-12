@@ -107,6 +107,61 @@ export const createInstallTaskManager = ({
   const cancelledIds = new Set<string>();
   const cancelableIds = new Set<string>();
   const controllerMap: Record<string, AbortController | undefined> = {};
+  const getOperationLabel = (operation: 'install-app' | 'update-app') =>
+    operation === 'install-app'
+      ? { action: 'install', gerund: 'installed', noun: 'installation' }
+      : { action: 'update', gerund: 'updated', noun: 'update' };
+  const createDuplicateRequestMessage = (
+    name: string,
+    operation: 'install-app' | 'update-app',
+    isQueued: boolean,
+  ) => {
+    const labels = getOperationLabel(operation);
+
+    if (isQueued) {
+      return `${name} is already queued for ${labels.noun}.`;
+    }
+
+    return `${name} is already being ${labels.gerund}.`;
+  };
+  const reportDuplicateRequest = (
+    id: string,
+    name: string,
+    operation: 'install-app' | 'update-app',
+    isQueued: boolean,
+  ) => {
+    const labels = getOperationLabel(operation);
+
+    reportObservation({
+      correlationKey: `${labels.action}:${id}`,
+      details: { duplicateRequest: true, queueState: isQueued ? 'queued' : 'running' },
+      level: 'warn',
+      message: 'Ignored duplicate app request.',
+      operation,
+      stage: 'reject',
+      subsystem: 'ipc',
+      target: { id, name },
+    });
+  };
+
+  const rejectDuplicateRequest = (
+    event: SenderEventLike,
+    id: string,
+    name: string,
+    operation: 'install-app' | 'update-app',
+  ) => {
+    if (!taskMap[id]) return false;
+
+    const isQueued = cancelableIds.has(id);
+    reportDuplicateRequest(id, name, operation, isQueued);
+    send(
+      event.sender,
+      'enqueue-snackbar',
+      createDuplicateRequestMessage(name, operation, isQueued),
+      'warning',
+    );
+    return true;
+  };
 
   const enqueue = (id: string) => {
     queue = queue.then(() => {
@@ -118,6 +173,8 @@ export const createInstallTaskManager = ({
 
   const requestInstallApp = (event: SenderEventLike, details: AppInstallDetails) => {
     const { engine, icon, id, name, opts, url } = details;
+
+    if (rejectDuplicateRequest(event, id, name, 'install-app')) return;
 
     cancelledIds.delete(id);
     cancelableIds.add(id);
@@ -181,6 +238,8 @@ export const createInstallTaskManager = ({
 
   const requestUpdateApp = (event: SenderEventLike, details: AppInstallDetails) => {
     const { engine, icon, id, name, opts, url } = details;
+
+    if (rejectDuplicateRequest(event, id, name, 'update-app')) return;
 
     cancelledIds.delete(id);
     cancelableIds.add(id);
