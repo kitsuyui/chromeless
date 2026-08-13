@@ -137,7 +137,9 @@ process.on('exit', () => {
   } catch (cleanupError) {
     process.stderr.write(
       `Failed to synchronously remove temporary install directory ${tmpPath}: ${
-        cleanupError instanceof Error ? cleanupError.stack || cleanupError.message : String(cleanupError)
+        cleanupError instanceof Error
+          ? cleanupError.stack || cleanupError.message
+          : String(cleanupError)
       }\n`,
     );
   }
