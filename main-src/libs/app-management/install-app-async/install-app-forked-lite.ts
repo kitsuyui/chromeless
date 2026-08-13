@@ -4,8 +4,18 @@
 import execAsync from '../../exec-async';
 import parseArgs from '../../parse-args';
 import { quoteShellArg } from '../../shell-quote';
+import { createTmpPathCleaner, parseInstallOpts } from './install-app-forked-lite-bootstrap';
 import { getExecFileContent, obj2Strings, strings2Obj } from './install-app-forked-lite-helpers';
 import { buildInstallRuntime } from './install-app-forked-lite-runtime';
+
+const fsExtra = require('fs-extra');
+
+const tmpPathCleaner = createTmpPathCleaner({
+  remove: (tmpPath) => fsExtra.remove(tmpPath),
+  writeStderr: (message) => {
+    process.stderr.write(message);
+  },
+});
 
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
@@ -16,7 +26,7 @@ process.on('uncaughtException', (e) => {
       stack: e.stack,
     },
   });
-  void removeTmpPath().then(() => {
+  void tmpPathCleaner.removeTmpPath().then(() => {
     process.exit(1);
   });
 });
@@ -26,7 +36,6 @@ const Jimp = process.env.NODE_ENV === 'production' ? require('jimp').default : r
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const fsExtra = require('fs-extra');
 const sudo = require('@vscode/sudo-prompt');
 
 const downloadAsync = require('../../network/download-async');
@@ -51,7 +60,7 @@ const argv = parseArgs([
   'browserPath',
 ]);
 const { engine, id, name, url, icon, helperPath, homePath, installationPath, username } = argv;
-const opts = JSON.parse(argv.opts);
+const opts = parseInstallOpts(argv.opts);
 const runtime = buildInstallRuntime({
   engine,
   homePath,
@@ -91,6 +100,7 @@ const sudoAsync = (prompt) =>
 const getAppFolderName = () => `${name}.app`;
 
 const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'chromeless-'));
+tmpPathCleaner.setTmpPath(tmpPath);
 const appFolderPath = path.join(tmpPath, getAppFolderName());
 // Mock Electron for backward compatibility
 const contentsPath = path.join(appFolderPath, 'Contents');
@@ -105,24 +115,8 @@ const buildResourcesPath = path.join(tmpPath, 'build-resources');
 const iconIcnsPath = path.join(buildResourcesPath, 'e.icns');
 const iconPngPath = path.join(buildResourcesPath, 'e.png');
 
-const getCleanupErrorMessage = (cleanupError) =>
-  cleanupError instanceof Error ? cleanupError.stack || cleanupError.message : String(cleanupError);
-
-let tmpPathCleaned = false;
-const removeTmpPath = () => {
-  if (tmpPathCleaned) {
-    return Promise.resolve();
-  }
-  tmpPathCleaned = true;
-  return fsExtra.remove(tmpPath).catch((cleanupError) => {
-    process.stderr.write(
-      `Failed to remove temporary install directory ${tmpPath}: ${getCleanupErrorMessage(cleanupError)}\n`,
-    );
-  });
-};
-
 const cleanupAndExit = (code) => {
-  void removeTmpPath().then(() => {
+  void tmpPathCleaner.removeTmpPath().then(() => {
     process.exit(code);
   });
 };
@@ -136,13 +130,17 @@ process.on('SIGINT', () => {
 });
 
 process.on('exit', () => {
-  if (tmpPathCleaned) return;
+  if (tmpPathCleaner.isTmpPathCleaned()) return;
   try {
     fs.rmSync(tmpPath, { force: true, recursive: true });
-    tmpPathCleaned = true;
+    tmpPathCleaner.markTmpPathCleaned();
   } catch (cleanupError) {
     process.stderr.write(
-      `Failed to synchronously remove temporary install directory ${tmpPath}: ${getCleanupErrorMessage(cleanupError)}\n`,
+      `Failed to synchronously remove temporary install directory ${tmpPath}: ${
+        cleanupError instanceof Error
+          ? cleanupError.stack || cleanupError.message
+          : String(cleanupError)
+      }\n`,
     );
   }
 });
@@ -449,12 +447,12 @@ Promise.resolve()
     }
     return fsExtra.move(appFolderPath, finalPath, { overwrite: true });
   })
-  .then(() => removeTmpPath())
+  .then(() => tmpPathCleaner.removeTmpPath())
   .then(() => {
     process.exit(0);
   })
   .catch((e) =>
-    removeTmpPath().then(() => {
+    tmpPathCleaner.removeTmpPath().then(() => {
       process.send({
         error: {
           name: e.name,
