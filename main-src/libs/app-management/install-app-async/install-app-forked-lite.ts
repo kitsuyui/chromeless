@@ -58,8 +58,20 @@ const argv = parseArgs([
   'username',
   'cacheRoot',
   'browserPath',
+  'tmpPath',
 ]);
-const { engine, id, name, url, icon, helperPath, homePath, installationPath, username } = argv;
+const {
+  engine,
+  id,
+  name,
+  url,
+  icon,
+  helperPath,
+  homePath,
+  installationPath,
+  tmpPath: providedTmpPath,
+  username,
+} = argv;
 const opts = parseInstallOpts(argv.opts);
 const runtime = buildInstallRuntime({
   engine,
@@ -99,7 +111,7 @@ const sudoAsync = (prompt) =>
 
 const getAppFolderName = () => `${name}.app`;
 
-const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'chromeless-'));
+const tmpPath = providedTmpPath ?? fs.mkdtempSync(path.join(os.tmpdir(), 'chromeless-'));
 tmpPathCleaner.setTmpPath(tmpPath);
 const appFolderPath = path.join(tmpPath, getAppFolderName());
 // Mock Electron for backward compatibility

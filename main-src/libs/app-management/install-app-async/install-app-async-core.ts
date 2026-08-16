@@ -69,6 +69,18 @@ export const createInstallAppAsync = ({
   path,
   sendToAllWindows,
 }: InstallAppAsyncDependencies) => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+
+  const cleanupTmpPath = async (tmpPath: string | null) => {
+    if (!tmpPath) return;
+
+    await fs.promises.rm(tmpPath, {
+      force: true,
+      recursive: true,
+    });
+  };
+
   const assertEngineInstalled = (engine: string) => {
     if (getEngineAppPath(engine, app.getPath('home'))) return;
 
@@ -99,6 +111,7 @@ export const createInstallAppAsync = ({
     opts,
     requireAdmin,
     url,
+    tmpPath,
   }: {
     cacheRoot: string;
     engine: string;
@@ -109,6 +122,7 @@ export const createInstallAppAsync = ({
     opts: Record<string, unknown>;
     requireAdmin: boolean;
     url: string | null;
+    tmpPath: string;
   }) => {
     const params = [
       '--engine',
@@ -141,6 +155,9 @@ export const createInstallAppAsync = ({
       params.push('--url');
       params.push(url);
     }
+
+    params.push('--tmpPath');
+    params.push(tmpPath);
 
     return params;
   };
@@ -183,6 +200,8 @@ export const createInstallAppAsync = ({
         return;
       }
 
+      const tmpPath = fs.mkdtempSync(path.join(os.tmpdir(), 'chromeless-'));
+
       const child = fork(
         path.join(__dirname, 'install-app-forked-lite.js').replace('app.asar', 'app.asar.unpacked'),
         buildForkParams({
@@ -195,6 +214,7 @@ export const createInstallAppAsync = ({
           opts,
           requireAdmin,
           url,
+          tmpPath,
         }),
         {
           env: {
@@ -205,11 +225,19 @@ export const createInstallAppAsync = ({
         },
       );
 
+      child.on('exit', () => {
+        void cleanupTmpPath(tmpPath).catch(() => undefined);
+      });
+
       if (signal) {
         if (signal.aborted) {
+          void cleanupTmpPath(tmpPath).catch(() => undefined);
           child.kill();
         } else {
-          const handleAbort = () => child.kill();
+          const handleAbort = () => {
+            void cleanupTmpPath(tmpPath).catch(() => undefined);
+            child.kill();
+          };
           signal.addEventListener('abort', handleAbort, { once: true });
           child.on('exit', () => signal.removeEventListener('abort', handleAbort));
         }
