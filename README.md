@@ -28,7 +28,10 @@ Supported Browser Engines:
 - Chromium
 - Cốc Cốc
 - Yandex Browser
-- Mozilla Firefox
+- Mozilla Firefox (experimental, tabbed mode only)
+
+Firefox support is currently limited to the experimental tabbed browser-instance path. Standard
+site-specific app mode is not offered for Firefox in the current build.
 
 ### Browser Instances
 Chromeless also lets you create traditional browser instances (also known as tabbed-style apps) that behave just like normal browsers but with their own cookies and storage.
