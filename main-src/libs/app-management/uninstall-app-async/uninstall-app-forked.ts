@@ -3,6 +3,20 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import parseArgs from '../../parse-args';
 import { quoteShellArg } from '../../shell-quote';
+import { createTmpFileCleaner } from './uninstall-app-forked-bootstrap';
+
+const path = require('path');
+const fsExtra = require('fs-extra');
+const sudo = require('@vscode/sudo-prompt');
+const { exec } = require('child_process');
+const os = require('os');
+
+const tmpFileCleaner = createTmpFileCleaner({
+  removeSync: (tmpPath) => fsExtra.removeSync(tmpPath),
+  writeStderr: (message) => {
+    process.stderr.write(message);
+  },
+});
 
 // set this event as soon as possible in the process
 process.on('uncaughtException', (e) => {
@@ -13,14 +27,23 @@ process.on('uncaughtException', (e) => {
       stack: e.stack,
     },
   });
+  tmpFileCleaner.removeTmpFilePath();
   process.exit(1);
 });
 
-const path = require('path');
-const fsExtra = require('fs-extra');
-const sudo = require('@vscode/sudo-prompt');
-const { exec } = require('child_process');
-const os = require('os');
+// Mirrors install-app-forked-lite.ts: without these handlers the process exits
+// via Node's default signal behavior, skipping the tmp file cleanup below and
+// giving the parent (uninstall-app-async/index.ts) no `err` to report, so it
+// falls back to a generic "Forked script failed to run correctly." message.
+process.on('SIGTERM', () => {
+  tmpFileCleaner.removeTmpFilePath();
+  process.exit(1);
+});
+
+process.on('SIGINT', () => {
+  tmpFileCleaner.removeTmpFilePath();
+  process.exit(1);
+});
 
 const getRelatedPathsModule = require('../get-related-paths');
 const getRelatedPaths = getRelatedPathsModule.default || getRelatedPathsModule;
@@ -155,10 +178,13 @@ Promise.resolve()
           .join(`${os.EOL}${os.EOL}`);
 
         // Write to a temp file then rename to avoid partial-write corruption
-        // if the process is killed mid-write.
+        // if the process is killed mid-write. tmpFileCleaner removes this
+        // path if SIGTERM/SIGINT/uncaughtException hits before the rename.
         const tmpPath = `${profilesIniPath}.tmp`;
+        tmpFileCleaner.setTmpFilePath(tmpPath);
         fsExtra.writeFileSync(tmpPath, modifiedProfilesIniContent);
         fsExtra.moveSync(tmpPath, profilesIniPath, { overwrite: true });
+        tmpFileCleaner.clearTmpFilePath();
       });
     }
     return null;
