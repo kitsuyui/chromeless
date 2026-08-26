@@ -69,9 +69,14 @@ const uninstallAppAsync = (id, name, engine) =>
       }
     });
 
-    child.on('exit', (code) => {
+    child.on('exit', (code, signal) => {
       if (code !== 0 || err !== null) {
-        reject(err || new Error('Forked script failed to run correctly.'));
+        reject(
+          err ||
+            (signal
+              ? new Error(`Forked script was terminated by signal ${signal}.`)
+              : new Error('Forked script failed to run correctly.')),
+        );
         return;
       }
 
