@@ -122,26 +122,30 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
       return lessPriorityCheck();
     })
     .then((icon) => {
+      // try to get /apple-touch-icon.png
+      // https://apple.stackexchange.com/questions/172204/how-apple-com-set-apple-touch-icon
+      const fallbackToAppleTouchIcon = () => {
+        const appleTouchIconUrl = resolveUrl(websiteURL, '/apple-touch-icon.png');
+        return customizedFetch(appleTouchIconUrl)
+          .then((res) => {
+            if (res.status === 200 && res.headers.get('Content-Type') === 'image/png')
+              return appleTouchIconUrl;
+            return undefined;
+          })
+          .catch(() => undefined);
+      };
+
       if (icon) {
         // try to download the icon to ensure it works
         return customizedFetch(icon)
           .then((res) => {
             if (res.ok) return icon; // res.status >= 200 && res.status < 300
-            return undefined;
+            return fallbackToAppleTouchIcon();
           })
-          .catch(() => undefined);
+          .catch(() => fallbackToAppleTouchIcon());
       }
 
-      // try to get /apple-touch-icon.png
-      // https://apple.stackexchange.com/questions/172204/how-apple-com-set-apple-touch-icon
-      const appleTouchIconUrl = resolveUrl(websiteURL, '/apple-touch-icon.png');
-      return customizedFetch(appleTouchIconUrl)
-        .then((res) => {
-          if (res.status === 200 && res.headers.get('Content-Type') === 'image/png')
-            return appleTouchIconUrl;
-          return undefined;
-        })
-        .catch(() => undefined);
+      return fallbackToAppleTouchIcon();
     });
 
 export default getWebsiteIconUrlAsync;
