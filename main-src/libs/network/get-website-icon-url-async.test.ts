@@ -162,6 +162,37 @@ describe('getWebsiteIconUrlAsync', () => {
     );
   });
 
+  it('falls back to apple-touch-icon.png when the declared icon fails its download check', async () => {
+    const fetchMock = globalThis.fetch as ReturnType<typeof vi.fn>;
+    const appleTouchIconResponse = createTextResponse({
+      body: '',
+      url: 'https://example.com/apple-touch-icon.png',
+    });
+    appleTouchIconResponse.headers.get.mockReturnValue('image/png');
+
+    fetchMock
+      .mockResolvedValueOnce(
+        createTextResponse({
+          body: '<html><head><link rel="icon" href="/favicon.png"></head></html>',
+          url: 'https://example.com/',
+        }),
+      )
+      .mockResolvedValueOnce(
+        createTextResponse({
+          body: '',
+          ok: false,
+          status: 404,
+          url: 'https://example.com/favicon.png',
+        }),
+      )
+      .mockResolvedValueOnce(appleTouchIconResponse);
+
+    await expect(getWebsiteIconUrlAsync('https://example.com')).resolves.toBe(
+      'https://example.com/apple-touch-icon.png',
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
   it('rejects an oversized HTML response before reading the full body', async () => {
     const fetchMock = globalThis.fetch as ReturnType<typeof vi.fn>;
 
