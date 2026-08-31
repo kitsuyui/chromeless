@@ -24,13 +24,13 @@ const getRelatedPaths = (
   },
   fsAccess: FsAccess = fsExtra as FsAccess,
 ) => {
-  const { id, name, engine } = appObj;
+  const { id, engine } = appObj;
 
   const relatedPaths = [];
 
   // App
   const dotAppPath = getInstalledAppBundlePath({
-    appName: name,
+    appId: id,
     homePath,
     installationPath,
   });

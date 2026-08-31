@@ -6,9 +6,9 @@ const { app, shell } = require('electron');
 const { getPreference } = require('../preferences');
 const { getInstalledAppBundlePath } = require('./installation-path');
 
-const openApp = (id, name) => {
+const openApp = (id, _name) => {
   const appPath = getInstalledAppBundlePath({
-    appName: name,
+    appId: id,
     homePath: app.getPath('home'),
     installationPath: getPreference('installationPath'),
   });

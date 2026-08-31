@@ -25,7 +25,7 @@ describe('getRelatedPaths', () => {
       }),
     ).toEqual([
       {
-        path: path.join('/Users/alice', 'Applications', 'Chromeless Apps', 'Mail.app'),
+        path: path.join('/Users/alice', 'Applications', 'Chromeless Apps', 'mail.app'),
         type: 'app',
       },
       {
@@ -61,7 +61,7 @@ describe('getRelatedPaths', () => {
       ),
     ).toEqual([
       {
-        path: path.join('/Users/alice', 'Applications', 'Chromeless Apps', 'Mail.app'),
+        path: path.join('/Users/alice', 'Applications', 'Chromeless Apps', 'mail.app'),
         type: 'app',
       },
       {
@@ -97,7 +97,7 @@ describe('getRelatedPaths', () => {
       ),
     ).toEqual([
       {
-        path: path.join('/Users/alice', 'Applications', 'Chromeless Apps', 'Mail.app'),
+        path: path.join('/Users/alice', 'Applications', 'Chromeless Apps', 'mail.app'),
         type: 'app',
       },
     ]);

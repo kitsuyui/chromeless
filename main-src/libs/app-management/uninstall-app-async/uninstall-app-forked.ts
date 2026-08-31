@@ -90,7 +90,7 @@ const execAsync = (cmd) =>
     });
   });
 
-const dotAppPath = path.join(installationPath.replace('~', homePath), `${name}.app`);
+const dotAppPath = path.join(installationPath.replace('~', homePath), `${id}.app`);
 
 const relatedPaths = getRelatedPaths({
   appObj: {
