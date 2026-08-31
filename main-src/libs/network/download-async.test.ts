@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const downloadAsync = require('./download-async');
+import downloadAsync from './download-async';
 
 const originalFetch = globalThis.fetch;
 
