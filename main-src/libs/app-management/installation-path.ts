@@ -11,12 +11,15 @@ export const resolveInstallationPath = (installationPath: string, homePath: stri
   return installationPath;
 };
 
+export const getInstalledAppBundleName = (appId: string) => `${appId}.app`;
+
 export const getInstalledAppBundlePath = ({
-  appName,
+  appId,
   homePath,
   installationPath,
 }: {
-  appName: string;
+  appId: string;
   homePath: string;
   installationPath: string;
-}) => path.join(resolveInstallationPath(installationPath, homePath), `${appName}.app`);
+}) =>
+  path.join(resolveInstallationPath(installationPath, homePath), getInstalledAppBundleName(appId));

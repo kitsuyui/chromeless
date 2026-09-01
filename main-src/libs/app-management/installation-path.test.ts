@@ -3,7 +3,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { getInstalledAppBundlePath, resolveInstallationPath } from './installation-path';
+import {
+  getInstalledAppBundleName,
+  getInstalledAppBundlePath,
+  resolveInstallationPath,
+} from './installation-path';
 
 describe('installation path helpers', () => {
   it('expands home-relative installation paths', () => {
@@ -22,13 +26,17 @@ describe('installation path helpers', () => {
     );
   });
 
+  it('uses the stable app id for bundle names', () => {
+    expect(getInstalledAppBundleName('custom-mail')).toBe('custom-mail.app');
+  });
+
   it('resolves installed app bundle paths', () => {
     expect(
       getInstalledAppBundlePath({
-        appName: 'Mail',
+        appId: 'mail',
         homePath: '/Users/alice',
         installationPath: '~/Applications/Chromeless Apps',
       }),
-    ).toBe(path.join('/Users/alice', 'Applications', 'Chromeless Apps', 'Mail.app'));
+    ).toBe(path.join('/Users/alice', 'Applications', 'Chromeless Apps', 'mail.app'));
   });
 });

@@ -24,13 +24,13 @@ export const buildInstallRuntime = ({
   homePath,
   id,
   installationPath,
-  name,
+  name: _name,
   requireAdmin,
   url,
 }: InstallRuntimeInput) => {
   const browserId = engine.split('/')[0];
   const useTabs = !url || engine.endsWith('/tabs');
-  const appFolderName = `${name}.app`;
+  const appFolderName = `${id}.app`;
   const firefoxProfileId = `chromeless-${id}`;
   const allAppsPath = installationPath.replace('~', homePath);
   const finalPath = `${allAppsPath}/${appFolderName}`;

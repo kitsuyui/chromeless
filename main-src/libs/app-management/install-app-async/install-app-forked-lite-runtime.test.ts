@@ -34,9 +34,9 @@ describe('install app forked lite runtime', () => {
       }),
     ).toEqual({
       allAppsPath: '/Users/example/Applications/Chromeless Apps',
-      appFolderName: 'Mail.app',
+      appFolderName: 'mail.app',
       browserId: 'firefox',
-      finalPath: '/Users/example/Applications/Chromeless Apps/Mail.app',
+      finalPath: '/Users/example/Applications/Chromeless Apps/mail.app',
       firefoxProfileId: 'chromeless-mail',
       iconFileName: 'firefox.icns',
       requireAdmin: 'false',
@@ -57,9 +57,9 @@ describe('install app forked lite runtime', () => {
       }),
     ).toEqual({
       allAppsPath: '/Applications/Custom Apps',
-      appFolderName: 'Docs.app',
+      appFolderName: 'docs.app',
       browserId: 'chrome',
-      finalPath: '/Applications/Custom Apps/Docs.app',
+      finalPath: '/Applications/Custom Apps/docs.app',
       firefoxProfileId: 'chromeless-docs',
       iconFileName: 'app.icns',
       requireAdmin: 'true',
