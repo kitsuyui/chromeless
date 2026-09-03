@@ -44,7 +44,7 @@ describe('downloadAsync', () => {
       statusText: 'Not Found',
     } as unknown as Response);
 
-    await expect(downloadAsync('https://example.com/icon.png', dest)).rejects.toThrow(
+    await expect(downloadAsync('https://example.com/icon.png', dest, undefined)).rejects.toThrow(
       /Failed to download/,
     );
     expect(fs.existsSync(dest)).toBe(false);
@@ -59,7 +59,7 @@ describe('downloadAsync', () => {
       statusText: 'OK',
     } as unknown as Response);
 
-    await expect(downloadAsync('https://example.com/icon.png', dest)).rejects.toThrow(
+    await expect(downloadAsync('https://example.com/icon.png', dest, undefined)).rejects.toThrow(
       /empty response body/,
     );
     expect(fs.existsSync(dest)).toBe(false);
@@ -74,7 +74,7 @@ describe('downloadAsync', () => {
       statusText: 'OK',
     } as unknown as Response);
 
-    await downloadAsync('https://example.com/icon.png', dest);
+    await downloadAsync('https://example.com/icon.png', dest, undefined);
     expect(fs.readFileSync(dest, 'utf8')).toBe('hello');
   });
 });

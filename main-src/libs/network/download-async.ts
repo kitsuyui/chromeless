@@ -21,4 +21,4 @@ const downloadAsync = (url, dest, fetchOpts) =>
       .then(() => pipeline(getNodeReadableStream(res.body), fsExtra.createWriteStream(dest)));
   });
 
-module.exports = downloadAsync;
+export default downloadAsync;

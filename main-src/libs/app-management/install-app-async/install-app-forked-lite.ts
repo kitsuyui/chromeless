@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 import execAsync from '../../exec-async';
+import downloadAsync from '../../network/download-async';
 import parseArgs from '../../parse-args';
 import { quoteShellArg } from '../../shell-quote';
 import { createTmpPathCleaner, parseInstallOpts } from './install-app-forked-lite-bootstrap';
@@ -38,7 +39,6 @@ const os = require('os');
 const path = require('path');
 const sudo = require('@vscode/sudo-prompt');
 
-const downloadAsync = require('../../network/download-async');
 const getEngineInfo = require('./get-engine-info');
 const getEngineAppPath = require('./get-engine-app-path');
 const packageJson = require('../../../../package.json');
@@ -177,7 +177,7 @@ Promise.resolve()
     });
 
     if (isUrl(icon)) {
-      return downloadAsync(icon, iconPngPath);
+      return downloadAsync(icon, iconPngPath, undefined);
     }
 
     return fsExtra.copy(icon, iconPngPath);
