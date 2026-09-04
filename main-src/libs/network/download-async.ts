@@ -5,8 +5,7 @@ const fsExtra = require('fs-extra');
 const { Readable } = require('stream');
 const { pipeline } = require('stream/promises');
 
-const customizedFetchModule = require('./customized-fetch');
-const customizedFetch = customizedFetchModule.default || customizedFetchModule;
+import customizedFetch from './customized-fetch';
 
 const getNodeReadableStream = (body) => {
   if (typeof body.pipe === 'function') return body;
@@ -14,13 +13,12 @@ const getNodeReadableStream = (body) => {
 };
 
 const downloadAsync = (url, dest, fetchOpts) =>
-  fsExtra
-    .ensureFile(dest)
-    .then(() => customizedFetch(url, fetchOpts))
-    .then((res) => {
-      if (!res.ok) throw new Error(`Failed to download ${url}: ${res.status} ${res.statusText}`);
-      if (!res.body) throw new Error(`Failed to download ${url}: empty response body`);
-      return pipeline(getNodeReadableStream(res.body), fsExtra.createWriteStream(dest));
-    });
+  customizedFetch(url, fetchOpts).then((res) => {
+    if (!res.ok) throw new Error(`Failed to download ${url}: ${res.status} ${res.statusText}`);
+    if (!res.body) throw new Error(`Failed to download ${url}: empty response body`);
+    return fsExtra
+      .ensureFile(dest)
+      .then(() => pipeline(getNodeReadableStream(res.body), fsExtra.createWriteStream(dest)));
+  });
 
-module.exports = downloadAsync;
+export default downloadAsync;
