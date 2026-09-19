@@ -22,14 +22,23 @@ export const open = (form) => ({
   form,
 });
 
+type WebsiteIconLookupResponse = {
+  failed?: boolean;
+  iconUrl?: string;
+};
+
 // to be replaced with invoke (electron 7+)
 // https://electronjs.org/docs/api/ipc-renderer#ipcrendererinvokechannel-args
 export const getWebsiteIconUrlAsync = (url) =>
   new Promise((resolve, reject) => {
     try {
       const id = crypto.randomUUID();
-      window.ipcRenderer.once(id, (e, uurl) => {
-        resolve(uurl);
+      window.ipcRenderer.once(id, (e, response: WebsiteIconLookupResponse) => {
+        if (response.failed) {
+          reject(new Error('Website icon lookup failed.'));
+          return;
+        }
+        resolve(response.iconUrl);
       });
       window.ipcRenderer.send('request-get-website-icon-url', id, url);
     } catch (err) {
@@ -72,7 +81,14 @@ export const getIconFromInternet = () => (dispatch, getState) => {
 
       return null;
     })
-    .catch(console.error) // eslint-disable-line no-console
+    .catch(() =>
+      window.remote.dialog.showMessageBox(window.remote.getCurrentWindow(), {
+        message: 'Unable to retrieve an icon from the Internet. Please try again.',
+        buttons: ['OK'],
+        cancelId: 0,
+        defaultId: 0,
+      }),
+    )
     .then(() => {
       requestCount -= 1;
       dispatch({

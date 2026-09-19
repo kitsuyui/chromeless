@@ -80,7 +80,10 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
       // https://webmasters.stackexchange.com/questions/23696/whats-the-fluid-icon-meta-tag-for
       const $fluidIcon = $('head > link[rel=fluid-icon]');
       if ($fluidIcon.length > 0) {
-        return resolveSelectedIcon(redirectedUrl, $fluidIcon.attr('href'));
+        return {
+          icon: resolveSelectedIcon(redirectedUrl, $fluidIcon.attr('href')),
+          manifestLookupFailure: undefined,
+        };
       }
 
       const lessPriorityCheck = () => {
@@ -98,8 +101,11 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
       // https://developers.google.com/web/fundamentals/web-app-manifest
       const $manifest = $('head > link[rel=manifest]');
       if ($('head > link[rel=manifest]').length > 0) {
+        let manifestLookupFailure: unknown;
         const manifestUrl = resolveSelectedIcon(redirectedUrl, $manifest.attr('href'));
-        if (!manifestUrl) return lessPriorityCheck();
+        if (!manifestUrl) {
+          return { icon: lessPriorityCheck(), manifestLookupFailure: undefined };
+        }
 
         return (
           customizedFetch(manifestUrl)
@@ -113,26 +119,28 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
               const iconSrc = selectLargestManifestIconSrc(manifestJson);
               return resolveSelectedIcon(manifestRedirectedUrl, iconSrc);
             })
-            // youtube.com/manifest.json doesn't specify icons
-            // error needs to be caught and the other checks need to be run
-            .catch(() => lessPriorityCheck())
+            // A failed manifest can still be recovered by a declared lower-priority icon.
+            // Preserve the failure when no fallback yields a usable icon.
+            .catch((error: unknown) => {
+              manifestLookupFailure = error;
+              return lessPriorityCheck();
+            })
+            .then((icon) => ({ icon, manifestLookupFailure }))
         );
       }
 
-      return lessPriorityCheck();
+      return { icon: lessPriorityCheck(), manifestLookupFailure: undefined };
     })
-    .then((icon) => {
+    .then(({ icon, manifestLookupFailure }) => {
       // try to get /apple-touch-icon.png
       // https://apple.stackexchange.com/questions/172204/how-apple-com-set-apple-touch-icon
       const fallbackToAppleTouchIcon = () => {
         const appleTouchIconUrl = resolveUrl(websiteURL, '/apple-touch-icon.png');
-        return customizedFetch(appleTouchIconUrl)
-          .then((res) => {
-            if (res.status === 200 && res.headers.get('Content-Type') === 'image/png')
-              return appleTouchIconUrl;
-            return undefined;
-          })
-          .catch(() => undefined);
+        return customizedFetch(appleTouchIconUrl).then((res) => {
+          if (res.status === 200 && res.headers.get('Content-Type') === 'image/png')
+            return appleTouchIconUrl;
+          return undefined;
+        });
       };
 
       if (icon) {
@@ -140,12 +148,20 @@ const getWebsiteIconUrlAsync = (websiteURL) =>
         return customizedFetch(icon)
           .then((res) => {
             if (res.ok) return icon; // res.status >= 200 && res.status < 300
-            return fallbackToAppleTouchIcon();
+            throw new Error(`Icon response returned status ${res.status}.`);
           })
-          .catch(() => fallbackToAppleTouchIcon());
+          .catch((error: unknown) =>
+            fallbackToAppleTouchIcon().then((fallbackIcon) => {
+              if (fallbackIcon) return fallbackIcon;
+              throw error;
+            }),
+          );
       }
 
-      return fallbackToAppleTouchIcon();
+      return fallbackToAppleTouchIcon().then((iconUrl) => {
+        if (!iconUrl && manifestLookupFailure) throw manifestLookupFailure;
+        return iconUrl;
+      });
     });
 
 export default getWebsiteIconUrlAsync;

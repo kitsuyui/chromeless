@@ -9,7 +9,7 @@ import {
   DIALOG_CREATE_CUSTOM_APP_OPEN,
 } from '../../../constants/actions';
 import { requestShowMessageBox } from '../../../senders';
-import { close, create, open, updateForm } from './action-creators';
+import { close, create, getWebsiteIconUrlAsync, open, updateForm } from './action-creators';
 
 const mocks = vi.hoisted(() => ({
   openDialogChooseEngine: vi.fn((...args: unknown[]) => ({
@@ -67,6 +67,25 @@ describe('dialog-create-custom-app action creators', () => {
       },
       type: DIALOG_CREATE_CUSTOM_APP_FORM_UPDATE,
     });
+  });
+
+  it('rejects a failed website icon lookup response from the main process', async () => {
+    const ipcRenderer = {
+      once: vi.fn((_: string, listener: (event: unknown, response: unknown) => void) =>
+        listener(undefined, { failed: true }),
+      ),
+      send: vi.fn(),
+    };
+    vi.stubGlobal('window', { ipcRenderer });
+
+    await expect(getWebsiteIconUrlAsync('https://example.com')).rejects.toThrow(
+      'Website icon lookup failed.',
+    );
+    expect(ipcRenderer.send).toHaveBeenCalledWith(
+      'request-get-website-icon-url',
+      MOCK_UUID,
+      'https://example.com',
+    );
   });
 
   it('dispatches validation changes instead of opening engine selection for invalid forms', () => {
