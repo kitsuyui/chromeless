@@ -29,8 +29,8 @@ describe('manifest icon selection', () => {
     ).toBe('/icon-192.png');
   });
 
-  it('returns undefined for invalid or unusable manifests', () => {
-    expect(selectLargestManifestIconSrc('not-json')).toBeUndefined();
+  it('throws for invalid JSON and returns undefined for usable manifests without icons', () => {
+    expect(() => selectLargestManifestIconSrc('not-json')).toThrow(SyntaxError);
     expect(selectLargestManifestIconSrc(JSON.stringify({}))).toBeUndefined();
     expect(selectLargestManifestIconSrc(JSON.stringify({ icons: [] }))).toBeUndefined();
   });

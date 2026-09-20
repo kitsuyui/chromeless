@@ -8,7 +8,14 @@ import {
   DIALOG_EDIT_APP_FORM_UPDATE,
   DIALOG_EDIT_APP_OPEN,
 } from '../../../constants/actions';
-import { close, open, save, updateForm, updateFormOpts } from './action-creators';
+import {
+  close,
+  getWebsiteIconUrlAsync,
+  open,
+  save,
+  updateForm,
+  updateFormOpts,
+} from './action-creators';
 
 const mocks = vi.hoisted(() => ({
   updateApp: vi.fn((...args: unknown[]) => ({
@@ -56,6 +63,25 @@ describe('dialog-edit-app action creators', () => {
       },
       type: DIALOG_EDIT_APP_FORM_UPDATE,
     });
+  });
+
+  it('rejects a failed website icon lookup response from the main process', async () => {
+    const ipcRenderer = {
+      once: vi.fn((_: string, listener: (event: unknown, response: unknown) => void) =>
+        listener(undefined, { failed: true }),
+      ),
+      send: vi.fn(),
+    };
+    vi.stubGlobal('window', { ipcRenderer });
+
+    await expect(getWebsiteIconUrlAsync('https://example.com')).rejects.toThrow(
+      'Website icon lookup failed.',
+    );
+    expect(ipcRenderer.send).toHaveBeenCalledWith(
+      'request-get-website-icon-url',
+      expect.any(String),
+      'https://example.com',
+    );
   });
 
   it('merges option updates into the current form options', () => {

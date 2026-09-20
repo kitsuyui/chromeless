@@ -16,12 +16,7 @@ const getDeclaredSize = (sizes: string | undefined): number => {
 };
 
 export const selectLargestManifestIconSrc = (manifestJson: string): string | undefined => {
-  let manifest: { icons?: ManifestIcon[] };
-  try {
-    manifest = JSON.parse(manifestJson);
-  } catch {
-    return undefined;
-  }
+  const manifest = JSON.parse(manifestJson) as { icons?: ManifestIcon[] };
 
   if (!Array.isArray(manifest.icons)) return undefined;
 

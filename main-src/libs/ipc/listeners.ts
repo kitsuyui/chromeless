@@ -240,11 +240,11 @@ const loadListeners = () => {
   ipcMain.on('request-get-website-icon-url', (e, id, url) => {
     getWebsiteIconUrlAsync(url)
       .then((iconUrl) => {
-        sendToAllWindows(id, iconUrl);
+        sendToAllWindows(id, { iconUrl });
       })
       .catch((err) => {
         console.error(err); // eslint-disable-line no-console
-        sendToAllWindows(id, null);
+        sendToAllWindows(id, { failed: true });
       });
   });
 

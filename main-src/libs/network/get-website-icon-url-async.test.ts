@@ -243,4 +243,62 @@ describe('getWebsiteIconUrlAsync', () => {
       'https://example.com/favicon.png',
     );
   });
+
+  it('rejects when the manifest is invalid and no fallback icon is available', async () => {
+    const fetchMock = globalThis.fetch as ReturnType<typeof vi.fn>;
+
+    fetchMock
+      .mockResolvedValueOnce(
+        createTextResponse({
+          body: '<html><head><link rel="manifest" href="/manifest.json"></head></html>',
+          url: 'https://example.com/',
+        }),
+      )
+      .mockResolvedValueOnce(
+        createTextResponse({
+          body: 'not-json',
+          url: 'https://example.com/manifest.json',
+        }),
+      )
+      .mockResolvedValueOnce(
+        createTextResponse({
+          body: '',
+          status: 404,
+          url: 'https://example.com/apple-touch-icon.png',
+        }),
+      );
+
+    await expect(getWebsiteIconUrlAsync('https://example.com')).rejects.toThrow(SyntaxError);
+  });
+
+  it('rejects when a declared icon cannot be verified', async () => {
+    const fetchMock = globalThis.fetch as ReturnType<typeof vi.fn>;
+
+    fetchMock
+      .mockResolvedValueOnce(
+        createTextResponse({
+          body: '<html><head><link rel="icon" href="/favicon.png"></head></html>',
+          url: 'https://example.com/',
+        }),
+      )
+      .mockResolvedValueOnce(
+        createTextResponse({
+          body: '',
+          ok: false,
+          status: 404,
+          url: 'https://example.com/favicon.png',
+        }),
+      )
+      .mockResolvedValueOnce(
+        createTextResponse({
+          body: '',
+          status: 404,
+          url: 'https://example.com/apple-touch-icon.png',
+        }),
+      );
+
+    await expect(getWebsiteIconUrlAsync('https://example.com')).rejects.toThrow(
+      'Icon response returned status 404.',
+    );
+  });
 });
