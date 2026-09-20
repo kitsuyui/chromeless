@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-14T12:21:12.822Z",
+  "generated_at": "2026-09-20T12:20:01.052Z",
   "repository": "kitsuyui/chromeless",
   "default_branch": "main",
   "publish_branch": "gh-counter-assets",
   "event_name": "push",
   "base_label": "main",
-  "base_reference": "1ba51a077fb12c33b3614a791667800eda87467c",
+  "base_reference": "5ad2d74b8e0fc93e272664c727979efa8887536b",
   "head_label": "main",
-  "head_reference": "5ad2d74b8e0fc93e272664c727979efa8887536b",
+  "head_reference": "950e38fe7b976614e72ebbfcc510df1824f62c0e",
   "bootstrap_message": null,
   "base_only_paths": [],
   "counters": [
@@ -55,12 +55,12 @@
     {
       "id": "lint-suppression",
       "label": "Lint suppression",
-      "current": 30,
+      "current": 28,
       "base": 30,
-      "delta": 0,
-      "dashboard_current": 30,
+      "delta": -2,
+      "dashboard_current": 28,
       "dashboard_base": 30,
-      "dashboard_delta": 0,
+      "dashboard_delta": -2,
       "commentable": true,
       "touched_files": [],
       "file_deltas": [
@@ -162,18 +162,6 @@
         },
         {
           "path": "src/listeners/index.ts",
-          "current": 1,
-          "base": 0,
-          "delta": 1
-        },
-        {
-          "path": "src/state/dialog-create-custom-app/actions/action-creators.ts",
-          "current": 1,
-          "base": 0,
-          "delta": 1
-        },
-        {
-          "path": "src/state/dialog-edit-app/actions/action-creators.ts",
           "current": 1,
           "base": 0,
           "delta": 1

@@ -1,7 +1,7 @@
 {
   "id": "lint-suppression",
   "label": "Lint suppression",
-  "count": 30,
+  "count": 28,
   "matches": [
     {
       "path": "dist.ts",
@@ -132,16 +132,6 @@
       "path": "src/listeners/index.ts",
       "line": 40,
       "text": "// eslint-disable-next-line no-console"
-    },
-    {
-      "path": "src/state/dialog-create-custom-app/actions/action-creators.ts",
-      "line": 81,
-      "text": ".catch(console.error) // eslint-disable-line no-console"
-    },
-    {
-      "path": "src/state/dialog-edit-app/actions/action-creators.ts",
-      "line": 75,
-      "text": ".catch(console.error) // eslint-disable-line no-console"
     },
     {
       "path": "src/state/dialog-set-installation-path/actions.ts",
