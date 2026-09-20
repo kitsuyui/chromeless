@@ -8,6 +8,8 @@ const { app } = require('electron');
 
 const sendToAllWindows = require('../ipc/send-to-all-windows');
 
+import { createSetSystemPreference } from './system-preference-setter';
+
 const getSystemPreference = (name) => {
   switch (name) {
     case 'openAtLogin': {
@@ -29,21 +31,7 @@ const getSystemPreferences = () => ({
   openAtLogin: getSystemPreference('openAtLogin'),
 });
 
-const setSystemPreference = (name, value) => {
-  switch (name) {
-    case 'openAtLogin': {
-      app.setLoginItemSettings({
-        openAtLogin: value.startsWith('yes'),
-        openAsHidden: value === 'yes-hidden',
-      });
-      break;
-    }
-    default: {
-      break;
-    }
-  }
-  sendToAllWindows('set-system-preference', name, value);
-};
+const setSystemPreference = createSetSystemPreference(app, sendToAllWindows);
 
 module.exports = {
   getSystemPreference,
